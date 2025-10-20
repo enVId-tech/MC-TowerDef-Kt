@@ -1,4 +1,4 @@
 name: MC-TowerDef
 version: '1.0-SNAPSHOT'
-main: dev.etran.mCTowerDef.MCTowerDef
+main: dev.etran.towerDefMc.TowerDefMC
 api-version: '1.21'
