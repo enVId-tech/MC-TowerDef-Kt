@@ -2,3 +2,8 @@ name: towerDefMc
 version: '1.0-SNAPSHOT'
 main: dev.etran.towerDefMc.TowerDefMC
 api-version: '1.21'
+
+commands:
+  diamonds:
+    description: A command to give diamonds.
+    usage: /<command> [player] [amount]
