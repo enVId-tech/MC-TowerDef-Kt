@@ -13,7 +13,7 @@ class TowerDefMC : JavaPlugin() {
 
         server.pluginManager.registerEvents(PlayerJoinListener(), this)
 
-        getCommand("diamonds")?.setExecutor(TestCommand())
+        getCommand("spawnegg")?.setExecutor(TestCommand())
     }
 
     override fun onDisable() {

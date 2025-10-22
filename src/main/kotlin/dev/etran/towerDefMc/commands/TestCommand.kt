@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack
 
 class TestCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (args.size != 2) {
-            sender.sendMessage("Usage: /diamonds <player> <size>")
+        if (args.size != 1) {
+            sender.sendMessage("Usage: /spawnegg <player> <size>")
             return false
         }
 
@@ -21,19 +21,14 @@ class TestCommand : CommandExecutor {
         }
 
         val playerName = args[0]
-        val targetPlayer = Bukkit.getPlayer(playerName)
-        val itemType = Material.DIAMOND
-        val amount = args[1].toIntOrNull()
-        if (amount == null || amount <= 0) {
-            sender.sendMessage("You need to specify a valid amount")
+        val player = Bukkit.getPlayer(playerName)
+        if (player == null) {
+            sender.sendMessage("Player $playerName does not exist")
             return false
         }
-        val diamondStack = ItemStack(itemType, amount)
 
+        val spawnegg = Material.ZOMBIE_SPAWN_EGG
 
-        val leftovers = targetPlayer?.inventory?.addItem(diamondStack)
-        leftovers?.values?.forEach { leftover -> targetPlayer.world.dropItemNaturally(targetPlayer.location, leftover)
-        }
 
         return true
     }

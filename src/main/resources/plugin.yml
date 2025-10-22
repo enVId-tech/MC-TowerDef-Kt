@@ -2,8 +2,9 @@ name: towerDefMc
 version: '1.0-SNAPSHOT'
 main: dev.etran.towerDefMc.TowerDefMC
 api-version: '1.21'
+depend: [NBTAPI]
 
 commands:
-  diamonds:
-    description: A command to give diamonds.
+  spawnegg:
+    description: A command to give spawnegg.
     usage: /<command> [player] [amount]
