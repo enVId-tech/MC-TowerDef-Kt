@@ -2,6 +2,7 @@ package dev.etran.towerDefMc
 
 import dev.etran.towerDefMc.commands.TestCommand
 import dev.etran.towerDefMc.listeners.PlayerJoinListener
+import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import org.bukkit.plugin.java.JavaPlugin
 
 class TowerDefMC : JavaPlugin() {
@@ -12,8 +13,9 @@ class TowerDefMC : JavaPlugin() {
         }
 
         server.pluginManager.registerEvents(PlayerJoinListener(), this)
+        server.pluginManager.registerEvents(PlayerPlaceListener(), this)
 
-        getCommand("spawnegg")?.setExecutor(TestCommand())
+        getCommand("gettower")?.setExecutor(TestCommand())
     }
 
     override fun onDisable() {

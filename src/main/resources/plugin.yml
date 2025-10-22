@@ -5,6 +5,6 @@ api-version: '1.21'
 depend: [NBTAPI]
 
 commands:
-  spawnegg:
-    description: A command to give spawnegg.
+  gettower:
+    description: A command to give a zombie tower with no AI.
     usage: /<command> [player] [amount]

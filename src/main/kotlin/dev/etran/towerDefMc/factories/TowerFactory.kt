@@ -13,13 +13,7 @@ object TowerFactory {
         val egg = ItemStack(Material.ZOMBIE_SPAWN_EGG, amount)
 
         NBT.modifyComponents(egg) { componentNBT ->
-            val customData = componentNBT.getOrCreateCompound("minecraft:custom_data")
-
-            val entityTag = customData.getOrCreateCompound("EntityTag")
-            entityTag.setByte("NoAI", 1.toByte())
-            entityTag.setString("id", "minecraft:zombie")
-
-             entityTag.setString("CustomName", "{\"text\":\"Tower Zombie\"}")
+            componentNBT.setString("CustomTag", "Tower 1")
         }
 
         return egg
