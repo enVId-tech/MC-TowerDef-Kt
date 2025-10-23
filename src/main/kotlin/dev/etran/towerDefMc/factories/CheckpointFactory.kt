@@ -44,8 +44,12 @@ object CheckpointFactory {
         entity.fireTicks = 0
         entity.setGravity(false)
 
+        NBT.modify(entity) { nbt ->
+            nbt.setString("tdef_checkpoint", "Checkpoint")
+        }
+
         // Global accessor for checkpoint
-        entity.persistentDataContainer.set(TowerDefMC.TOWER_KEY, PersistentDataType.STRING, "Checkpoint")
+        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_KEY, PersistentDataType.STRING, "Checkpoint")
 
         // Take away 1 from the user if they aren't in creative mode
         if (player.gameMode != GameMode.CREATIVE) {
