@@ -42,6 +42,7 @@ object CheckpointFactory {
         // Add NBT data to armor stands
         entity.isInvulnerable = true
         entity.fireTicks = 0
+        entity.setGravity(false)
 
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.TOWER_KEY, PersistentDataType.STRING, "Checkpoint")

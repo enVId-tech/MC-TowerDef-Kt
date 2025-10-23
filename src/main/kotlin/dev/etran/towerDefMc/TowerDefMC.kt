@@ -1,8 +1,10 @@
 package dev.etran.towerDefMc
 
 import dev.etran.towerDefMc.commands.GiveCheckpoint
+import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
+import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -33,9 +35,11 @@ class TowerDefMC : JavaPlugin() {
         // Set commands and behaviors
         getCommand("givettower")?.setExecutor(GiveTower())
         getCommand("givetcheckpoint")?.setExecutor(GiveCheckpoint())
+        getCommand("givetenemy")?.setExecutor(GiveEnemy())
 
         // Scheduler tasks
         startTowerCheckTask()
+        startEnemyCheckTask()
     }
 
     override fun onDisable() {
@@ -51,6 +55,19 @@ class TowerDefMC : JavaPlugin() {
             this, Runnable {
                 for (world in Bukkit.getWorlds()) {
                     TowerScheduler.checkAndHandleTowers(world)
+                }
+            },
+            0L,
+            CHECK_INTERVAL_TICKS
+        )
+    }
+
+    private fun startEnemyCheckTask() {
+        // Makes a task every 5 game ticks to update object behavior based on new data
+        Bukkit.getScheduler().runTaskTimer(
+            this, Runnable {
+                for (world in Bukkit.getWorlds()) {
+                    EnemyScheduler.checkAndHandleEnemies(world)
                 }
             },
             0L,

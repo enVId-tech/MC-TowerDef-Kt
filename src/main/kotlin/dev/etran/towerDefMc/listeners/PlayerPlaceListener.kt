@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.listeners
 
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.factories.CheckpointFactory
+import dev.etran.towerDefMc.factories.EnemyFactory
 import dev.etran.towerDefMc.factories.TowerFactory
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -24,6 +25,7 @@ class PlayerPlaceListener : Listener {
         when (name) {
             "Tower 1" -> TowerFactory.towerPlace(event)
             "Checkpoint" -> CheckpointFactory.checkPointPlace(event)
+            "Enemy 1" -> EnemyFactory.enemyPlace(event)
         }
     }
 }
