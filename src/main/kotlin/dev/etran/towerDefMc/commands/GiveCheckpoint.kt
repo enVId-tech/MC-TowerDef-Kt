@@ -33,10 +33,13 @@ class GiveCheckpoint : CommandExecutor {
             return false
         }
 
+        // Generate checkpoint stack
         val checkpoint: ItemStack = CheckpointFactory.newCheckpoint(amount)
 
+        // Add items to inventory, stores whatever cannot be put in inventory
         val leftovers = player.inventory.addItem(checkpoint)
 
+        // Throws out remaining items in leftovers
         leftovers.values.forEach { checkpointItemStack ->
             player.world.dropItemNaturally(
                 player.location,

@@ -16,10 +16,11 @@ class PlayerPlaceListener : Listener {
     @EventHandler
     fun onPlayerPlace(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
-        val towerSpawn = event.item ?: return
+        val gameElementSpawn = event.item ?: return
 
-        val name: String = NBT.get<String>(towerSpawn, { nbt -> nbt.getString("tdef_item_name")})
+        val name: String = NBT.get<String>(gameElementSpawn, { nbt -> nbt.getString("tdef_item_name") })
 
+        // Run functions specific to their unique identifiers
         when (name) {
             "Tower 1" -> TowerFactory.towerPlace(event)
             "Checkpoint" -> CheckpointFactory.checkPointPlace(event)

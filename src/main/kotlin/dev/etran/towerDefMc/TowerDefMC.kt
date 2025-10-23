@@ -24,25 +24,29 @@ class TowerDefMC : JavaPlugin() {
 
         // Plugin startup logic
         logger.info {
-            "Hello World!"
+            "Tower Defense Plugin Enabled!"
         }
 
+        // Register continuous events
         server.pluginManager.registerEvents(PlayerPlaceListener(), this)
 
+        // Set commands and behaviors
         getCommand("givettower")?.setExecutor(GiveTower())
         getCommand("givetcheckpoint")?.setExecutor(GiveCheckpoint())
 
+        // Scheduler tasks
         startTowerCheckTask()
     }
 
     override fun onDisable() {
         // Plugin shutdown logic
         logger.info {
-            "Goodbye World!"
+            "Tower Defense Plugin Successfully Disabled"
         }
     }
 
     private fun startTowerCheckTask() {
+        // Makes a task every 5 game ticks to update object behavior based on new data
         Bukkit.getScheduler().runTaskTimer(
             this, Runnable {
                 for (world in Bukkit.getWorlds()) {

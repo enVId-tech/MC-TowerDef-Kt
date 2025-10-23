@@ -33,10 +33,13 @@ class GiveTower : CommandExecutor {
             return false
         }
 
+        // Generate tower stack
         val tower: ItemStack = TowerFactory.newBasicTower(amount)
 
+        // Add items to inventory, stores whatever cannot be put in inventory
         val leftovers = player.inventory.addItem(tower)
 
+        // Throws out remaining items in leftovers
         leftovers.values.forEach { towerItemStack ->
             player.world.dropItemNaturally(
                 player.location,

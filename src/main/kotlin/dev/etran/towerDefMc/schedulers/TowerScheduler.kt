@@ -11,6 +11,7 @@ import kotlin.math.sqrt
 
 object TowerScheduler {
     fun checkAndHandleTowers(world: World) {
+        // Only get the entities in the world
         world.getEntitiesByClass(LivingEntity::class.java).forEach { entity ->
             val container = entity.persistentDataContainer
 
@@ -18,6 +19,7 @@ object TowerScheduler {
             if (!container.has(TowerDefMC.TOWER_KEY, PersistentDataType.STRING)) return@forEach
             val towerId = container.get(TowerDefMC.TOWER_KEY, PersistentDataType.STRING) ?: return@forEach
 
+            // Checks each instance of the global identifier and runs code accordingly
             when (towerId) {
                 "Basic_Tower_1" -> {
                     val targetPlayer = entity.getNearbyEntities(30.0, 30.0, 30.0)
@@ -27,6 +29,8 @@ object TowerScheduler {
                     if (targetPlayer != null) {
                         entity.setAI(false)
                         entity.isInvulnerable = true
+
+                        // Math for the rotation of the tower towards the player (soon to be enemy)
                         val maxPitch = 40f
 
                         val playerEye = targetPlayer.eyeLocation
