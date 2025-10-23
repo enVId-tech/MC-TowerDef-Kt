@@ -22,7 +22,6 @@ object CheckpointFactory {
     fun checkPointPlace(event: PlayerInteractEvent) {
         event.isCancelled = true
 
-
         val block = event.clickedBlock ?: return
         val location = block.location.add(0.5, 1.0, 0.5)
         val player = event.player
@@ -30,7 +29,7 @@ object CheckpointFactory {
         player.sendBlockChange(location, location.block.blockData)
 
         if (location.getNearbyEntities(0.5, 1.0, 0.5).count() >= 1) {
-            player.sendMessage("You cannot place a tower here!")
+            player.sendMessage("You cannot place a checkpoint here!")
             return
         }
 

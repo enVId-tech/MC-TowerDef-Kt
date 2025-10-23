@@ -29,8 +29,17 @@ object TowerFactory {
 
         val block = event.clickedBlock ?: return
         val location = block.location.add(0.5, 1.0, 0.5)
+        val player = event.player
+
+        // TODO: Add this into a configuration file for the user to be able to make custom towers later on
+        if (location.getNearbyEntities(0.5, 1.0, 0.5).count() >= 1) {
+            player.sendMessage("You cannot place a tower here!")
+            return
+        }
+
         val world = location.world
         val entity = world.spawnEntity(location, EntityType.ZOMBIE)
+
 
         if (entity is LivingEntity) {
             entity.setAI(false)
@@ -40,6 +49,6 @@ object TowerFactory {
         }
 
 
-        event.player.inventory.itemInMainHand.amount -= 1
+        player.inventory.itemInMainHand.amount -= 1
     }
 }
