@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.listeners
 
 import de.tr7zw.nbtapi.NBT
+import dev.etran.towerDefMc.factories.CheckpointFactory
 import dev.etran.towerDefMc.factories.TowerFactory
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -15,11 +16,13 @@ class PlayerPlaceListener : Listener {
     @EventHandler
     fun onPlayerPlace(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
-        val player = event.player
         val towerSpawn = event.item ?: return
 
-        val name: String = NBT.get<String>(towerSpawn, { nbt -> nbt.getString("tower_id")})
+        val name: String = NBT.get<String>(towerSpawn, { nbt -> nbt.getString("tdef_item_name")})
 
-        if (name.equals("Tower 1")) TowerFactory.towerPlace(event, player)
+        when (name) {
+            "Tower 1" -> TowerFactory.towerPlace(event)
+            "Checkpoint" -> CheckpointFactory.checkPointPlace(event)
+        }
     }
 }

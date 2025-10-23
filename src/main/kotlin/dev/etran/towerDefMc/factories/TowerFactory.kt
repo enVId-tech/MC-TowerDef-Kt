@@ -18,13 +18,13 @@ object TowerFactory {
         val towerSpawn = ItemStack(Material.END_ROD, amount)
 
         NBT.modify(towerSpawn) { nbt ->
-            nbt.setString("tower_id", "Tower 1")
+            nbt.setString("tdef_item_name", "Tower 1")
         }
 
         return towerSpawn
     }
 
-    fun towerPlace(event: PlayerInteractEvent, player: Player) {
+    fun towerPlace(event: PlayerInteractEvent) {
         event.isCancelled = true
 
         val block = event.clickedBlock ?: return
@@ -40,6 +40,6 @@ object TowerFactory {
         }
 
 
-        player.inventory.itemInMainHand.amount -= 1
+        event.player.inventory.itemInMainHand.amount -= 1
     }
 }

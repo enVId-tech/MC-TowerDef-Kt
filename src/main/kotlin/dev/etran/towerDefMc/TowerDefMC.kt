@@ -1,7 +1,7 @@
 package dev.etran.towerDefMc
 
-import dev.etran.towerDefMc.commands.TestCommand
-import dev.etran.towerDefMc.listeners.PlayerJoinListener
+import dev.etran.towerDefMc.commands.GiveCheckpoint
+import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import org.bukkit.Bukkit
@@ -9,7 +9,6 @@ import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
 
 class TowerDefMC : JavaPlugin() {
-
     private val CHECK_INTERVAL_TICKS: Long = 5L
     companion object {
         // Set by onEnable, clear in onDisable
@@ -28,10 +27,10 @@ class TowerDefMC : JavaPlugin() {
             "Hello World!"
         }
 
-        server.pluginManager.registerEvents(PlayerJoinListener(), this)
         server.pluginManager.registerEvents(PlayerPlaceListener(), this)
 
-        getCommand("gettower")?.setExecutor(TestCommand())
+        getCommand("givettower")?.setExecutor(GiveTower())
+        getCommand("givetcheckpoint")?.setExecutor(GiveCheckpoint())
 
         startTowerCheckTask()
     }

@@ -8,10 +8,10 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class TestCommand : CommandExecutor {
+class GiveTower : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (args.size != 2) {
-            sender.sendMessage("Usage: /spawnegg <player> <size>")
+            sender.sendMessage("Usage: /givettower <player> <size>")
             return false
         }
 
@@ -33,11 +33,16 @@ class TestCommand : CommandExecutor {
             return false
         }
 
-        val egg: ItemStack = TowerFactory.newBasicTower(amount)
+        val tower: ItemStack = TowerFactory.newBasicTower(amount)
 
-        val leftovers = player.inventory.addItem(egg)
+        val leftovers = player.inventory.addItem(tower)
 
-        leftovers.values.forEach { eggItemStack -> player.world.dropItemNaturally(player.location, eggItemStack) }
+        leftovers.values.forEach { towerItemStack ->
+            player.world.dropItemNaturally(
+                player.location,
+                towerItemStack
+            )
+        }
 
         return true
     }
