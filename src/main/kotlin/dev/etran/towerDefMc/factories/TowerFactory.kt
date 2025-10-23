@@ -12,8 +12,8 @@ object TowerFactory {
     fun newZombieEgg(amount: Int = 1): ItemStack {
         val egg = ItemStack(Material.ZOMBIE_SPAWN_EGG, amount)
 
-        NBT.modifyComponents(egg) { componentNBT ->
-            componentNBT.setString("CustomTag", "Tower 1")
+        NBT.modify(egg) { nbt ->
+            nbt.setString("tower_id", "Tower 1")
         }
 
         return egg
