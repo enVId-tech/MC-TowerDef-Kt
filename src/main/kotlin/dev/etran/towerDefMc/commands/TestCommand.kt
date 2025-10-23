@@ -33,7 +33,7 @@ class TestCommand : CommandExecutor {
             return false
         }
 
-        val egg: ItemStack = TowerFactory.newZombieEgg(amount)
+        val egg: ItemStack = TowerFactory.newBasicTower(amount)
 
         val leftovers = player.inventory.addItem(egg)
 
