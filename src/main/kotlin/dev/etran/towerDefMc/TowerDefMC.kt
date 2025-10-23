@@ -11,15 +11,18 @@ import org.bukkit.plugin.java.JavaPlugin
 class TowerDefMC : JavaPlugin() {
 
     private val CHECK_INTERVAL_TICKS: Long = 5L
-
     companion object {
+        // Set by onEnable, clear in onDisable
         lateinit var instance: TowerDefMC
-        lateinit var TOWER_KEY: NamespacedKey
-    }
+            private set
 
+        // Access the key via the current instance
+        val TOWER_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "towerKey")
+    }
     override fun onEnable() {
         instance = this
-        TOWER_KEY = NamespacedKey(this, "TOWER_ID")
+
         // Plugin startup logic
         logger.info {
             "Hello World!"

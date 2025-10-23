@@ -10,11 +10,11 @@ import org.bukkit.persistence.PersistentDataType
 object TowerScheduler {
     fun checkAndHandleTowers(world: World) {
         world.getEntitiesByClass(LivingEntity::class.java).forEach { entity ->
-            val towerId = entity.persistentDataContainer.get(TowerDefMC.TOWER_KEY, PersistentDataType.STRING)
+            val container = entity.persistentDataContainer
 
-            world.players.forEach { player ->
-                player.sendMessage(towerId ?: "")
-            }
+            // Only proceed if entity actually has the key
+            if (!container.has(TowerDefMC.TOWER_KEY, PersistentDataType.STRING)) return@forEach
+            val towerId = container.get(TowerDefMC.TOWER_KEY, PersistentDataType.STRING) ?: return@forEach
 
             when (towerId) {
                 "Basic_Tower_1" -> {
@@ -26,11 +26,11 @@ object TowerScheduler {
                         entity.setAI(false)
                         entity.isInvulnerable = true
                         val playerLoc = targetPlayer.eyeLocation
-                        val entityLoc = entity.location
+                        val entityLoc = entity.location.clone()
                         val directionVec = playerLoc.toVector().subtract(entityLoc.toVector()).normalize()
 
-                        entity.location.direction = directionVec
-                        entity.teleport(entity.location)
+                        entityLoc.direction = directionVec
+                        entity.teleport(entityLoc)
                     }
                 }
             }
