@@ -2,9 +2,11 @@ package dev.etran.towerDefMc.factories
 
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.findCheckpointById
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerInteractEvent
@@ -34,16 +36,16 @@ object EnemyFactory {
         val entity = world.spawnEntity(location, EntityType.ZOMBIE)
 
         // Add NBT data if only the zombie exists after calling spawn
-        if (entity is LivingEntity) {
-            entity.setAI(false)
-            entity.isInvulnerable = true
-            entity.fireTicks = 0
-            entity.visualFire = TriState.TRUE
-            entity.isPersistent = true
-            entity.isSilent = true
-            entity.persistentDataContainer.set(TowerDefMC.ENEMY_KEY, PersistentDataType.STRING, "Basic_Enemy_1")
-            entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, -1)
-        }
+        if (entity !is LivingEntity) return
+
+        entity.setAI(false)
+        entity.isInvulnerable = true
+        entity.fireTicks = 0
+        entity.visualFire = TriState.TRUE
+        entity.isPersistent = true
+        entity.isSilent = true
+        entity.persistentDataContainer.set(TowerDefMC.ENEMY_KEY, PersistentDataType.STRING, "Basic_Enemy_1")
+        entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
 
         // Take away 1 from the user if they aren't in creative mode
         if (player.gameMode != GameMode.CREATIVE) {
