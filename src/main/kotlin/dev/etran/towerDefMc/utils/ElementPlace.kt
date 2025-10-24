@@ -1,11 +1,10 @@
 package dev.etran.towerDefMc.utils
 
-import de.tr7zw.nbtapi.NBT
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
 
-fun placeElement(event: PlayerInteractEvent, loggerName: String, nbtId: String, nbtIdData: String): Entity? {
+fun placeElement(event: PlayerInteractEvent, loggerName: String): Entity? {
     event.isCancelled = true
 
     val block = event.clickedBlock ?: return null
@@ -27,10 +26,6 @@ fun placeElement(event: PlayerInteractEvent, loggerName: String, nbtId: String, 
     entity.isInvulnerable = true
     entity.fireTicks = 0
     entity.setGravity(false)
-
-    NBT.modify(entity) { nbt ->
-        nbt.setString(nbtId, nbtIdData)
-    }
 
     return entity
 }

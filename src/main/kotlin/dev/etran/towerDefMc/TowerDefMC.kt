@@ -20,12 +20,19 @@ class TowerDefMC : JavaPlugin() {
             private set
 
         // Access the key via the current instance
+        // Major game objects
         val TOWER_KEY: NamespacedKey
             get() = NamespacedKey(instance, "towerKey")
         val GAME_ELEMENT_KEY: NamespacedKey
             get() = NamespacedKey(instance, "gameElementKey")
         val ENEMY_KEY: NamespacedKey
             get() = NamespacedKey(instance, "enemyKey")
+
+        // Per-object properties
+        val CHECKPOINT_ID: NamespacedKey
+            get() = NamespacedKey(instance, "checkpointId")
+        val TARGET_CHECKPOINT_ID: NamespacedKey
+            get() = NamespacedKey(instance, "targetCheckpointId")
     }
     override fun onEnable() {
         instance = this

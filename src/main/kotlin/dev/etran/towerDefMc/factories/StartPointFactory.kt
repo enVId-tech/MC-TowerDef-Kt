@@ -20,7 +20,7 @@ object StartPointFactory {
     }
 
     fun startPointPlace(event: PlayerInteractEvent) {
-        val entity = placeElement(event, "startpoint", "tdef_startpoint", "StartPoint")
+        val entity = placeElement(event, "startpoint")
 
         if (entity !is Entity) return
 

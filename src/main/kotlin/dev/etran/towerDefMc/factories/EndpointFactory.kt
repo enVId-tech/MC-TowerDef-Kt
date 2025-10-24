@@ -23,9 +23,9 @@ object EndpointFactory {
     }
 
     fun endPointPlace(event: PlayerInteractEvent) {
-        val entity = placeElement(event, "endpoint", "tdef_endpoint", "EndPoint")
+        val entity = placeElement(event, "endpoint")
 
-        if (entity !is Entity) return
+        if (entity == null) return
 
         val player = event.player
 

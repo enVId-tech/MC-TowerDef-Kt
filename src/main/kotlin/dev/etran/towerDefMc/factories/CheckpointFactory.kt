@@ -25,26 +25,21 @@ object CheckpointFactory {
     }
 
     fun checkPointPlace(event: PlayerInteractEvent) {
-        val entity = placeElement(event, "checkpoint", "tdef_checkpoint", "CheckPoint")
+        val entity = placeElement(event, "checkpoint")
 
-        if (entity !is Entity) return
+        if (entity == null) return
 
-        var checkpointCount = 0
-
-        for (entity in event.player.world.entities) {
-            if (entity.type == EntityType.ARMOR_STAND) {
-                val armorStand = entity as ArmorStand
-
-                val tag = NBT.get<Int>(armorStand, { nbt -> nbt.getInteger("tdef_checkpoint_id")})
-
-                if (tag != null) checkpointCount++
+        val checkpointCount = event.player.world.entities
+            .filterIsInstance<ArmorStand>()
+            .count { armorStand ->
+                entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) != null
             }
-        }
 
-        NBT.modify(entity) { nbt -> nbt.setInteger("tdef_checkpoint_id", checkpointCount + 1) }
+        val newCheckpointId = checkpointCount + 1
+
+        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, newCheckpointId)
 
         val player = event.player
-
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING, "Checkpoint")
 

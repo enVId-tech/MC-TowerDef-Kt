@@ -42,6 +42,7 @@ object EnemyFactory {
             entity.isPersistent = true
             entity.isSilent = true
             entity.persistentDataContainer.set(TowerDefMC.ENEMY_KEY, PersistentDataType.STRING, "Basic_Enemy_1")
+            entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, -1)
         }
 
         // Take away 1 from the user if they aren't in creative mode
