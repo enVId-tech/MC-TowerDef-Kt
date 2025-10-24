@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.factories
 import de.tr7zw.nbtapi.NBT
 import de.tr7zw.nbtapi.NBTEntity
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.findMaxCheckpoint
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -28,9 +29,11 @@ object EndpointFactory {
         if (entity == null) return
 
         val player = event.player
+        val world = player.world
 
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING, "EndPoint")
+        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, findMaxCheckpoint(world) + 1)
 
         // Take away 1 from the user if they aren't in creative mode
         if (player.gameMode != GameMode.CREATIVE) {

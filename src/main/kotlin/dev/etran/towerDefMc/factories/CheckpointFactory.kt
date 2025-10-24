@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.factories
 
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.findMaxCheckpoint
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -30,19 +31,7 @@ object CheckpointFactory {
 
         if (entity == null) return
 
-        var maxId = 0
-
-        event.player.world.entities
-            .filterIsInstance<ArmorStand>()
-            .forEach { armorStand ->
-                val currentId = armorStand.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 0
-
-                if (currentId > maxId) {
-                    maxId = currentId
-                }
-            }
-
-        val newCheckpointId = maxId + 1
+        val newCheckpointId = findMaxCheckpoint(world) + 1
 
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, newCheckpointId)
 

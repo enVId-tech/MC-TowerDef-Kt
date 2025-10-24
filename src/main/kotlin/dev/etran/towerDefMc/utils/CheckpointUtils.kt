@@ -18,3 +18,20 @@ fun findCheckpointById(world: World, targetId: Int): ArmorStand? {
             isCheckpoint.equals("Checkpoint") && checkpointId == targetId
         }
 }
+
+fun findMaxCheckpoint(world: World): Int {
+    var maxId = 0
+
+    world.entities
+        .filterIsInstance<ArmorStand>()
+        .forEach { armorStand ->
+            val currentId =
+                armorStand.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 0
+
+            if (currentId > maxId) {
+                maxId = currentId
+            }
+        }
+
+    return maxId
+}

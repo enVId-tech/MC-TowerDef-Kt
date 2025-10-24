@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.utils.findCheckpointById
+import dev.etran.towerDefMc.utils.findMaxCheckpoint
 import dev.etran.towerDefMc.utils.setMobTargetLocation
 import org.bukkit.World
 import org.bukkit.entity.ArmorStand
@@ -30,11 +31,22 @@ object EnemyScheduler {
 
                     if (distanceSq <= arrivalRangeSq) {
                         val nextId = currentTargetId + 1
-                        container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
+
+                        val maxCheckpoint = findMaxCheckpoint(world)
+
+                        if (nextId > maxCheckpoint) {
+                            // TODO: Handle endpoint ids properly
+                            if(targetCheckpoint.persistentDataContainer.get(TowerDefMC.GAME_ELEMENT_KEY,
+                                    PersistentDataType.STRING).equals("EndPoint")) {
+                                entity.damage(entity.health)
+                            }
+                        } else {
+                            container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
+                        }
 
                         return@forEach
                     }
-                    if (entity is Mob) setMobTargetLocation(entity, targetCheckpoint.location, 4.0)
+                    if (entity is Mob) setMobTargetLocation(entity, targetCheckpoint.location, 2.5)
                 }
             }
         }

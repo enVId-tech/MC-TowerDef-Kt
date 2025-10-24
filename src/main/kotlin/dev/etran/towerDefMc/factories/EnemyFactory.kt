@@ -39,7 +39,7 @@ object EnemyFactory {
         if (entity !is LivingEntity) return
 
         entity.setAI(false)
-        entity.isInvulnerable = true
+        entity.isInvulnerable = false
         entity.fireTicks = 0
         entity.visualFire = TriState.TRUE
         entity.isPersistent = true
