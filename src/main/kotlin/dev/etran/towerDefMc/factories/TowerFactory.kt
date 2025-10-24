@@ -51,6 +51,7 @@ object TowerFactory {
             entity.visualFire = TriState.FALSE
             entity.isPersistent = true
             entity.isSilent = true
+            entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Tower")
             entity.persistentDataContainer.set(TowerDefMC.TOWER_KEY, PersistentDataType.STRING, "Basic_Tower_1")
         }
 

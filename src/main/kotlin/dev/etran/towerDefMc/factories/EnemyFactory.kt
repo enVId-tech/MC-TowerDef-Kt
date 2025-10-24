@@ -44,6 +44,7 @@ object EnemyFactory {
         entity.visualFire = TriState.TRUE
         entity.isPersistent = true
         entity.isSilent = true
+        entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy")
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_KEY, PersistentDataType.STRING, "Basic_Enemy_1")
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
 

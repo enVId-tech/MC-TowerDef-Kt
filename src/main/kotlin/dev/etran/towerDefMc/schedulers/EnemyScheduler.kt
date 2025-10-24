@@ -30,18 +30,19 @@ object EnemyScheduler {
                     val arrivalRangeSq = 1.0 * 1.0
 
                     if (distanceSq <= arrivalRangeSq) {
+                        entity.setAI(false)
+
                         val nextId = currentTargetId + 1
 
                         val maxCheckpoint = findMaxCheckpoint(world)
 
-                        if (nextId > maxCheckpoint) {
-                            // TODO: Handle endpoint ids properly
-                            if(targetCheckpoint.persistentDataContainer.get(TowerDefMC.GAME_ELEMENT_KEY,
-                                    PersistentDataType.STRING).equals("EndPoint")) {
-                                entity.damage(entity.health)
-                            }
-                        } else {
+                        if (targetCheckpoint.persistentDataContainer.get(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING) == "EndPoint") {
+                            entity.damage(entity.health)
+                        }
+
+                        if (currentTargetId < maxCheckpoint) {
                             container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
+                            // TODO: Handle endpoint ids properly
                         }
 
                         return@forEach

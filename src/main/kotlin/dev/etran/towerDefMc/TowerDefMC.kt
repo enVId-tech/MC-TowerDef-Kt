@@ -5,6 +5,7 @@ import dev.etran.towerDefMc.commands.GiveEndPoint
 import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
+import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
@@ -21,6 +22,8 @@ class TowerDefMC : JavaPlugin() {
 
         // Access the key via the current instance
         // Major game objects
+        val ELEMENT_TYPES: NamespacedKey
+            get() = NamespacedKey(instance, "elementTypes")
         val TOWER_KEY: NamespacedKey
             get() = NamespacedKey(instance, "towerKey")
         val GAME_ELEMENT_KEY: NamespacedKey
@@ -44,6 +47,7 @@ class TowerDefMC : JavaPlugin() {
 
         // Register continuous events
         server.pluginManager.registerEvents(PlayerPlaceListener(), this)
+        server.pluginManager.registerEvents(FireproofListener(), this)
 
         // Set commands and behaviors
         getCommand("givettower")?.setExecutor(GiveTower())
