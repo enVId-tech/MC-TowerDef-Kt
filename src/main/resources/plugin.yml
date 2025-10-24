@@ -16,3 +16,11 @@ commands:
   givetenemy:
     description: A command to give an enemy spawn with limited AI.
     usage: /<command> [amount]
+
+  givetstartpoint:
+    description: A command to give a spawn point for the enemies
+    usage: /<command>
+
+  givetendpoint:
+    description: A command to give an end point for the enemies
+    usage: /<command>

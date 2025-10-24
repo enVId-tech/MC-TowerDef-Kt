@@ -2,16 +2,14 @@ package dev.etran.towerDefMc.listeners
 
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.factories.CheckpointFactory
+import dev.etran.towerDefMc.factories.EndpointFactory
 import dev.etran.towerDefMc.factories.EnemyFactory
+import dev.etran.towerDefMc.factories.StartPointFactory
 import dev.etran.towerDefMc.factories.TowerFactory
-import org.bukkit.Material
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.ItemStack
 
 class PlayerPlaceListener : Listener {
     @EventHandler
@@ -24,7 +22,9 @@ class PlayerPlaceListener : Listener {
         // Run functions specific to their unique identifiers
         when (name) {
             "Tower 1" -> TowerFactory.towerPlace(event)
-            "Checkpoint" -> CheckpointFactory.checkPointPlace(event)
+            "CheckPoint" -> CheckpointFactory.checkPointPlace(event)
+            "EndPoint" -> EndpointFactory.endPointPlace(event)
+            "StartPoint" -> StartPointFactory.startPointPlace(event)
             "Enemy 1" -> EnemyFactory.enemyPlace(event)
         }
     }

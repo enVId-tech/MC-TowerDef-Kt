@@ -25,9 +25,9 @@ object EnemyScheduler {
                     val targetArmorStand =
                         entity.getNearbyEntities(30.0, 30.0, 30.0).filterIsInstance<ArmorStand>().filter { armorStand ->
                             val standContainer = armorStand.persistentDataContainer
-                            standContainer.has(TowerDefMC.CHECKPOINT_KEY, PersistentDataType.STRING) && standContainer.get(
-                                TowerDefMC.CHECKPOINT_KEY, PersistentDataType.STRING
-                            ) == "Checkpoint"
+                            standContainer.has(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING) && standContainer.get(
+                                TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING
+                            ) == "CheckPoint"
                         }.minByOrNull { armorStand ->
                             entity.location.distanceSquared(armorStand.location)
                         }

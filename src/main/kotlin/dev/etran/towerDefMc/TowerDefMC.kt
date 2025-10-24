@@ -1,7 +1,9 @@
 package dev.etran.towerDefMc
 
 import dev.etran.towerDefMc.commands.GiveCheckpoint
+import dev.etran.towerDefMc.commands.GiveEndPoint
 import dev.etran.towerDefMc.commands.GiveEnemy
+import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
@@ -20,8 +22,8 @@ class TowerDefMC : JavaPlugin() {
         // Access the key via the current instance
         val TOWER_KEY: NamespacedKey
             get() = NamespacedKey(instance, "towerKey")
-        val CHECKPOINT_KEY: NamespacedKey
-            get() = NamespacedKey(instance, "checkpointKey")
+        val GAME_ELEMENT_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "gameElementKey")
         val ENEMY_KEY: NamespacedKey
             get() = NamespacedKey(instance, "enemyKey")
     }
@@ -40,6 +42,8 @@ class TowerDefMC : JavaPlugin() {
         getCommand("givettower")?.setExecutor(GiveTower())
         getCommand("givetcheckpoint")?.setExecutor(GiveCheckpoint())
         getCommand("givetenemy")?.setExecutor(GiveEnemy())
+        getCommand("givetstartpoint")?.setExecutor(GiveStartPoint())
+        getCommand("givetendpoint")?.setExecutor(GiveEndPoint())
 
         // Scheduler tasks
         startTowerCheckTask()
