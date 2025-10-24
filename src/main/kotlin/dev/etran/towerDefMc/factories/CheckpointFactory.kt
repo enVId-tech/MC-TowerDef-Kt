@@ -26,16 +26,23 @@ object CheckpointFactory {
 
     fun checkPointPlace(event: PlayerInteractEvent) {
         val entity = placeElement(event, "checkpoint")
+        val world = event.player.world
 
         if (entity == null) return
 
-        val checkpointCount = event.player.world.entities
+        var maxId = 0
+
+        event.player.world.entities
             .filterIsInstance<ArmorStand>()
-            .count { armorStand ->
-                entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) != null
+            .forEach { armorStand ->
+                val currentId = armorStand.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 0
+
+                if (currentId > maxId) {
+                    maxId = currentId
+                }
             }
 
-        val newCheckpointId = checkpointCount + 1
+        val newCheckpointId = maxId + 1
 
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, newCheckpointId)
 

@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.findCheckpointById
 import dev.etran.towerDefMc.utils.setMobTargetLocation
 import org.bukkit.World
 import org.bukkit.entity.ArmorStand
@@ -20,16 +21,20 @@ object EnemyScheduler {
 
             when (enemyId) {
                 "Basic_Enemy_1" -> {
-                    val targetArmorStand =
-                        world.entities.filterIsInstance<ArmorStand>()
-                            .filter { armorStand ->
-                                armorStand.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) != null
-                            }
-                            .minByOrNull { armorStand ->
-                               armorStand.location.distanceSquared(armorStand.location)
-                            }
-                    if (targetArmorStand == null) return
-                    if (entity is Mob) setMobTargetLocation(entity, targetArmorStand.location, 1.0)
+                    val currentTargetId = container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
+                    val targetCheckpoint = findCheckpointById(world, currentTargetId) ?: return@forEach
+
+                    // Direct distance checking instead of radius checking
+                    val distanceSq = entity.location.distanceSquared(targetCheckpoint.location)
+                    val arrivalRangeSq = 1.0 * 1.0
+
+                    if (distanceSq <= arrivalRangeSq) {
+                        val nextId = currentTargetId + 1
+                        container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
+
+                        return@forEach
+                    }
+                    if (entity is Mob) setMobTargetLocation(entity, targetCheckpoint.location, 4.0)
                 }
             }
         }
