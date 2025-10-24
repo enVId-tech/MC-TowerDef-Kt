@@ -28,6 +28,7 @@ object StartPointFactory {
 
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING, "StartPoint")
+        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, -1)
 
         // Take away 1 from the user if they aren't in creative mode
         if (player.gameMode != GameMode.CREATIVE) {

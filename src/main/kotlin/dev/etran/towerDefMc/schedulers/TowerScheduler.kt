@@ -1,7 +1,9 @@
 package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.getClosestMobToTower
 import org.bukkit.World
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataType
@@ -22,10 +24,7 @@ object TowerScheduler {
             // Checks each instance of the global identifier and runs code accordingly
             when (towerId) {
                 "Basic_Tower_1" -> {
-                    val targetPlayer = entity.getNearbyEntities(30.0, 30.0, 30.0)
-                        .filterIsInstance<Player>()
-                        .minByOrNull { entity.location.distanceSquared(it.location) }
-
+                    val targetPlayer = getClosestMobToTower(world, entity as Entity, 30.0)
                     if (targetPlayer != null) {
                         entity.setAI(false)
                         entity.isInvulnerable = true
@@ -33,7 +32,7 @@ object TowerScheduler {
                         // Math for the rotation of the tower towards the player (soon to be enemy)
                         val maxPitch = 40f
 
-                        val playerEye = targetPlayer.eyeLocation
+                        val playerEye = targetPlayer.location
                         val entityEye = entity.eyeLocation
 
                         val dx = playerEye.x - entityEye.x
