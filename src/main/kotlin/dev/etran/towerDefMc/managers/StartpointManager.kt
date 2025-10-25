@@ -9,8 +9,8 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.SortedMap
 import java.util.TreeMap
 
-object CheckpointManager {
-    var checkpoints: SortedMap<Int, Entity> = TreeMap<Int, Entity>()
+object StartpointManager {
+    var startpoints: SortedMap<Int, Entity> = TreeMap<Int, Entity>()
 
     /**
      * @param entity The armor stand entity to insert
@@ -19,16 +19,16 @@ object CheckpointManager {
     fun add(entity: Entity): Int {
         if (entity !is ArmorStand) return -1
 
-        for (i in 1..checkpoints.keys.last()) {
-            if (i !in checkpoints) {
-                checkpoints[i] = entity
+        for (i in 1..startpoints.keys.last()) {
+            if (i !in startpoints) {
+                startpoints[i] = entity
                 return i
             }
         }
 
-        val insertId = checkpoints.keys.last() + 1
+        val insertId = startpoints.keys.last() + 1
 
-        checkpoints[insertId] = entity
+        startpoints[insertId] = entity
         return insertId
     }
 
@@ -44,7 +44,7 @@ object CheckpointManager {
         val removeId = entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
         if (removeId == null) return -1
 
-        val removedValue = checkpoints.remove(removeId)
+        val removedValue = startpoints.remove(removeId)
 
         if (removedValue != null) {
             adjustArmorStandIds()
@@ -59,10 +59,10 @@ object CheckpointManager {
      * @return A list of armors after readjustment of IDs
      */
     fun adjustArmorStandIds(): List<Entity> {
-        val entitiesInOrder: List<Entity> = checkpoints.values.toList()
+        val entitiesInOrder: List<Entity> = startpoints.values.toList()
 
         val currentSize = entitiesInOrder.size
-        val lastKey = checkpoints.keys.lastOrNull() ?: 0
+        val lastKey = startpoints.keys.lastOrNull() ?: 0
 
         if (lastKey == currentSize) {
             return entitiesInOrder
@@ -73,7 +73,7 @@ object CheckpointManager {
             newId to entity
         }.toMap(TreeMap())
 
-        checkpoints = reIndexedCheckpoint
+        startpoints = reIndexedCheckpoint
 
         return entitiesInOrder
     }

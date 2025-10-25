@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.factories
 
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.StartpointManager
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -29,6 +30,7 @@ object StartPointFactory {
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "StartPoint")
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, -1)
+        StartpointManager.add(entity)
 
         // Take away 1 from the user if they aren't in creative mode
         if (player.gameMode != GameMode.CREATIVE) {
