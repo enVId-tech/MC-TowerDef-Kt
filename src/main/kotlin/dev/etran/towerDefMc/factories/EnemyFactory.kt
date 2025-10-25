@@ -7,6 +7,7 @@ import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -34,15 +35,14 @@ object EnemyFactory {
         val player = event.player
 
         val world = location.world
-        val entity = world.spawnEntity(location, EntityType.ZOMBIE)
-
-        if (entity !is LivingEntity) return
+        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
 
         val scale = entity.getAttribute(Attribute.SCALE)
 
         // Base value is a multiplier from the normal value, 2 is double size
         if (scale != null) scale.baseValue = 1.5
         entity.setAI(false)
+        entity.setAdult()
         entity.isInvulnerable = false
         entity.fireTicks = 0
         entity.visualFire = TriState.TRUE
