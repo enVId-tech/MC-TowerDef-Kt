@@ -43,8 +43,8 @@ object CheckpointManager {
     fun remove(entity: Entity): Int {
         if (entity !is ArmorStand) return -1
 
-        var removeId = entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
-        if (removeId == null) return -1 else removeId--
+        val removeId = entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
+        if (removeId == null) return -1
 
         val removedValue = checkpoints.remove(removeId)
 

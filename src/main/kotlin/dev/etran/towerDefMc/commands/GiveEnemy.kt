@@ -19,6 +19,7 @@ class GiveEnemy : CommandExecutor {
             return false
         }
 
+        // TODO: Fix when the user doesn't input proper arguments
         if (args.size == 1 && args[0].toIntOrNull() == null) {
             sender.sendMessage("The first argument must be a valid positive integer.")
             return false

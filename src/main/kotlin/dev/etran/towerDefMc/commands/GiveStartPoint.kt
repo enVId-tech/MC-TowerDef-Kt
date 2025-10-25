@@ -14,6 +14,7 @@ class GiveStartPoint : CommandExecutor {
             return false
         }
 
+        // TODO: Fix when the user doesn't input proper arguments
         if (args.isNotEmpty()) {
             sender.sendMessage("Command usage: /givetstartpoint")
             return false

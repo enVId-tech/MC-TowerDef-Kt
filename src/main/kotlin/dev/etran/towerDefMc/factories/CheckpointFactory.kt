@@ -24,39 +24,35 @@ object CheckpointFactory {
 
     fun checkPointPlace(event: PlayerInteractEvent) {
         val entity = placeElement(event, "checkpoint")
-        val world = event.player.world
+        val player = event.player
 
         if (entity == null) return
 
+        val lastCheckpoint = CheckpointManager.checkpoints.values.lastOrNull()
+
+        // Only check if the checkpoint isn't empty to avoid NoSuchElementException
         // If the final checkpoint ID is an endpoint, do not allow additional checkpoints
-        if (CheckpointManager
-                .checkpoints
-                .values
-                .last()
-                .persistentDataContainer
-                .get(
-                    TowerDefMC.ELEMENT_TYPES,
-                    PersistentDataType.STRING
-                )
-                .equals("EndPoint")
+        if (lastCheckpoint != null && CheckpointManager.checkpoints.values.last().persistentDataContainer.get(
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
+            ).equals("EndPoint")
         ) {
             event.player.sendMessage("There is an existing endpoint on this path! Remove the endpoint before placing any new checkpoints")
+            entity.remove()
             return
         }
-            CheckpointManager.add(entity)
 
-        val newCheckpointId = CheckpointManager.checkpoints.size + 1
+        val correctNewId = CheckpointManager.add(entity)
 
-        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, newCheckpointId)
+        // 3. Set the PDC with the correct ID.
+        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, correctNewId)
 
-        val player = event.player
-
-        // Global accessor for checkpoint
+        // 4. Set the general type (Global accessor for checkpoint)
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Checkpoint")
 
-        // Take away 1 from the user if they aren't in creative mode
+        // 5. Item Consumption
         if (player.gameMode != GameMode.CREATIVE) {
-            event.player.inventory.itemInMainHand.amount -= 1
+            // NOTE: This assumes the item in hand is the checkpoint item.
+            player.inventory.itemInMainHand.amount -= 1
         }
     }
 }

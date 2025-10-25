@@ -14,7 +14,7 @@ class GiveCheckpoint : CommandExecutor {
             return false
         }
 
-        if (args.size > 1) {
+        if (args.size > 1 || args[0].isEmpty()) {
             sender.sendMessage("Command usage: /givetcheckpoint <amount>")
             return false
         }

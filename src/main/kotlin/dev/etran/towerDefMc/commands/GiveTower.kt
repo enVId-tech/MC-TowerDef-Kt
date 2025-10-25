@@ -28,6 +28,7 @@ class GiveTower : CommandExecutor {
             return false
         }
 
+        // TODO: Fix when the user doesn't input proper arguments
         if (amount <= 0) {
             sender.sendMessage("Amount must be greater than zero")
             return false
