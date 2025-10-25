@@ -52,7 +52,7 @@ object TowerFactory {
             entity.isPersistent = true
             entity.isSilent = true
             entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Tower")
-            entity.persistentDataContainer.set(TowerDefMC.TOWER_KEY, PersistentDataType.STRING, "Basic_Tower_1")
+            entity.persistentDataContainer.set(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING, "Basic_Tower_1")
         }
 
         // Take away 1 from the user if they aren't in creative mode

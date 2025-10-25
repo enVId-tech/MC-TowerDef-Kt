@@ -18,8 +18,8 @@ object TowerScheduler {
             val container = entity.persistentDataContainer
 
             // Only proceed if entity actually has the key
-            if (!container.has(TowerDefMC.TOWER_KEY, PersistentDataType.STRING)) return@forEach
-            val towerId = container.get(TowerDefMC.TOWER_KEY, PersistentDataType.STRING) ?: return@forEach
+            if (!container.has(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING)) return@forEach
+            val towerId = container.get(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING) ?: return@forEach
 
             // Checks each instance of the global identifier and runs code accordingly
             when (towerId) {

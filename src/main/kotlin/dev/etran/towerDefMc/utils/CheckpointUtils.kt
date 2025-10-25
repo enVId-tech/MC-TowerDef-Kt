@@ -11,7 +11,7 @@ fun findCheckpointById(world: World, targetId: Int): ArmorStand? {
         .firstOrNull { armorStand ->
             val pdc = armorStand.persistentDataContainer
 
-            val isCheckpoint = pdc.get(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING)
+            val isCheckpoint = pdc.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING)
 
             val checkpointId = pdc.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
 

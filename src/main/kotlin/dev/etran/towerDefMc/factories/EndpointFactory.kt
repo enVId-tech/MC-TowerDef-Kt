@@ -32,7 +32,7 @@ object EndpointFactory {
         val world = player.world
 
         // Global accessor for checkpoint
-        entity.persistentDataContainer.set(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING, "EndPoint")
+        entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "EndPoint")
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, findMaxCheckpoint(world) + 1)
 
         // Take away 1 from the user if they aren't in creative mode

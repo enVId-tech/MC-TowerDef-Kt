@@ -21,7 +21,7 @@ fun getClosestMobToTower(world: World, tower: Entity, blocksDistance: Double): E
 fun getClosestMobToEnd(world: World, tower: Entity, blocksDistance: Double): Entity? {
     val endPoint = world.entities
         .filter { entity ->
-            entity.persistentDataContainer.get(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING).equals("EndPoint")
+            entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING).equals("EndPoint")
         }.get(1)
 
     return world.entities
@@ -51,7 +51,7 @@ fun getFurthestMobFromTower(world: World, tower: Entity, blocksDistance: Double)
 fun getClosestMobToSpawn(world: World, tower: Entity, blocksDistance: Double): Entity? {
     val spawnPoint = world.entities
         .filter { entity ->
-            entity.persistentDataContainer.get(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING).equals("StartPoint")
+            entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING).equals("StartPoint")
         }.get(1)
 
     return world.entities

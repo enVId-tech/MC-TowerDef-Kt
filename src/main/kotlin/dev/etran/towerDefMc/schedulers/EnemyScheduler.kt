@@ -17,8 +17,8 @@ object EnemyScheduler {
             val container = entity.persistentDataContainer
 
             // Only proceed if entity actually has the key
-            if (!container.has(TowerDefMC.ENEMY_KEY, PersistentDataType.STRING)) return@forEach
-            val enemyId = container.get(TowerDefMC.ENEMY_KEY, PersistentDataType.STRING) ?: return@forEach
+            if (!container.has(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING)) return@forEach
+            val enemyId = container.get(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING) ?: return@forEach
 
             when (enemyId) {
                 "Basic_Enemy_1" -> {
@@ -36,7 +36,7 @@ object EnemyScheduler {
 
                         val maxCheckpoint = findMaxCheckpoint(world)
 
-                        if (targetCheckpoint.persistentDataContainer.get(TowerDefMC.GAME_ELEMENT_KEY, PersistentDataType.STRING) == "EndPoint") {
+                        if (targetCheckpoint.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) == "EndPoint") {
                             entity.damage(entity.health)
                         }
 
