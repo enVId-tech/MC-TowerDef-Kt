@@ -1,8 +1,10 @@
 package dev.etran.towerDefMc.utils
 
+import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.block.Block
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.BoundingBox
@@ -46,4 +48,20 @@ fun visualizeTempParticles(plugin: JavaPlugin, centerLocation: Location, x: Doub
             particleTask.cancel()
         }
     }.runTaskLater(plugin, durationTicks)
+}
+
+fun getHighlightedBlock(player: org.bukkit.entity.Player): Block? {
+    // 1. Define the maximum distance a player can look (usually around 4-5 blocks)
+    val maxDistance = 5.0
+
+    // 2. Perform the ray trace
+    val blockHit = player.world.rayTraceBlocks(
+        player.eyeLocation,
+        player.location.direction,
+        maxDistance, // Max distance
+        FluidCollisionMode.NEVER,
+        true
+    )
+
+    return blockHit?.hitBlock
 }
