@@ -73,9 +73,7 @@ object CheckpointManager {
 
             // Update the Persistent Data Container (PDC) on the actual entity
             entity.persistentDataContainer.set(
-                TowerDefMC.CHECKPOINT_ID,
-                PersistentDataType.INTEGER,
-                newId
+                TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, newId
             )
 
             // Populate the new map
@@ -93,18 +91,10 @@ object CheckpointManager {
     fun clearAllCheckpoints(worlds: MutableList<World>): Boolean {
         try {
             checkpoints.clear()
-            worlds.forEach { world ->
-                world.entities
-                    .filter { entity -> entity is ArmorStand }
-                    .forEach { entity ->
-                        val checkpointId =
-                            entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
-                        if (checkpointId != null) {
-                            entity.remove()
-                        }
-                    }
 
-            }
+            worlds.flatMap { world -> world.entities }.filterIsInstance<ArmorStand>()
+                .filter { it.persistentDataContainer.has(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) }
+                .forEach { it.remove() }
             return true
         } catch (ex: Exception) {
             ex.printStackTrace()
