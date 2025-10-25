@@ -4,7 +4,6 @@ import dev.etran.towerDefMc.TowerDefMC
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataType
-import kotlin.math.pow
 
 fun getClosestMobToTower(world: World, tower: Entity, blocksDistance: Double): Entity? {
     return world.entities

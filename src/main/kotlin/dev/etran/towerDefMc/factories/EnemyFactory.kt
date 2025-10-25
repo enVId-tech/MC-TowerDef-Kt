@@ -6,6 +6,7 @@ import dev.etran.towerDefMc.utils.findCheckpointById
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -38,6 +39,10 @@ object EnemyFactory {
         // Add NBT data if only the zombie exists after calling spawn
         if (entity !is LivingEntity) return
 
+        val scale = entity.getAttribute(Attribute.SCALE)
+
+        // Base value is a multiplier from the normal value, 2 is double size
+        if (scale != null) scale.baseValue = 1.5
         entity.setAI(false)
         entity.isInvulnerable = false
         entity.fireTicks = 0
