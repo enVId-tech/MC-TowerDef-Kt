@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
+import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataType
@@ -74,6 +75,18 @@ object CheckpointManager {
             val newId = index + 1
             newId to entity
         }.toMap(TreeMap())
+
+        entitiesInOrder.forEachIndexed { index, entity ->
+            val newId = index + 1
+
+            entity.persistentDataContainer.set(
+                TowerDefMC.CHECKPOINT_ID,
+                PersistentDataType.INTEGER,
+                newId
+            )
+
+            reIndexedCheckpoint[newId] = entity
+        }
 
         checkpoints = reIndexedCheckpoint
 
