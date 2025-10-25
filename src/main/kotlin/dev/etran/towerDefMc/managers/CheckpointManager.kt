@@ -32,30 +32,48 @@ object CheckpointManager {
         return insertId
     }
 
+    /**
+     * Removes an entity from the checkpoint list
+     * Automatically readjusts IDs to be consecutive if removal was successful
+     * @param entity The armor stand to remove
+     * @return The ID of the armor stand if removal was successful, -1 if failed
+     */
     fun remove(entity: Entity): Int {
         if (entity !is ArmorStand) return -1
 
         val removeId = entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
-
         if (removeId == null) return -1
 
-        checkpoint.remove(removeId)
+        val removedValue = checkpoint.remove(removeId)
 
-        return removeId
-    }
-
-    fun adjustArmorStandIds(): MutableList<Int> {
-        var intIds: MutableList<Int> = mutableListOf()
-
-        for (i in 1..checkpoint.keys.size) {
-            for (j in 1..checkpoint.keys.last()) {
-
-            }
-            if (i !in checkpoint) {
-
-            }
+        if (removedValue != null) {
+            adjustArmorStandIds()
+            return removeId
         }
 
-        return intIds
+        return -1
+    }
+
+    /**
+     * Readjusts checkpoint list IDs to always be consecutive
+     */
+    fun adjustArmorStandIds(): List<Entity> {
+        val entitiesInOrder: List<Entity> = checkpoint.values.toList()
+
+        val currentSize = entitiesInOrder.size
+        val lastKey = checkpoint.keys.lastOrNull() ?: 0
+
+        if (lastKey == currentSize) {
+            return entitiesInOrder
+        }
+
+        val reIndexedCheckpoint: SortedMap<Int, Entity> = entitiesInOrder.mapIndexed { index, entity ->
+            val newId = index + 1
+            newId to entity
+        }.toMap(TreeMap())
+
+        checkpoint = reIndexedCheckpoint
+
+        return entitiesInOrder
     }
 }

@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.factories
 
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.utils.findMaxCheckpoint
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
@@ -30,6 +31,8 @@ object CheckpointFactory {
         val world = event.player.world
 
         if (entity == null) return
+
+        CheckpointManager.add(entity)
 
         val newCheckpointId = findMaxCheckpoint(world) + 1
 
