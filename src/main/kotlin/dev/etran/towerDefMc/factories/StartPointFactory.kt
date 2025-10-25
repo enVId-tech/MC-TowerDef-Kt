@@ -1,6 +1,5 @@
 package dev.etran.towerDefMc.factories
 
-import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.StartpointManager
 import dev.etran.towerDefMc.utils.placeElement
@@ -13,9 +12,15 @@ import org.bukkit.persistence.PersistentDataType
 
 object StartPointFactory {
     fun newStartElement(amount: Int = 1): ItemStack {
-        val startPointSpawn = ItemStack(Material.EMERALD_BLOCK, 1)
+        val startPointSpawn = ItemStack(Material.EMERALD_BLOCK, amount)
 
-        NBT.modify(startPointSpawn) { nbt -> nbt.setString("tdef_item_name", "StartPoint") }
+        // Get the current item metadata (which is mutable)
+        val meta = startPointSpawn.itemMeta ?: return startPointSpawn // Fallback if meta cannot be retrieved
+
+        // Modify the Persistent Data Container within the metaobject
+        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "StartPoint")
+
+        startPointSpawn.itemMeta = meta
 
         return startPointSpawn
     }

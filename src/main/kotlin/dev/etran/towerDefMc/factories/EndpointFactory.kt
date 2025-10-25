@@ -1,6 +1,5 @@
 package dev.etran.towerDefMc.factories
 
-import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.utils.placeElement
@@ -12,9 +11,15 @@ import org.bukkit.persistence.PersistentDataType
 
 object EndpointFactory {
     fun newEndElement(amount: Int = 1): ItemStack {
-        val endPointSpawn = ItemStack(Material.DIAMOND_BLOCK, 1)
+        val endPointSpawn = ItemStack(Material.DIAMOND_BLOCK, amount)
 
-        NBT.modify(endPointSpawn) { nbt -> nbt.setString("tdef_item_name", "EndPoint") }
+        // Get the current item metadata (which is mutable)
+        val meta = endPointSpawn.itemMeta ?: return endPointSpawn // Fallback if meta cannot be retrieved
+
+        // Modify the Persistent Data Container within the metaobject
+        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "EndPoint")
+
+        endPointSpawn.itemMeta = meta
 
         return endPointSpawn
     }

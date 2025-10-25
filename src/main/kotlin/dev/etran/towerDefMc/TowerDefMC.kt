@@ -8,11 +8,11 @@ import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
-import dev.etran.towerDefMc.listeners.PlayerMouseMoveListener
+import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
-import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
+import dev.etran.towerDefMc.utils.TaskUtility
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
@@ -32,6 +32,8 @@ class TowerDefMC : JavaPlugin() {
             get() = NamespacedKey(instance, "towerKey")
         val ENEMY_TYPES: NamespacedKey
             get() = NamespacedKey(instance, "enemyKey")
+        val GAME_ITEMS: NamespacedKey
+            get() = NamespacedKey(instance, "towerItems")
 
         // Per-object properties
         val CHECKPOINT_ID: NamespacedKey
@@ -47,11 +49,14 @@ class TowerDefMC : JavaPlugin() {
             "Tower Defense Plugin Enabled!"
         }
 
+        // Register utils
+        TaskUtility.initialize(this)
+
         // Register continuous events
-        server.pluginManager.registerEvents(PlayerPlaceListener(), this)
-        server.pluginManager.registerEvents(EntityDeathListener(), this)
-        server.pluginManager.registerEvents(FireproofListener(), this)
-        server.pluginManager.registerEvents(PlayerMouseMoveListener(), this)
+        server.pluginManager.registerEvents(PlayerPlaceListener, this)
+        server.pluginManager.registerEvents(EntityDeathListener, this)
+        server.pluginManager.registerEvents(FireproofListener, this)
+        server.pluginManager.registerEvents(PlayerHoldListener, this)
 
         // Set commands and behaviors
         getCommand("givettower")?.setExecutor(GiveTower())

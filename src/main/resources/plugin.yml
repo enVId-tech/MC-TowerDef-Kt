@@ -2,7 +2,6 @@ name: towerDefMc
 version: '1.0-SNAPSHOT'
 main: dev.etran.towerDefMc.TowerDefMC
 api-version: '1.21'
-depend: [NBTAPI]
 
 commands:
   givettower:

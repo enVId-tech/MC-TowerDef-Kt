@@ -1,6 +1,5 @@
 package dev.etran.towerDefMc.factories
 
-import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.utils.placeElement
@@ -14,10 +13,13 @@ object CheckpointFactory {
     fun newCheckpoint(amount: Int = 1): ItemStack {
         val checkPointSpawn = ItemStack(Material.GOLD_BLOCK, amount)
 
-        // Add an NBT tag to the checkpoint that says that it is actually a checkpoint and not a generic gold block
-        NBT.modify(checkPointSpawn) { nbt ->
-            nbt.setString("tdef_item_name", "CheckPoint")
-        }
+        // Get the current item metadata (which is mutable)
+        val meta = checkPointSpawn.itemMeta ?: return checkPointSpawn // Fallback if meta cannot be retrieved
+
+        // Modify the Persistent Data Container within the metaobject
+        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "CheckPoint")
+
+        checkPointSpawn.itemMeta = meta
 
         return checkPointSpawn
     }

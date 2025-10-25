@@ -6,7 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataType
 
-class FireproofListener : Listener {
+object FireproofListener : Listener {
     @EventHandler
     fun onEntityDamage(event: EntityDamageEvent) {
         if (event.entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) == null) return

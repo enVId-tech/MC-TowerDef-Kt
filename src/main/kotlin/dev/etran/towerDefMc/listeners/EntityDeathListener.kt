@@ -8,7 +8,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.persistence.PersistentDataType
 
-class EntityDeathListener : Listener {
+object EntityDeathListener : Listener {
     @EventHandler
     fun whenEntityDamage(event: EntityDeathEvent) {
         val gameElement = event.entity

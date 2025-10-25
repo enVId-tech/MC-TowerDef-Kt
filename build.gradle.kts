@@ -21,7 +21,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly("de.tr7zw:item-nbt-api-plugin:2.15.3")
     compileOnly("io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }

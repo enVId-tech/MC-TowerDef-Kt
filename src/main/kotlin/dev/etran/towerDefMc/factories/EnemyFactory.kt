@@ -1,6 +1,5 @@
 package dev.etran.towerDefMc.factories
 
-import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
@@ -16,10 +15,13 @@ object EnemyFactory {
     fun newBasicEnemy(amount: Int = 1): ItemStack {
         val enemySpawn = ItemStack(Material.REDSTONE_BLOCK, amount)
 
+        // Get the current item metadata (which is mutable)
+        val meta = enemySpawn.itemMeta ?: return enemySpawn // Fallback if meta cannot be retrieved
+
         // Add identifier for the end rod to make sure it is a spawn object and not just an end rod
-        NBT.modify(enemySpawn) { nbt ->
-            nbt.setString("tdef_item_name", "Enemy 1")
-        }
+        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Enemy 1")
+
+        enemySpawn.itemMeta = meta
 
         return enemySpawn
     }
@@ -34,7 +36,6 @@ object EnemyFactory {
         val world = location.world
         val entity = world.spawnEntity(location, EntityType.ZOMBIE)
 
-        // Add NBT data if only the zombie exists after calling spawn
         if (entity !is LivingEntity) return
 
         val scale = entity.getAttribute(Attribute.SCALE)

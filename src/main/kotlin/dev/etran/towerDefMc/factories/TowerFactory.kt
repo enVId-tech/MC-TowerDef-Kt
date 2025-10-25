@@ -1,7 +1,6 @@
 package dev.etran.towerDefMc.factories
 
 
-import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
@@ -16,10 +15,13 @@ object TowerFactory {
     fun newBasicTower(amount: Int = 1): ItemStack {
         val towerSpawn = ItemStack(Material.END_ROD, amount)
 
-        // Add identifier for the end rod to make sure it is a spawn object and not just an end rod
-        NBT.modify(towerSpawn) { nbt ->
-            nbt.setString("tdef_item_name", "Tower 1")
-        }
+        // Get the current item metadata (which is mutable)
+        val meta = towerSpawn.itemMeta ?: return towerSpawn // Fallback if meta cannot be retrieved
+
+        // Modify the Persistent Data Container within the metaobject
+        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Tower 1")
+
+        towerSpawn.itemMeta = meta
 
         return towerSpawn
     }
@@ -40,7 +42,6 @@ object TowerFactory {
         val world = location.world
         val entity = world.spawnEntity(location, EntityType.ZOMBIE)
 
-        // Add NBT data if only the zombie exists after calling spawn
         if (entity is LivingEntity) {
             entity.setAI(false)
             entity.isInvulnerable = true
