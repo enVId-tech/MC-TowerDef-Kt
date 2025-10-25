@@ -1,7 +1,5 @@
 package dev.etran.towerDefMc.commands
 
-import dev.etran.towerDefMc.factories.CheckpointFactory
-import dev.etran.towerDefMc.factories.EndpointFactory
 import dev.etran.towerDefMc.factories.StartPointFactory
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor

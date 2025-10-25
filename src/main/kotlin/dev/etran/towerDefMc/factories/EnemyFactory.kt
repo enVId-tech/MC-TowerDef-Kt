@@ -2,12 +2,10 @@ package dev.etran.towerDefMc.factories
 
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
-import dev.etran.towerDefMc.utils.findCheckpointById
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
-import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.player.PlayerInteractEvent

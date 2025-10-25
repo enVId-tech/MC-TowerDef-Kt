@@ -5,7 +5,6 @@ import dev.etran.towerDefMc.utils.findCheckpointById
 import dev.etran.towerDefMc.utils.findMaxCheckpoint
 import dev.etran.towerDefMc.utils.setMobTargetLocation
 import org.bukkit.World
-import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.persistence.PersistentDataType

@@ -2,15 +2,12 @@ package dev.etran.towerDefMc.factories
 
 
 import de.tr7zw.nbtapi.NBT
-import de.tr7zw.nbtapi.iface.ReadWriteNBT
 import dev.etran.towerDefMc.TowerDefMC
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
-
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType

@@ -7,9 +7,6 @@ import dev.etran.towerDefMc.utils.findMaxCheckpoint
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
