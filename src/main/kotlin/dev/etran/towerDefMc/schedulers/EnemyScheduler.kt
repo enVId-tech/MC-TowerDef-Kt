@@ -1,8 +1,7 @@
 package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
-import dev.etran.towerDefMc.utils.findCheckpointById
-import dev.etran.towerDefMc.utils.findMaxCheckpoint
+import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.utils.setMobTargetLocation
 import org.bukkit.World
 import org.bukkit.entity.LivingEntity
@@ -21,8 +20,30 @@ object EnemyScheduler {
 
             when (enemyId) {
                 "Basic_Enemy_1" -> {
-                    val currentTargetId = container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
-                    val targetCheckpoint = findCheckpointById(world, currentTargetId) ?: return@forEach
+                    val currentTargetId =
+                        container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
+                    val targetCheckpoint = CheckpointManager.checkpoints[currentTargetId]
+                    val maxCheckpointId = CheckpointManager.checkpoints.keys.lastOrNull() ?: 1
+
+                    if (targetCheckpoint == null) {
+                        val nextPotentialId = currentTargetId + 1
+
+                        if (!CheckpointManager.checkpoints.containsKey(nextPotentialId)) {
+                            /* TODO: Skip the next ID, the next checkpoint should be the EndPoint, so make a PDC to set the mob to go to the endpoint
+                                If endpoint doesn't exist, delete the mob at the point, assume that it has reached an EndPoint
+                            */
+                            entity.remove()
+                        } else {
+                            container.set(
+                                TowerDefMC.TARGET_CHECKPOINT_ID,
+                                PersistentDataType.INTEGER,
+                                currentTargetId + 1
+                            )
+                        }
+
+                        return@forEach
+                    }
+
 
                     // Direct distance checking instead of radius checking
                     val distanceSq = entity.location.distanceSquared(targetCheckpoint.location)
@@ -33,20 +54,24 @@ object EnemyScheduler {
 
                         val nextId = currentTargetId + 1
 
-                        val maxCheckpoint = findMaxCheckpoint(world)
+                        val isEndPoint = targetCheckpoint.persistentDataContainer.get(
+                            TowerDefMC.ELEMENT_TYPES,
+                            PersistentDataType.STRING
+                        ) == "EndPoint"
 
-                        if (targetCheckpoint.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) == "EndPoint") {
-                            entity.damage(entity.health)
+                        if (isEndPoint) {
+                            entity.remove()
+                            // TODO: runGameLoss();
+                            return@forEach
                         }
 
-                        if (currentTargetId < maxCheckpoint) {
+                        if (nextId <= maxCheckpointId) {
                             container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
-                            // TODO: Handle endpoint ids properly
                         }
 
                         return@forEach
                     }
-                    if (entity is Mob) setMobTargetLocation(entity, targetCheckpoint.location, 2.5)
+                    if (entity is Mob) setMobTargetLocation(entity, targetCheckpoint.location, 2.0)
                 }
             }
         }

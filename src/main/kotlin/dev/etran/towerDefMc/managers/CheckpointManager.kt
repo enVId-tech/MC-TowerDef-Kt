@@ -30,7 +30,7 @@ object CheckpointManager {
 
         checkpoints[smallestAvailableId] = entity
 
-        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString())}
+        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString()) }
         return smallestAvailableId
     }
 
@@ -43,17 +43,19 @@ object CheckpointManager {
     fun remove(entity: Entity): Int {
         if (entity !is ArmorStand) return -1
 
-        val removeId = entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
-        if (removeId == null) return -1
+        var removeId = entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
+        if (removeId == null) return -1 else removeId--
 
         val removedValue = checkpoints.remove(removeId)
+
+        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString()) }
+        entity.world.players.forEach { player -> player.sendMessage(removeId.toString()) }
 
         if (removedValue != null) {
             adjustArmorStandIds()
             return removeId
         }
 
-        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString())}
         return -1
     }
 
@@ -64,32 +66,49 @@ object CheckpointManager {
     fun adjustArmorStandIds(): List<Entity> {
         val entitiesInOrder: List<Entity> = checkpoints.values.toList()
 
-        val currentSize = entitiesInOrder.size
-        val lastKey = checkpoints.keys.lastOrNull() ?: 0
-
-        if (lastKey == currentSize) {
-            return entitiesInOrder
-        }
-
-        val reIndexedCheckpoint: SortedMap<Int, Entity> = entitiesInOrder.mapIndexed { index, entity ->
-            val newId = index + 1
-            newId to entity
-        }.toMap(TreeMap())
+        val reIndexedCheckpoints: SortedMap<Int, Entity> = TreeMap()
 
         entitiesInOrder.forEachIndexed { index, entity ->
             val newId = index + 1
 
+            // Update the Persistent Data Container (PDC) on the actual entity
             entity.persistentDataContainer.set(
                 TowerDefMC.CHECKPOINT_ID,
                 PersistentDataType.INTEGER,
                 newId
             )
 
-            reIndexedCheckpoint[newId] = entity
+            // Populate the new map
+            reIndexedCheckpoints[newId] = entity
         }
 
-        checkpoints = reIndexedCheckpoint
+        checkpoints = reIndexedCheckpoints
 
         return entitiesInOrder
+    }
+
+    /**
+     * Clears existing checkpoints
+     */
+    fun clearAllCheckpoints(worlds: MutableList<World>): Boolean {
+        try {
+            checkpoints.clear()
+            worlds.forEach { world ->
+                world.entities
+                    .filter { entity -> entity is ArmorStand }
+                    .forEach { entity ->
+                        val checkpointId =
+                            entity.persistentDataContainer.get(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER)
+                        if (checkpointId != null) {
+                            entity.remove()
+                        }
+                    }
+
+            }
+            return true
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return false
+        }
     }
 }

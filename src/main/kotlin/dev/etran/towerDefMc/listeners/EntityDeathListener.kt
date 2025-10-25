@@ -2,14 +2,13 @@ package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.CheckpointManager
-import dev.etran.towerDefMc.managers.EndpointManager
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.persistence.PersistentDataType
 
-class EntityDamageListener : Listener {
+class EntityDeathListener : Listener {
     @EventHandler
     fun whenEntityDamage(event: EntityDeathEvent) {
         val gameElement = event.entity
@@ -21,7 +20,7 @@ class EntityDamageListener : Listener {
             "Checkpoint" ->
                 if (gameElement is ArmorStand) CheckpointManager.remove(gameElement)
             "EndPoint" ->
-                if (gameElement is ArmorStand) EndpointManager.remove(gameElement)
+                if (gameElement is ArmorStand) CheckpointManager.remove(gameElement)
         }
 
         event.drops.clear()

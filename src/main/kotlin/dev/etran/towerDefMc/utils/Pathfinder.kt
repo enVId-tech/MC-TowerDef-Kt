@@ -12,17 +12,7 @@ import org.bukkit.entity.Mob
  */
 fun setMobTargetLocation(mob: Mob, targetLocation: Location, speed: Double = 1.0, stopRadius: Double = 0.5): Boolean {
     val pathfinder = mob.pathfinder
-    val distanceSquared = targetLocation.distanceSquared(targetLocation)
-    val stopRadiusSquared = stopRadius * stopRadius
-//    if (distanceSquared <= stopRadiusSquared) {
-//        // Stop pathfinding
-//        mob.pathfinder.stopPathfinding()
-//
-//        mob.setAI(false)
-//        return true
-//    } else {
-        mob.setAI(true)
-        val success = pathfinder.moveTo(targetLocation, speed)
-        return success
-//    }
+    mob.setAI(true)
+    val success = pathfinder.moveTo(targetLocation, speed)
+    return success
 }

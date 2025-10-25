@@ -24,3 +24,7 @@ commands:
   givetendpoint:
     description: A command to give an end point for the enemies
     usage: /<command>
+
+  cleartallcheckpoints:
+    description: A command to clear all checkpoints and endpoints
+    usage: /<command>

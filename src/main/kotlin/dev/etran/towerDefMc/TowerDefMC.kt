@@ -1,13 +1,15 @@
 package dev.etran.towerDefMc
 
+import dev.etran.towerDefMc.commands.ClearCheckpoints
 import dev.etran.towerDefMc.commands.GiveCheckpoint
 import dev.etran.towerDefMc.commands.GiveEndPoint
 import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
-import dev.etran.towerDefMc.listeners.EntityDamageListener
+import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
+import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import org.bukkit.Bukkit
@@ -46,7 +48,7 @@ class TowerDefMC : JavaPlugin() {
 
         // Register continuous events
         server.pluginManager.registerEvents(PlayerPlaceListener(), this)
-        server.pluginManager.registerEvents(EntityDamageListener(), this)
+        server.pluginManager.registerEvents(EntityDeathListener(), this)
         server.pluginManager.registerEvents(FireproofListener(), this)
 
         // Set commands and behaviors
@@ -55,6 +57,7 @@ class TowerDefMC : JavaPlugin() {
         getCommand("givetenemy")?.setExecutor(GiveEnemy())
         getCommand("givetstartpoint")?.setExecutor(GiveStartPoint())
         getCommand("givetendpoint")?.setExecutor(GiveEndPoint())
+        getCommand("cleartallcheckpoints")?.setExecutor(ClearCheckpoints())
 
         // Scheduler tasks
         startTowerCheckTask()

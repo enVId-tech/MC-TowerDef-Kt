@@ -3,7 +3,6 @@ package dev.etran.towerDefMc.factories
 import de.tr7zw.nbtapi.NBT
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.CheckpointManager
-import dev.etran.towerDefMc.utils.findMaxCheckpoint
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -29,13 +28,29 @@ object CheckpointFactory {
 
         if (entity == null) return
 
-        CheckpointManager.add(entity)
+        // If the final checkpoint ID is an endpoint, do not allow additional checkpoints
+        if (CheckpointManager
+                .checkpoints
+                .values
+                .last()
+                .persistentDataContainer
+                .get(
+                    TowerDefMC.ELEMENT_TYPES,
+                    PersistentDataType.STRING
+                )
+                .equals("EndPoint")
+        ) {
+            event.player.sendMessage("There is an existing endpoint on this path! Remove the endpoint before placing any new checkpoints")
+            return
+        }
+            CheckpointManager.add(entity)
 
-        val newCheckpointId = findMaxCheckpoint(world) + 1
+        val newCheckpointId = CheckpointManager.checkpoints.size + 1
 
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, newCheckpointId)
 
         val player = event.player
+
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Checkpoint")
 
