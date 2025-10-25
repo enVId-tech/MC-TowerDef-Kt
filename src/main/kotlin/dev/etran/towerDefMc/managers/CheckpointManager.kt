@@ -17,17 +17,20 @@ object CheckpointManager {
     fun add(entity: Entity): Int {
         if (entity !is ArmorStand) return -1
 
-        for (i in 1..checkpoints.keys.last()) {
-            if (i !in checkpoints) {
-                checkpoints[i] = entity
-                return i
+        var smallestAvailableId = 1
+
+        for (id in checkpoints.keys) {
+            if (id == smallestAvailableId) {
+                smallestAvailableId++
+            } else {
+                break
             }
         }
 
-        val insertId = checkpoints.keys.last() + 1
+        checkpoints[smallestAvailableId] = entity
 
-        checkpoints[insertId] = entity
-        return insertId
+        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString())}
+        return smallestAvailableId
     }
 
     /**
@@ -49,6 +52,7 @@ object CheckpointManager {
             return removeId
         }
 
+        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString())}
         return -1
     }
 
