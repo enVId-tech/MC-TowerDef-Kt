@@ -14,6 +14,10 @@ fun placeElement(event: PlayerInteractEvent, loggerName: String): Entity? {
     player.sendBlockChange(location, location.block.blockData)
 
     // Prevents the player from placing checkpoints on top of each other, possibly causing bugs
+    /* TODO: Fix bug where user cannot place an entity close to them, because of this check.
+        It should allow for users to only place instances of entities near them if no other entity exists
+        on that block
+     */
     if (location.getNearbyEntities(0.5, 1.0, 0.5).count() >= 1) {
         player.sendMessage("You cannot place a game element of type $loggerName here!")
         return null

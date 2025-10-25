@@ -8,6 +8,7 @@ import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
+import dev.etran.towerDefMc.listeners.PlayerMouseMoveListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
@@ -50,6 +51,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerPlaceListener(), this)
         server.pluginManager.registerEvents(EntityDeathListener(), this)
         server.pluginManager.registerEvents(FireproofListener(), this)
+        server.pluginManager.registerEvents(PlayerMouseMoveListener(), this)
 
         // Set commands and behaviors
         getCommand("givettower")?.setExecutor(GiveTower())
