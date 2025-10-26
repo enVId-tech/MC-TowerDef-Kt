@@ -6,6 +6,7 @@ import dev.etran.towerDefMc.commands.GiveEndPoint
 import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
+import dev.etran.towerDefMc.commands.ToggleStandVisibility
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
@@ -59,12 +60,13 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerHoldListener, this)
 
         // Set commands and behaviors
-        getCommand("givettower")?.setExecutor(GiveTower())
-        getCommand("givetcheckpoint")?.setExecutor(GiveCheckpoint())
-        getCommand("givetenemy")?.setExecutor(GiveEnemy())
-        getCommand("givetstartpoint")?.setExecutor(GiveStartPoint())
-        getCommand("givetendpoint")?.setExecutor(GiveEndPoint())
-        getCommand("cleartallcheckpoints")?.setExecutor(ClearCheckpoints())
+        getCommand("giveTDtower")?.setExecutor(GiveTower())
+        getCommand("giveTDcheckpoint")?.setExecutor(GiveCheckpoint())
+        getCommand("giveTDenemy")?.setExecutor(GiveEnemy())
+        getCommand("giveTDstartpoint")?.setExecutor(GiveStartPoint())
+        getCommand("giveTDendpoint")?.setExecutor(GiveEndPoint())
+        getCommand("clearTDallcheckpoints")?.setExecutor(ClearCheckpoints())
+        getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility())
 
         // Scheduler tasks
         startTowerCheckTask()

@@ -1,15 +1,22 @@
 package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.util.SortedMap
 import java.util.TreeMap
 
 object CheckpointManager {
     var checkpoints: SortedMap<Int, Entity> = TreeMap<Int, Entity>()
+    var standsAreVisible: Boolean = true
+    val effectType = PotionEffectType.GLOWING
+    val duration = Int.MAX_VALUE
+    val amplifier = 255
 
     /**
      * @param entity The armor stand entity to insert
@@ -48,8 +55,8 @@ object CheckpointManager {
 
         val removedValue = checkpoints.remove(removeId)
 
-        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString()) }
-        entity.world.players.forEach { player -> player.sendMessage(removeId.toString()) }
+//        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString()) }
+//        entity.world.players.forEach { player -> player.sendMessage(removeId.toString()) }
 
         if (removedValue != null) {
             adjustArmorStandIds()
@@ -95,6 +102,36 @@ object CheckpointManager {
             worlds.flatMap { world -> world.entities }.filterIsInstance<ArmorStand>()
                 .filter { it.persistentDataContainer.has(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) }
                 .forEach { it.remove() }
+            return true
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return false
+        }
+    }
+
+    /**
+     * Toggle stand visibility
+     */
+    fun toggleStandVisibility(): Boolean {
+        try {
+            standsAreVisible = !standsAreVisible
+            Bukkit.getWorlds().forEach { world ->
+                world.entities
+                    .filterIsInstance<ArmorStand>()
+                    .filter { entity ->
+                        entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) != null
+                    }
+                    .forEach { entity ->
+                        if (standsAreVisible) {
+                            entity.isInvisible = false
+                            entity.addPotionEffect(PotionEffect(effectType, duration, amplifier))
+                        } else {
+                            entity.isInvisible = true
+                            entity.removePotionEffect(effectType)
+                        }
+                    }
+            }
+
             return true
         } catch (ex: Exception) {
             ex.printStackTrace()

@@ -4,26 +4,30 @@ main: dev.etran.towerDefMc.TowerDefMC
 api-version: '1.21'
 
 commands:
-  givettower:
+  giveTDtower:
     description: A command to give a zombie tower with no AI.
     usage: /<command> [player] [amount]
 
-  givetcheckpoint:
+  giveTDcheckpoint:
     description: A command to give a checkpoint armor stand for enemies.
     usage: /<command> [amount]
 
-  givetenemy:
+  giveTDenemy:
     description: A command to give an enemy spawn with limited AI.
     usage: /<command> [amount]
 
-  givetstartpoint:
+  giveTDstartpoint:
     description: A command to give a spawn point for the enemies
     usage: /<command>
 
-  givetendpoint:
+  giveTDendpoint:
     description: A command to give an end point for the enemies
     usage: /<command>
 
-  cleartallcheckpoints:
+  clearTDallcheckpoints:
     description: A command to clear all checkpoints and endpoints
+    usage: /<command>
+
+  toggleStandVisibility:
+    description: A command to toggle the visibility of all stands
     usage: /<command>
