@@ -32,6 +32,7 @@ fun applyEnemyMovementLogic(entity: Entity) {
 
             // If the current target was an EndPoint OR the next ID is out of bounds, remove the entity
             if (isEndPoint || !CheckpointManager.checkpoints.containsKey(nextId)) {
+                cleanUpEnemyHealthBar(entity)
                 entity.remove()
                 // TODO: runGameLoss();
                 return
@@ -50,6 +51,7 @@ fun applyEnemyMovementLogic(entity: Entity) {
 
         if (!CheckpointManager.checkpoints.containsKey(nextPotentialId)) {
             // No more valid checkpoints available after the current missing one, assume end of path.
+            cleanUpEnemyHealthBar(entity)
             entity.remove()
         } else {
             container.set(

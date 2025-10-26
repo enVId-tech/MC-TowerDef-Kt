@@ -7,6 +7,7 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -54,14 +55,16 @@ object TowerFactory {
         }
 
         val world = location.world
-        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as LivingEntity
+        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
         val itemMD_PDC = itemHeld.itemMeta.persistentDataContainer
 
         entity.setAI(false)
+        entity.setAdult()
         entity.isInvulnerable = true
         entity.fireTicks = 0
         entity.visualFire = TriState.FALSE
         entity.isPersistent = true
+        entity.isSilent = true
         entity.isSilent = true
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Tower")
         entity.persistentDataContainer.set(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING, "Basic_Tower_1")

@@ -10,6 +10,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.TextDisplay
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.entity.Display.Billboard
+import org.bukkit.entity.Entity
 
 fun getHealthBarComponent(currentHealth: Double, maxHealth: Double): Component {
     // --- Graphical Bar Logic ---
@@ -73,14 +74,11 @@ fun getHealthBarComponent(currentHealth: Double, maxHealth: Double): Component {
         .append(numericalDisplay)
         .build()
 }
-fun updateHealthBar(enemy: LivingEntity, healthBar: TextDisplay) {
-    // Corrected Attribute name
+fun updateHealthBar(enemy: LivingEntity, healthBar: TextDisplay, calculatedHealth: Double) {
     val maxHealth = enemy.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
-    val currentHealth = enemy.health
 
-    val newComponent = getHealthBarComponent(currentHealth, maxHealth)
+    val newComponent = getHealthBarComponent(calculatedHealth, maxHealth)
 
-    // Use the Adventure API's text() setter
     healthBar.text(newComponent)
 }
 
@@ -104,7 +102,27 @@ fun createHealthBar(enemy: LivingEntity): TextDisplay {
 
     enemy.addPassenger(textDisplay)
 
-    updateHealthBar(enemy, textDisplay)
+    updateHealthBar(enemy, textDisplay, enemy.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0)
 
     return textDisplay
+}
+
+fun cleanUpEnemyHealthBar(enemy: Entity) {
+    val deadMobUUID = enemy.uniqueId.toString()
+
+    // 1. Search near the enemy's location for the TextDisplay owner link
+    enemy.getNearbyEntities(2.0, 2.0, 2.0)
+        .filterIsInstance<TextDisplay>()
+        .forEach { textDisplay ->
+            if (textDisplay.persistentDataContainer.get(TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING) == deadMobUUID) {
+                textDisplay.remove()
+                return@forEach
+            }
+        }
+
+    enemy.passengers.forEach { passenger ->
+        if (passenger is TextDisplay) {
+            passenger.remove()
+        }
+    }
 }

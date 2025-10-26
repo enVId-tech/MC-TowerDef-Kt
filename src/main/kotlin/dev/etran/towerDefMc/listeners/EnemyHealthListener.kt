@@ -22,15 +22,21 @@ object EnemyHealthListener : Listener {
         val enemy = event.entity as LivingEntity
 
         // Check for your custom enemy type here (e.g., based on custom tags)
-        if (enemy.persistentDataContainer.has(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING)) return
+        if (!enemy.persistentDataContainer.has(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING)) return
+
+        val damage = event.finalDamage
+
+        val newHealth = enemy.health - damage
 
         val healthBar = enemy.getNearbyEntities(1.0, 2.0, 1.0)
             .filterIsInstance<TextDisplay>()
-            .firstOrNull { it.persistentDataContainer.get(TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING) == enemy.uniqueId.toString() }
-
+            .firstOrNull {
+                it.passengers.contains(enemy)
+                it.persistentDataContainer.get(TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING) == enemy.uniqueId.toString()
+            }
         if (healthBar != null) {
             // Update the text component with the new health
-            updateHealthBar(enemy, healthBar)
+            updateHealthBar(enemy, healthBar, newHealth)
         }
     }
 }
