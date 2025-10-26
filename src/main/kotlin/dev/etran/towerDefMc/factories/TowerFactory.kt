@@ -20,7 +20,7 @@ object TowerFactory {
 
         // Modify the Persistent Data Container within the metaobject
         meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Tower 1")
-        meta.persistentDataContainer.set(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 30.0)
+        meta.persistentDataContainer.set(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 5.0)
 
         towerSpawn.itemMeta = meta
 

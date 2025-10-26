@@ -32,17 +32,14 @@ object TaskUtility {
      * @return The Block the player is looking at, or null.
      */
     fun getHighlightedBlock(player: Player): Block? {
-        val maxDistance = 10.0 // Standard reach distance
-
-        // Trace to get the block the player is looking AT
+        val maxDistance = 10.0
         val blockHit = player.world.rayTraceBlocks(
             player.eyeLocation,
             player.location.direction,
             maxDistance,
             FluidCollisionMode.NEVER,
-            true // Ignore passable blocks
+            true
         )
-
         return blockHit?.hitBlock
     }
 
@@ -69,7 +66,7 @@ object TaskUtility {
             val z = center.z + radius * sin(angle)
 
             val particleLoc = Location(world, x, y, z)
-            world.spawnParticle(Particle.FLAME, particleLoc, 1, 0.0, 0.0, 0.0, 0.0)
+            world.spawnParticle(Particle.SOUL, particleLoc, 1, 0.0, 0.0, 0.0, 0.0)
         }
     }
 
@@ -100,8 +97,8 @@ object TaskUtility {
         player: Player,
         activeMouseTasks: MutableMap<UUID, BukkitTask>,
         particleTickRate: Long,
-        towerRange: Double, // Tower range for the circle
-        previewMaterial: Material // Material for the faded texture
+        towerRange: Double,
+        previewMaterial: Material
     ) {
         if (activeMouseTasks.containsKey(player.uniqueId)) {
             return
@@ -109,29 +106,29 @@ object TaskUtility {
 
         player.sendMessage("§bTower placement preview active. Range: $towerRange blocks.")
 
-        // Pre-cache the block data for the preview
         val previewBlockData = previewMaterial.createBlockData()
 
         val task = object : BukkitRunnable() {
+            // Use red dust for "No Placement" indicator
+            val redDust = Particle.DustOptions(org.bukkit.Color.RED, 1.0f)
+
             override fun run() {
                 val targetBlock = getHighlightedBlock(player)
 
                 if (targetBlock != null) {
                     val centerLoc = targetBlock.location.toCenterLocation()
 
-                    // Check if the block is placable (e.g., not air, not liquid, etc.)
                     if (targetBlock.type.isSolid) {
-
-                        // 1. Draw the Tower Range Circle
-                        drawCircleParticles(centerLoc, towerRange, 40)
-
-                        // 2. Draw the Tower Block Preview (faded texture)
-                        drawBlockPreview(centerLoc, previewBlockData)
+                        // Valid placement preview
+                        drawCircleParticles(centerLoc.clone(), towerRange, 40) // Use clone to avoid modifying centerLoc
+                        drawBlockPreview(centerLoc.clone(), previewBlockData)
                     } else {
+                        // Invalid placement indicator
                         targetBlock.world.spawnParticle(
-                            Particle.SMOKE,
-                            centerLoc.add(0.0, 0.5, 0.0), 5,
-                            0.2, 0.2, 0.2, 0.0
+                            Particle.SMOKE, // Changed SMOKE to REDSTONE
+                            centerLoc.add(0.0, 0.5, 0.0), 10, // Amount increased slightly
+                            0.3, 0.3, 0.3, 0.0, // Small offset
+                            redDust // Red X effect
                         )
                     }
                 }
@@ -140,7 +137,6 @@ object TaskUtility {
 
         activeMouseTasks[player.uniqueId] = task
     }
-
     /** Stops the running block highlight task for a player. */
     fun stopTargetHighlightTask(player: Player, activeMouseTasks: MutableMap<UUID, BukkitTask>) {
         val task = activeMouseTasks.remove(player.uniqueId)
