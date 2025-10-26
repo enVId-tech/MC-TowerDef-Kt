@@ -37,7 +37,6 @@ object CheckpointManager {
 
         checkpoints[smallestAvailableId] = entity
 
-        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString()) }
         return smallestAvailableId
     }
 
@@ -99,9 +98,11 @@ object CheckpointManager {
         try {
             checkpoints.clear()
 
-            worlds.flatMap { world -> world.entities }.filterIsInstance<ArmorStand>()
-                .filter { it.persistentDataContainer.has(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER) }
-                .forEach { it.remove() }
+            worlds.flatMap { world -> world.entities }.filterIsInstance<ArmorStand>().filter {
+                it.persistentDataContainer.has(
+                    TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER
+                ) || it.persistentDataContainer.has(TowerDefMC.STARTPOINT_ID, PersistentDataType.INTEGER)
+            }.forEach { it.remove() }
             return true
         } catch (ex: Exception) {
             ex.printStackTrace()
@@ -116,20 +117,17 @@ object CheckpointManager {
         try {
             standsAreVisible = !standsAreVisible
             Bukkit.getWorlds().forEach { world ->
-                world.entities
-                    .filterIsInstance<ArmorStand>()
-                    .filter { entity ->
-                        entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) != null
+                world.entities.filterIsInstance<ArmorStand>().filter { entity ->
+                    entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) != null
+                }.forEach { entity ->
+                    if (standsAreVisible) {
+                        entity.isInvisible = false
+                        entity.addPotionEffect(PotionEffect(effectType, duration, amplifier))
+                    } else {
+                        entity.isInvisible = true
+                        entity.removePotionEffect(effectType)
                     }
-                    .forEach { entity ->
-                        if (standsAreVisible) {
-                            entity.isInvisible = false
-                            entity.addPotionEffect(PotionEffect(effectType, duration, amplifier))
-                        } else {
-                            entity.isInvisible = true
-                            entity.removePotionEffect(effectType)
-                        }
-                    }
+                }
             }
 
             return true

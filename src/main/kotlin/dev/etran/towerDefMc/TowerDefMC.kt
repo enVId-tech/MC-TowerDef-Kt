@@ -41,6 +41,8 @@ class TowerDefMC : JavaPlugin() {
             get() = NamespacedKey(instance, "checkpointId")
         val TARGET_CHECKPOINT_ID: NamespacedKey
             get() = NamespacedKey(instance, "targetCheckpointId")
+        val STARTPOINT_ID: NamespacedKey
+            get() = NamespacedKey(instance, "startpointId")
     }
     override fun onEnable() {
         instance = this

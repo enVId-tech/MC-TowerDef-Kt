@@ -17,17 +17,19 @@ object StartpointManager {
     fun add(entity: Entity): Int {
         if (entity !is ArmorStand) return -1
 
-        for (i in 1..startpoints.keys.last()) {
-            if (i !in startpoints) {
-                startpoints[i] = entity
-                return i
+        var smallestAvailableId = 1
+
+        for (id in startpoints.keys) {
+            if (id == smallestAvailableId) {
+                smallestAvailableId++
+            } else {
+                break
             }
         }
 
-        val insertId = startpoints.keys.last() + 1
+        startpoints[smallestAvailableId] = entity
 
-        startpoints[insertId] = entity
-        return insertId
+        return smallestAvailableId
     }
 
     /**
@@ -44,6 +46,9 @@ object StartpointManager {
 
         val removedValue = startpoints.remove(removeId)
 
+//        entity.world.players.forEach { player -> player.sendMessage(checkpoints.toString()) }
+//        entity.world.players.forEach { player -> player.sendMessage(removeId.toString()) }
+
         if (removedValue != null) {
             adjustArmorStandIds()
             return removeId
@@ -59,19 +64,21 @@ object StartpointManager {
     fun adjustArmorStandIds(): List<Entity> {
         val entitiesInOrder: List<Entity> = startpoints.values.toList()
 
-        val currentSize = entitiesInOrder.size
-        val lastKey = startpoints.keys.lastOrNull() ?: 0
+        val reIndexedCheckpoints: SortedMap<Int, Entity> = TreeMap()
 
-        if (lastKey == currentSize) {
-            return entitiesInOrder
+        entitiesInOrder.forEachIndexed { index, entity ->
+            val newId = index + 1
+
+            // Update the Persistent Data Container (PDC) on the actual entity
+            entity.persistentDataContainer.set(
+                TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, newId
+            )
+
+            // Populate the new map
+            reIndexedCheckpoints[newId] = entity
         }
 
-        val reIndexedCheckpoint: SortedMap<Int, Entity> = entitiesInOrder.mapIndexed { index, entity ->
-            val newId = index + 1
-            newId to entity
-        }.toMap(TreeMap())
-
-        startpoints = reIndexedCheckpoint
+        startpoints = reIndexedCheckpoints
 
         return entitiesInOrder
     }

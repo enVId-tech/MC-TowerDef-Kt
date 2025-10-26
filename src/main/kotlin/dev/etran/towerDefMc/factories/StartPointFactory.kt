@@ -32,10 +32,11 @@ object StartPointFactory {
 
         val player = event.player
 
+        val correctNewId = StartpointManager.add(entity)
+
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "StartPoint")
-        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, -1)
-        StartpointManager.add(entity)
+        entity.persistentDataContainer.set(TowerDefMC.STARTPOINT_ID, PersistentDataType.INTEGER, correctNewId)
 
         // Take away 1 from the user if they aren't in creative mode
         if (player.gameMode != GameMode.CREATIVE) {
