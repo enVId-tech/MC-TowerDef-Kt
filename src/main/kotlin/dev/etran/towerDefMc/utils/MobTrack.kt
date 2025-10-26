@@ -3,7 +3,10 @@ package dev.etran.towerDefMc.utils
 import dev.etran.towerDefMc.TowerDefMC
 import org.bukkit.World
 import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
 fun getClosestMobToTower(world: World, tower: Entity, blocksDistance: Double): Entity? {
     return world.entities
@@ -63,4 +66,34 @@ fun getClosestMobToSpawn(world: World, tower: Entity, blocksDistance: Double): E
         }
         // Add code to get the lowest checkpoint id
         .minByOrNull {  tower.location.distanceSquared(spawnPoint.location) }
+}
+
+fun towerTurnToTarget(entity: LivingEntity, targetEntity: Entity): Boolean {
+    try {
+        // Math for the rotation of the tower towards the player (soon to be enemy)
+        val maxPitch = 40f
+
+        val playerEye = targetEntity.location
+        val entityEye = entity.eyeLocation
+
+        val dx = playerEye.x - entityEye.x
+        val dy = playerEye.y - entityEye.y
+        val dz = playerEye.z - entityEye.z
+
+        val horiz = sqrt(dx * dx + dz * dz).coerceAtLeast(1e-6)
+
+        val yaw = Math.toDegrees(atan2(-dx, dz)).toFloat()
+        val pitch = -Math.toDegrees(atan2(dy, horiz)).toFloat()
+
+        val clampedPitch = pitch.coerceIn(-maxPitch, maxPitch)
+
+        val loc = entity.location.clone()
+        loc.yaw = yaw
+        loc.pitch = clampedPitch
+        entity.teleport(loc)
+        return true
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        return false
+    }
 }

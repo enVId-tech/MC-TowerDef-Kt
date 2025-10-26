@@ -120,13 +120,13 @@ object TaskUtility {
 
                     if (targetBlock.type.isSolid) {
                         // Valid placement preview
-                        drawCircleParticles(centerLoc.clone(), towerRange, 40) // Use clone to avoid modifying centerLoc
+                        drawCircleParticles(centerLoc.clone(), towerRange, 10 * towerRange.toInt()) // Use clone to avoid modifying centerLoc
                         drawBlockPreview(centerLoc.clone(), previewBlockData)
                     } else {
                         // Invalid placement indicator
                         targetBlock.world.spawnParticle(
-                            Particle.SMOKE, // Changed SMOKE to REDSTONE
-                            centerLoc.add(0.0, 0.5, 0.0), 10, // Amount increased slightly
+                            Particle.SOUL,
+                            centerLoc.add(0.0, 0.5, 0.0), 15 * towerRange.toInt(), // Amount increased slightly
                             0.3, 0.3, 0.3, 0.0, // Small offset
                             redDust // Red X effect
                         )

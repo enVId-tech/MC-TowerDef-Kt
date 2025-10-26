@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.utils.getClosestMobToTower
+import dev.etran.towerDefMc.utils.towerTurnToTarget
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
@@ -28,28 +29,7 @@ object TowerScheduler {
                     if (targetEntity != null) {
                         entity.setAI(false)
                         entity.isInvulnerable = true
-
-                        // Math for the rotation of the tower towards the player (soon to be enemy)
-                        val maxPitch = 40f
-
-                        val playerEye = targetEntity.location
-                        val entityEye = entity.eyeLocation
-
-                        val dx = playerEye.x - entityEye.x
-                        val dy = playerEye.y - entityEye.y
-                        val dz = playerEye.z - entityEye.z
-
-                        val horiz = sqrt(dx * dx + dz * dz).coerceAtLeast(1e-6)
-
-                        val yaw = Math.toDegrees(atan2(-dx, dz)).toFloat()
-                        val pitch = Math.toDegrees(atan2(-dy, horiz)).toFloat()
-
-                        val clampedPitch = pitch.coerceIn(-maxPitch, maxPitch)
-
-                        val loc = entity.location.clone()
-                        loc.yaw = yaw
-                        loc.pitch = clampedPitch
-                        entity.teleport(loc)
+                        towerTurnToTarget(entity, targetEntity)
                     }
                 }
             }
