@@ -10,16 +10,16 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 
 object PlayerPlaceListener : Listener {
     @EventHandler
     fun onPlayerPlace(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
-        val gameElementSpawn = event.item ?: return
+        val gameElementSpawn = event.player.inventory.itemInMainHand
 
-        gameElementSpawn.itemMeta?.let { meta ->
-
+        gameElementSpawn.itemMeta?.let { meta: ItemMeta ->
             // Retrieve the name from the PDC
             val name = meta.persistentDataContainer.get(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING)
 
@@ -28,11 +28,16 @@ object PlayerPlaceListener : Listener {
             // Run functions specific to their unique identifiers
             when (name) {
                 "Tower 1" -> TowerFactory.towerPlace(event)
-                "CheckPoint" -> CheckpointFactory.checkPointPlace(event)
+                "Checkpoint" -> CheckpointFactory.checkPointPlace(event)
                 "EndPoint" -> EndpointFactory.endPointPlace(event)
                 "StartPoint" -> StartPointFactory.startPointPlace(event)
                 "Enemy 1" -> EnemyFactory.enemyPlace(event)
+                else -> event.player.sendMessage("This game element doesn't exist.")
             }
+
+            return
         }
+
+        event.player.sendMessage("An error has occurred when trying to place this game element.")
     }
 }

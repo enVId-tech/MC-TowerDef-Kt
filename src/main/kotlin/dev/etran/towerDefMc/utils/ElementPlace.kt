@@ -1,5 +1,6 @@
 package dev.etran.towerDefMc.utils
 
+import org.bukkit.Effect
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
@@ -30,6 +31,7 @@ fun placeElement(event: PlayerInteractEvent, loggerName: String): Entity? {
     entity.isInvulnerable = true
     entity.fireTicks = 0
     entity.setGravity(false)
+    entity.isInvisible = true
 
     return entity
 }

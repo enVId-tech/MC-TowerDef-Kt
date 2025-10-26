@@ -26,11 +26,9 @@ object EndpointFactory {
 
     fun endPointPlace(event: PlayerInteractEvent) {
         val entity = placeElement(event, "endpoint")
+        val player = event.player
 
         if (entity == null) return
-
-        val player = event.player
-        val world = player.world
 
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "EndPoint")

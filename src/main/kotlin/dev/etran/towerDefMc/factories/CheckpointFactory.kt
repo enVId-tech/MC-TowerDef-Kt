@@ -17,7 +17,7 @@ object CheckpointFactory {
         val meta = checkPointSpawn.itemMeta ?: return checkPointSpawn // Fallback if meta cannot be retrieved
 
         // Modify the Persistent Data Container within the metaobject
-        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "CheckPoint")
+        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Checkpoint")
 
         checkPointSpawn.itemMeta = meta
 
