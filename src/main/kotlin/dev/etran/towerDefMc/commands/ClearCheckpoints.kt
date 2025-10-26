@@ -6,7 +6,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 
-class ClearCheckpoints : CommandExecutor {
+object ClearCheckpoints : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         val success = clearAllCheckpoints(Bukkit.getWorlds())
         if (!success) {

@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.factories
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.createHealthBar
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -11,6 +12,7 @@ import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.plugin.java.JavaPlugin
 
 object EnemyFactory {
     fun newBasicEnemy(amount: Int = 1): ItemStack {
@@ -52,6 +54,8 @@ object EnemyFactory {
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy")
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, "Basic_Enemy_1")
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
+
+        createHealthBar(entity)
 
         // Take away 1 from the user if they aren't in creative or spectator mode.
         if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
