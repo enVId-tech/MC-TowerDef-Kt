@@ -95,7 +95,7 @@ class TowerDefMC : JavaPlugin() {
         // Scheduler tasks
         startTowerCheckTask()
         startEnemyCheckTask()
-        startHealthBarPositionTask()
+//        startHealthBarPositionTask()
 
         logger.info {
             "Tower Defense Plugin - Scheduler Tasks Started"
@@ -139,15 +139,15 @@ class TowerDefMC : JavaPlugin() {
         )
     }
 
-    fun startHealthBarPositionTask() {
-        Bukkit.getScheduler().runTaskTimer(
-            this, Runnable {
-                for (world in Bukkit.getWorlds()) {
-                    HealthScheduler.checkAndHandleHealth(world)
-                }
-            },
-            0L,
-            CHECK_INTERVAL_TICKS
-        )
-    }
+//    fun startHealthBarPositionTask() {
+//        Bukkit.getScheduler().runTaskTimer(
+//            this, Runnable {
+//                for (world in Bukkit.getWorlds()) {
+//                    HealthScheduler.checkAndHandleHealth(world)
+//                }
+//            },
+//            0L,
+//            1L
+//        )
+//    }
 }

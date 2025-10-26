@@ -4,6 +4,7 @@ import dev.etran.towerDefMc.TowerDefMC
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.TextDisplay
@@ -84,14 +85,24 @@ fun updateHealthBar(enemy: LivingEntity, healthBar: TextDisplay) {
 }
 
 fun createHealthBar(enemy: LivingEntity): TextDisplay {
-    val textDisplay = enemy.world.spawn(enemy.location.add(0.0, enemy.height + 0.5, 0.0), TextDisplay::class.java)
+    val offset = 0.5 // Blocks above the enemy's head (adjustable)
+    val targetLocation = enemy.location.add(0.0, enemy.height + offset, 0.0)
 
-    textDisplay.billboard = Billboard.CENTER  // Always faces the player
-    textDisplay.isShadowed = true // Makes text visible in sunlight
-    textDisplay.isDefaultBackground = false // Removes the opaque box behind the text
+    val textDisplay = enemy.world.spawn(targetLocation, TextDisplay::class.java)
+
+    // Configuration
+    textDisplay.billboard = Billboard.CENTER
+    textDisplay.isShadowed = true
+    textDisplay.isDefaultBackground = false
     textDisplay.setGravity(false)
 
-    textDisplay.persistentDataContainer.set(TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING, enemy.uniqueId.toString())
+    textDisplay.persistentDataContainer.set(
+        TowerDefMC.HEALTH_OWNER_UUID,
+        PersistentDataType.STRING,
+        enemy.uniqueId.toString()
+    )
+
+    enemy.addPassenger(textDisplay)
 
     updateHealthBar(enemy, textDisplay)
 
