@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class TowerDefMC : JavaPlugin() {
     private val CHECK_INTERVAL_TICKS: Long = 5L
+
     companion object {
         // Set by onEnable, clear in onDisable
         lateinit var instance: TowerDefMC
@@ -43,7 +44,10 @@ class TowerDefMC : JavaPlugin() {
             get() = NamespacedKey(instance, "targetCheckpointId")
         val STARTPOINT_ID: NamespacedKey
             get() = NamespacedKey(instance, "startpointId")
+        val TOWER_RANGE: NamespacedKey
+            get() = NamespacedKey(instance, "towerRange")
     }
+
     override fun onEnable() {
         instance = this
 

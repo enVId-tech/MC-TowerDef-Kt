@@ -45,16 +45,15 @@ object CheckpointFactory {
 
         val correctNewId = CheckpointManager.add(entity)
 
-        // 3. Set the PDC with the correct ID.
+        // Set the PDC with the correct ID.
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, correctNewId)
 
-        // 4. Set the general type (Global accessor for checkpoint)
+        // Set the general type (Global accessor for checkpoint)
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Checkpoint")
 
-        // 5. Item Consumption
-        if (player.gameMode != GameMode.CREATIVE) {
-            // NOTE: This assumes the item in hand is the checkpoint item.
-            player.inventory.itemInMainHand.amount -= 1
+        // Take away 1 from the user if they aren't in creative or spectator mode.
+        if (player.gameMode != GameMode.CREATIVE || player.gameMode != GameMode.SPECTATOR) {
+            event.player.inventory.itemInMainHand.amount -= 1
         }
     }
 }

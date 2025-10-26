@@ -23,15 +23,16 @@ object TowerScheduler {
             // Checks each instance of the global identifier and runs code accordingly
             when (towerId) {
                 "Basic_Tower_1" -> {
-                    val targetPlayer = getClosestMobToTower(world, entity as Entity, 30.0)
-                    if (targetPlayer != null) {
+                    val range = entity.persistentDataContainer.getOrDefault(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 20.0)
+                    val targetEntity = getClosestMobToTower(world, entity as Entity, range)
+                    if (targetEntity != null) {
                         entity.setAI(false)
                         entity.isInvulnerable = true
 
                         // Math for the rotation of the tower towards the player (soon to be enemy)
                         val maxPitch = 40f
 
-                        val playerEye = targetPlayer.location
+                        val playerEye = targetEntity.location
                         val entityEye = entity.eyeLocation
 
                         val dx = playerEye.x - entityEye.x

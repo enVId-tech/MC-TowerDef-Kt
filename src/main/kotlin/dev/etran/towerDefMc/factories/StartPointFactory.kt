@@ -38,8 +38,8 @@ object StartPointFactory {
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "StartPoint")
         entity.persistentDataContainer.set(TowerDefMC.STARTPOINT_ID, PersistentDataType.INTEGER, correctNewId)
 
-        // Take away 1 from the user if they aren't in creative mode
-        if (player.gameMode != GameMode.CREATIVE) {
+        // Take away 1 from the user if they aren't in creative or spectator mode.
+        if (player.gameMode != GameMode.CREATIVE || player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
     }

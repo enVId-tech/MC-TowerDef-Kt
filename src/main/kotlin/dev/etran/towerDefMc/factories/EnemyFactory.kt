@@ -53,8 +53,8 @@ object EnemyFactory {
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, "Basic_Enemy_1")
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
 
-        // Take away 1 from the user if they aren't in creative mode
-        if (player.gameMode != GameMode.CREATIVE) {
+        // Take away 1 from the user if they aren't in creative or spectator mode.
+        if (player.gameMode != GameMode.CREATIVE || player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
     }

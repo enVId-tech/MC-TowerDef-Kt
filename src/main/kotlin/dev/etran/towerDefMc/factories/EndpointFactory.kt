@@ -37,8 +37,8 @@ object EndpointFactory {
         )
         CheckpointManager.add(entity)
 
-        // Take away 1 from the user if they aren't in creative mode
-        if (player.gameMode != GameMode.CREATIVE) {
+        // Take away 1 from the user if they aren't in creative or spectator mode.
+        if (player.gameMode != GameMode.CREATIVE || player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
     }
