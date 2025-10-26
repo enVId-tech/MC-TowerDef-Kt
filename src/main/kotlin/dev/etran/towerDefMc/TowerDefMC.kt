@@ -14,6 +14,7 @@ import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
+import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import dev.etran.towerDefMc.utils.TaskUtility
@@ -76,9 +77,10 @@ class TowerDefMC : JavaPlugin() {
 
         // Register utils
         TaskUtility.initialize(this)
+        CheckpointManager.initialize(this)
 
         logger.info {
-            "Tower Defense Plugin - Utility Functions Registered"
+            "Tower Defense Plugin - Primary Functions Initialized"
         }
 
         // Register continuous events
@@ -111,8 +113,17 @@ class TowerDefMC : JavaPlugin() {
         startTowerCheckTask()
         startEnemyCheckTask()
 
+
         logger.info {
             "Tower Defense Plugin - Scheduler Tasks Started"
+        }
+
+        // Load configuration
+        CheckpointManager.checkpoints.clear()
+        CheckpointManager.loadCheckpoints()
+
+        logger.info {
+            "Tower Defense Plugin - File configuration loaded"
         }
 
         logger.info {
@@ -122,6 +133,12 @@ class TowerDefMC : JavaPlugin() {
 
     override fun onDisable() {
         // Plugin shutdown logic
+        logger.info {
+            "Tower Defense Plugin - File configuration saved"
+        }
+
+        CheckpointManager.saveCheckpoints()
+
         logger.info {
             "Tower Defense Plugin - Shut down all tasks"
         }

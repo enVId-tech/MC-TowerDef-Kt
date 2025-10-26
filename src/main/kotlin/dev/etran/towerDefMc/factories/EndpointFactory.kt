@@ -5,6 +5,7 @@ import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.ArmorStand
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -35,7 +36,7 @@ object EndpointFactory {
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER,
             (CheckpointManager.checkpoints.size + 1)
         )
-        CheckpointManager.add(entity)
+        CheckpointManager.add(entity as ArmorStand)
 
         // Take away 1 from the user if they aren't in creative or spectator mode.
         if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {

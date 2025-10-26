@@ -5,6 +5,7 @@ import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.ArmorStand
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -43,7 +44,7 @@ object CheckpointFactory {
             return
         }
 
-        val correctNewId = CheckpointManager.add(entity)
+        val correctNewId = CheckpointManager.add(entity as ArmorStand)
 
         // Set the PDC with the correct ID.
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, correctNewId)
