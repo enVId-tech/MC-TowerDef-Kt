@@ -9,9 +9,11 @@ import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.commands.ToggleStandVisibility
+import dev.etran.towerDefMc.commands.TowerDefenseMenus
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
+import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.managers.CheckpointManager
@@ -89,6 +91,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(FireproofListener, this)
         server.pluginManager.registerEvents(PlayerHoldListener, this)
         server.pluginManager.registerEvents(EnemyHealthListener, this)
+        server.pluginManager.registerEvents(MenuListener, this)
 
         logger.info {
             "Tower Defense Plugin - Continuous Listeners Registered"
@@ -104,6 +107,7 @@ class TowerDefMC : JavaPlugin() {
         getCommand("clearTDalltowers")?.setExecutor(ClearTowers)
         getCommand("clearTDallenemies")?.setExecutor(ClearEnemies)
         getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility)
+        getCommand("td")?.setExecutor(TowerDefenseMenus)
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"

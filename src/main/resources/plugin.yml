@@ -39,3 +39,8 @@ commands:
   toggleStandVisibility:
     description: A command to toggle the visibility of all stands
     usage: /<command>
+
+  td:
+    description: The main command for the Tower Defense plugin.
+    usage: /<command> [setup|upgrade] <args...>
+    permission: towerdef.admin
