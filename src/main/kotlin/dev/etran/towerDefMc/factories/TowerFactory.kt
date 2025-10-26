@@ -14,16 +14,18 @@ import org.bukkit.persistence.PersistentDataType
 object TowerFactory {
     fun newBasicTower(amount: Int = 1): ItemStack {
         val towerSpawn = ItemStack(Material.END_ROD, amount)
+        val meta = towerSpawn.itemMeta ?: return towerSpawn
 
-        // Get the current item metadata (which is mutable)
-        val meta = towerSpawn.itemMeta ?: return towerSpawn // Fallback if meta cannot be retrieved
+        // ATTACK_WAIT_TIME: Stored as DOUBLE (seconds)
+        meta.persistentDataContainer.set(TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, 0.2)
 
-        // Modify the Persistent Data Container within the metaobject
+        // TOWER_DMG: Stored as DOUBLE (required for enemy.damage())
+        meta.persistentDataContainer.set(TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 2.5) // Change 10L to 10.0
+
         meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Tower 1")
         meta.persistentDataContainer.set(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 5.0)
 
         towerSpawn.itemMeta = meta
-
         return towerSpawn
     }
 
@@ -53,6 +55,7 @@ object TowerFactory {
 
         val world = location.world
         val entity = world.spawnEntity(location, EntityType.ZOMBIE) as LivingEntity
+        val itemMD_PDC = itemHeld.itemMeta.persistentDataContainer
 
         entity.setAI(false)
         entity.isInvulnerable = true
@@ -63,8 +66,19 @@ object TowerFactory {
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Tower")
         entity.persistentDataContainer.set(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING, "Basic_Tower_1")
         entity.persistentDataContainer.set(
-            TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, itemHeld.itemMeta.persistentDataContainer.getOrDefault(
+            TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, itemMD_PDC.getOrDefault(
                 TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 5.0
+            )
+        )
+        entity.persistentDataContainer.set(
+            TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, itemMD_PDC.getOrDefault(
+                TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 5.0
+            )
+        )
+        // ATTACK_WAIT_TIME: Retrieve and set as DOUBLE (seconds)
+        entity.persistentDataContainer.set(
+            TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, itemMD_PDC.getOrDefault(
+                TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, 1.0 // Use DOUBLE defaults
             )
         )
 

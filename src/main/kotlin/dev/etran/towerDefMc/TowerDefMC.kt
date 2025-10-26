@@ -13,7 +13,6 @@ import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
-import dev.etran.towerDefMc.schedulers.HealthScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import dev.etran.towerDefMc.utils.TaskUtility
 import org.bukkit.Bukkit
@@ -41,14 +40,26 @@ class TowerDefMC : JavaPlugin() {
             get() = NamespacedKey(instance, "towerItems")
 
         // Per-object properties
+        // -- Checkpoints --
         val CHECKPOINT_ID: NamespacedKey
             get() = NamespacedKey(instance, "checkpointId")
         val TARGET_CHECKPOINT_ID: NamespacedKey
             get() = NamespacedKey(instance, "targetCheckpointId")
         val STARTPOINT_ID: NamespacedKey
             get() = NamespacedKey(instance, "startpointId")
+
+        // -- Towers --
+        // Attack wait time is used in seconds, converted to ms
         val TOWER_RANGE: NamespacedKey
             get() = NamespacedKey(instance, "towerRange")
+        val READY_TIME: NamespacedKey
+            get() = NamespacedKey(instance, "towerReadyTime")
+        val ATTACK_WAIT_TIME: NamespacedKey
+            get() = NamespacedKey(instance, "attackWaitTime")
+        val TOWER_DMG: NamespacedKey
+            get() = NamespacedKey(instance, "towerDMG")
+
+        // -- Enemies --
         val HEALTH_OWNER_UUID: NamespacedKey
             get() = NamespacedKey(instance, "owner_uuid")
     }
@@ -95,7 +106,6 @@ class TowerDefMC : JavaPlugin() {
         // Scheduler tasks
         startTowerCheckTask()
         startEnemyCheckTask()
-//        startHealthBarPositionTask()
 
         logger.info {
             "Tower Defense Plugin - Scheduler Tasks Started"
@@ -138,16 +148,4 @@ class TowerDefMC : JavaPlugin() {
             CHECK_INTERVAL_TICKS
         )
     }
-
-//    fun startHealthBarPositionTask() {
-//        Bukkit.getScheduler().runTaskTimer(
-//            this, Runnable {
-//                for (world in Bukkit.getWorlds()) {
-//                    HealthScheduler.checkAndHandleHealth(world)
-//                }
-//            },
-//            0L,
-//            1L
-//        )
-//    }
 }

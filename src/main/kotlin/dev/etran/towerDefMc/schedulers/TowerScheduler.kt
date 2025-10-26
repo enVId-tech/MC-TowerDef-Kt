@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.damageEnemy
 import dev.etran.towerDefMc.utils.getClosestMobToTower
 import dev.etran.towerDefMc.utils.towerTurnToTarget
 import org.bukkit.World
@@ -24,12 +25,17 @@ object TowerScheduler {
             // Checks each instance of the global identifier and runs code accordingly
             when (towerId) {
                 "Basic_Tower_1" -> {
-                    val range = entity.persistentDataContainer.getOrDefault(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 20.0)
+                    val range = entity.persistentDataContainer.getOrDefault(
+                        TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 20.0
+                    )
                     val targetEntity = getClosestMobToTower(world, entity as Entity, range)
                     if (targetEntity != null) {
                         entity.setAI(false)
                         entity.isInvulnerable = true
                         towerTurnToTarget(entity, targetEntity)
+                        if (!targetEntity.isDead) {
+                            damageEnemy(entity, targetEntity as LivingEntity)
+                        }
                     }
                 }
             }
