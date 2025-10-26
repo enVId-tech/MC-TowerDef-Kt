@@ -14,7 +14,6 @@ object EnemyScheduler {
 
             // Only proceed if entity actually has the key
             if (!container.has(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING)) return@forEach
-            val enemyId = container.get(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING) ?: return@forEach
             entity.isCollidable = false
 
             applyEnemyMovementLogic(entity)

@@ -97,6 +97,7 @@ object CheckpointManager {
     fun clearAllCheckpoints(worlds: MutableList<World>): Boolean {
         try {
             checkpoints.clear()
+            StartpointManager.startpoints.clear()
 
             worlds.flatMap { world -> world.entities }.filterIsInstance<ArmorStand>().filter {
                 it.persistentDataContainer.has(

@@ -24,8 +24,16 @@ commands:
     description: A command to give an end point for the enemies
     usage: /<command>
 
-  clearTDallcheckpoints:
-    description: A command to clear all checkpoints and endpoints
+  clearTDallwaypoints:
+    description: A command to clear all startpoints, checkpoints and endpoints
+    usage: /<command>
+
+  clearTDalltowers:
+    description: A command to clear all existing towers
+    usage: /<command>
+
+  clearTDallenemies:
+    description: A command to remove all enemies spawned in at the moment
     usage: /<command>
 
   toggleStandVisibility:

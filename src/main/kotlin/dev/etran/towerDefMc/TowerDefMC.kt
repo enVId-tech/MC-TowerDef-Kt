@@ -1,6 +1,8 @@
 package dev.etran.towerDefMc
 
 import dev.etran.towerDefMc.commands.ClearCheckpoints
+import dev.etran.towerDefMc.commands.ClearEnemies
+import dev.etran.towerDefMc.commands.ClearTowers
 import dev.etran.towerDefMc.commands.GiveCheckpoint
 import dev.etran.towerDefMc.commands.GiveEndPoint
 import dev.etran.towerDefMc.commands.GiveEnemy
@@ -96,11 +98,13 @@ class TowerDefMC : JavaPlugin() {
         getCommand("giveTDenemy")?.setExecutor(GiveEnemy)
         getCommand("giveTDstartpoint")?.setExecutor(GiveStartPoint)
         getCommand("giveTDendpoint")?.setExecutor(GiveEndPoint)
-        getCommand("clearTDallcheckpoints")?.setExecutor(ClearCheckpoints)
+        getCommand("clearTDallwaypoints")?.setExecutor(ClearCheckpoints)
+        getCommand("clearTDalltowers")?.setExecutor(ClearTowers)
+        getCommand("clearTDallenemies")?.setExecutor(ClearEnemies)
         getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility)
 
         logger.info {
-            "Tower Defense Plugin - Game Commands Verified"
+            "Tower Defense Plugin - Game Commands Verified & Set up"
         }
 
         // Scheduler tasks

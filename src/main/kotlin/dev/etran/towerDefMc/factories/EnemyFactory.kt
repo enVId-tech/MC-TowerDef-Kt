@@ -47,6 +47,7 @@ object EnemyFactory {
         entity.setAdult()
         entity.isInvulnerable = false
         entity.fireTicks = 0
+        entity.noDamageTicks = 0
         entity.visualFire = TriState.TRUE
         entity.isPersistent = true
         entity.isSilent = true

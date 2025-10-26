@@ -26,6 +26,7 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
     val nextReadyTime = currentTime + delayMs
 
     if (!enemy.isDead) {
+        enemy.noDamageTicks = 0
         enemy.damage(
             tower.persistentDataContainer.getOrDefault(
                 TowerDefMC.TOWER_DMG,
