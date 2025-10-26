@@ -1,9 +1,16 @@
 package dev.etran.towerDefMc.utils
 
+import dev.etran.towerDefMc.managers.CheckpointManager
+import dev.etran.towerDefMc.managers.CheckpointManager.amplifier
+import dev.etran.towerDefMc.managers.CheckpointManager.duration
+import dev.etran.towerDefMc.managers.CheckpointManager.effectType
+import dev.etran.towerDefMc.managers.CheckpointManager.standsAreVisible
 import org.bukkit.Effect
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.potion.PotionEffect
 
 fun placeElement(event: PlayerInteractEvent, loggerName: String): Entity? {
     event.isCancelled = true
@@ -25,13 +32,19 @@ fun placeElement(event: PlayerInteractEvent, loggerName: String): Entity? {
     }
 
     val world = location.world
-    val entity = world.spawnEntity(location, EntityType.ARMOR_STAND)
+    val entity: ArmorStand = world.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
 
     // Add NBT data to armor stands
+    if (standsAreVisible) {
+        entity.isInvisible = false
+        entity.addPotionEffect(PotionEffect(effectType, duration, amplifier))
+    } else {
+        entity.isInvisible = true
+        entity.removePotionEffect(effectType)
+    }
     entity.isInvulnerable = true
     entity.fireTicks = 0
     entity.setGravity(false)
-    entity.isInvisible = true
 
     return entity
 }

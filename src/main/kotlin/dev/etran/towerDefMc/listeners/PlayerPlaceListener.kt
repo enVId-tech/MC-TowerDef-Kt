@@ -37,7 +37,5 @@ object PlayerPlaceListener : Listener {
 
             return
         }
-
-        event.player.sendMessage("An error has occurred when trying to place this game element.")
     }
 }
