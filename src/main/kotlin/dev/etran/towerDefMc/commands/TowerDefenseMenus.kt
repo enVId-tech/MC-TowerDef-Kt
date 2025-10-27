@@ -27,7 +27,6 @@ object TowerDefenseMenus : CommandExecutor {
         when (args[0].lowercase()) {
             "menu" -> {
                 val menu = HomeMenu(sender)
-                MenuListener.registerMenu(sender, menu)
                 menu.open()
                 return true
             }
@@ -36,7 +35,6 @@ object TowerDefenseMenus : CommandExecutor {
                 when (args[1].lowercase()) {
                     "game" -> {
                         val menu = NewGame(sender)
-                        MenuListener.registerMenu(sender, menu)
                         menu.open()
                         return true
                     }

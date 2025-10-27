@@ -20,7 +20,9 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
     abstract fun setMenuItems()
 
     fun open() {
+        player.closeInventory()
         setMenuItems() // Populate the inventory
+        MenuListener.registerMenu(player, this)
         player.openInventory(inventory)
     }
 

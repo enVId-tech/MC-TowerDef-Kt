@@ -44,7 +44,9 @@ object MenuListener : Listener {
         val player = event.whoClicked as? Player ?: return
         val currentMenu = openMenus[player.uniqueId] ?: return
 
-        currentMenu.handleGlobalClick(event)
+        if (event.clickedInventory == currentMenu.inventory) {
+            currentMenu.handleGlobalClick(event)
+        }
 
         // Prevent user from moving inventory items
         if (event.inventory == currentMenu.inventory) {

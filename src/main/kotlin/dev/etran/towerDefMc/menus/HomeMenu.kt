@@ -35,7 +35,6 @@ class HomeMenu(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Me
             10 -> {
                 val menu = NewGame(player)
                 MenuListener.registerMenu(player, menu)
-                player.closeInventory()
                 menu.open()
             }
             13 -> {
