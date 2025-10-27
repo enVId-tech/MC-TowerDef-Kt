@@ -89,8 +89,6 @@ object MenuListener : Listener {
                 )
 
                 context.itemToRename.itemMeta = meta
-
-                // Update item in inventory and reopen
                 currentMenu?.inventory?.setItem(context.sourceSlot, context.itemToRename)
 
                 awaitingRename.remove(playerUUID)

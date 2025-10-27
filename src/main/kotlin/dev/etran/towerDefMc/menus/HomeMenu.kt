@@ -1,5 +1,6 @@
 package dev.etran.towerDefMc.menus
 
+import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.utils.CustomMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -32,8 +33,10 @@ class HomeMenu(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Me
 
         when (event.slot) {
             10 -> {
-                player.performCommand("td setup game")
+                val menu = NewGame(player)
+                MenuListener.registerMenu(player, menu)
                 player.closeInventory()
+                menu.open()
             }
             13 -> {
                 player.performCommand("td modify game")

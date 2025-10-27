@@ -21,6 +21,9 @@ object TowerDefenseMenus : CommandExecutor {
             return false // Returning false shows the usage from plugin.yml
         }
 
+        /* TODO: Make more condensed system to register nested commands
+            * Preregister menus before executing them to reduce multi-line boilerplate
+            */
         when (args[0].lowercase()) {
             "menu" -> {
                 val menu = HomeMenu(sender)
@@ -28,6 +31,7 @@ object TowerDefenseMenus : CommandExecutor {
                 menu.open()
                 return true
             }
+
             "setup" -> {
                 when (args[1].lowercase()) {
                     "game" -> {
