@@ -24,7 +24,7 @@ object MenuListener : Listener {
     data class RenameContext(
         val itemToRename: ItemStack,
         val sourceSlot: Int,
-        val menuId: UUID
+        val menuInstance: CustomMenu
     )
 
     fun initialize(plugin: TowerDefMC) {
@@ -72,7 +72,7 @@ object MenuListener : Listener {
 
         object : BukkitRunnable() {
             override fun run() {
-                val currentMenu = openMenus[playerUUID]
+                val currentMenu = context.menuInstance
                 val meta = context.itemToRename.itemMeta.clone()
                 val rawName = input
 
@@ -89,7 +89,7 @@ object MenuListener : Listener {
                 )
 
                 context.itemToRename.itemMeta = meta
-                currentMenu?.inventory?.setItem(context.sourceSlot, context.itemToRename)
+                currentMenu.inventory.setItem(context.sourceSlot, context.itemToRename)
 
                 awaitingRename.remove(playerUUID)
                 player.sendMessage(
@@ -97,7 +97,7 @@ object MenuListener : Listener {
                         .append(displayNameComponent)
                 )
 
-                currentMenu?.open()
+                currentMenu.open()
             }
         }.runTask(plugin)
     }

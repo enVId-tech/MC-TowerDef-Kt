@@ -65,7 +65,7 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val context = MenuListener.RenameContext(
             itemToRename = item.clone(),
             sourceSlot = slot,
-            menuId = player.uniqueId
+            menuInstance = this
         )
 
         MenuListener.awaitingRename[player.uniqueId] = context
