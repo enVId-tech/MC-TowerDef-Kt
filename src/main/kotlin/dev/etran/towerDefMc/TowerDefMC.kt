@@ -20,6 +20,7 @@ import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import dev.etran.towerDefMc.utils.TaskUtility
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.TextDisplay
@@ -67,6 +68,13 @@ class TowerDefMC : JavaPlugin() {
         // -- Enemies --
         val HEALTH_OWNER_UUID: NamespacedKey
             get() = NamespacedKey(instance, "owner_uuid")
+
+        // -- Misc --
+        val TITLE_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "customId")
+        val RENAMABLE_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "isRenamableAttribute")
+        val MINI_MESSAGE: MiniMessage = MiniMessage.miniMessage()
     }
 
     override fun onEnable() {
@@ -80,6 +88,7 @@ class TowerDefMC : JavaPlugin() {
         // Register utils
         TaskUtility.initialize(this)
         CheckpointManager.initialize(this)
+        MenuListener.initialize(this)
 
         logger.info {
             "Tower Defense Plugin - Primary Functions Initialized"

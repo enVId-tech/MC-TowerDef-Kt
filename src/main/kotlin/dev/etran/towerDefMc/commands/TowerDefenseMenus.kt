@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.commands
 
 import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.menus.HomeMenu
+import dev.etran.towerDefMc.menus.NewGame
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes.player
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -26,6 +27,16 @@ object TowerDefenseMenus : CommandExecutor {
                 MenuListener.registerMenu(sender, menu)
                 menu.open()
                 return true
+            }
+            "setup" -> {
+                when (args[1].lowercase()) {
+                    "game" -> {
+                        val menu = NewGame(sender)
+                        MenuListener.registerMenu(sender, menu)
+                        menu.open()
+                        return true
+                    }
+                }
             }
         }
         return true

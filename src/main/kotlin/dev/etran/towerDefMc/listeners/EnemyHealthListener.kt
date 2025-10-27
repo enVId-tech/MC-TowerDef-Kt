@@ -2,16 +2,12 @@ package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.utils.updateHealthBar
-import org.bukkit.NamespacedKey
-import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.TextDisplay
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.java.JavaPlugin
 
 // A separate class that implements Listener
 object EnemyHealthListener : Listener {

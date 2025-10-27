@@ -34,25 +34,14 @@ class HomeMenu(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Me
             10 -> {
                 player.performCommand("td setup game")
                 player.closeInventory()
-                player.openInventory(player.inventory) // TODO: Replace placeholder inventory with actual inventory
             }
             13 -> {
                 player.performCommand("td modify game")
                 player.closeInventory()
-                player.openInventory(player.inventory)
             }
             16 -> {
                 player.performCommand("td delete game")
             }
         }
-    }
-
-    private fun createMenuItem(material: Material, name: String, lore: List<String>): ItemStack {
-        val item = ItemStack(material)
-        val meta = item.itemMeta
-        meta.displayName(Component.text(name))
-        meta.lore(lore.map { Component.text(it) })
-        item.itemMeta = meta
-        return item
     }
 }
