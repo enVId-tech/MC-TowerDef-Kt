@@ -71,10 +71,19 @@ class TowerDefMC : JavaPlugin() {
 
         // -- Misc --
         val TITLE_KEY: NamespacedKey
-            get() = NamespacedKey(instance, "customId")
+            get() = NamespacedKey(instance, "titleVal")
+        val LORE_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "loreVal")
         val RENAMABLE_KEY: NamespacedKey
             get() = NamespacedKey(instance, "isRenamableAttribute")
         val MINI_MESSAGE: MiniMessage = MiniMessage.miniMessage()
+        val RENAMABLE_TARGET_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "targetRenamable")
+
+        const val RENAMABLE_MARKER_VALUE = "ITEM_IS_RENAMABLE"
+        const val RENAME_MODE_KEY = "rename_mode_key"
+        const val RENAME_MODE_TITLE = "title"
+        const val RENAME_MODE_LORE = "lore"
     }
 
     override fun onEnable() {

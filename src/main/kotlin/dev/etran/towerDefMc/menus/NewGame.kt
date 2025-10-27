@@ -1,5 +1,6 @@
 package dev.etran.towerDefMc.menus
 
+import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.utils.CustomMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -12,19 +13,31 @@ class NewGame(player: Player) : CustomMenu(player, 27, "Tower Defense - New Game
     override fun setMenuItems() {
         inventory.setItem(
             10,
-            createRenamableItem(Material.REDSTONE_BLOCK, "Max Health", listOf("The default maximum game health."))
+            createRenamableItem(
+                Material.REDSTONE_BLOCK,
+                "Max Health",
+                listOf("The default maximum game health."),
+                renameLoreMode = false
+            )
         )
         inventory.setItem(
             13,
-            createRenamableItem(Material.EMERALD, "Default Starting Cash", listOf("The default starting cash."))
+            createRenamableItem(
+                Material.EMERALD,
+                "Default Starting Cash",
+                listOf("The default starting cash."),
+                renameLoreMode = false
+            )
         )
     }
 
     // Slots
     override fun handleClick(event: InventoryClickEvent) {
-        val player = event.whoClicked as Player
-
+        val player = event.whoClicked as? Player ?: return
         event.isCancelled = true
+
+        // The target item we want to rename is placed in slot 13
+        val targetItem = inventory.getItem(13) ?: return
 
         when (event.slot) {
 

@@ -24,7 +24,8 @@ object MenuListener : Listener {
     data class RenameContext(
         val itemToRename: ItemStack,
         val sourceSlot: Int,
-        val menuInstance: CustomMenu
+        val menuInstance: CustomMenu,
+        val renameMode: String
     )
 
     fun initialize(plugin: TowerDefMC) {
@@ -68,7 +69,7 @@ object MenuListener : Listener {
         if (input.equals("cancel", true)) {
             awaitingRename.remove(playerUUID)
             player.sendMessage(Component.text("Item renaming cancelled.").color(TextColor.color(0xFF0000)))
-            openMenus[playerUUID]?.open()
+            context.menuInstance.open()
             return
         }
 
@@ -79,23 +80,41 @@ object MenuListener : Listener {
                 val rawName = input
 
                 val displayNameComponent = TowerDefMC.MINI_MESSAGE.deserialize(rawName.replace("§", "&"))
-
-                meta.displayName(displayNameComponent)
-
                 val cleanName = PlainTextComponentSerializer.plainText().serialize(displayNameComponent).trim()
 
-                meta.persistentDataContainer.set(
-                    TowerDefMC.TITLE_KEY,
-                    PersistentDataType.STRING,
-                    cleanName
-                )
+                when (context.renameMode) {
+                    TowerDefMC.RENAME_MODE_TITLE -> {
+                        meta.displayName(displayNameComponent)
+                        meta.persistentDataContainer.set(
+                            TowerDefMC.TITLE_KEY,
+                            PersistentDataType.STRING,
+                            cleanName
+                        )
+                    }
+                    TowerDefMC.RENAME_MODE_LORE -> {
+                        val newLoreList = mutableListOf<Component>()
+                        newLoreList.add(displayNameComponent) // Set the first line of lore
+
+                        // Optional: If you want to replace existing lore, you'd load and modify it here.
+                        // This simple implementation replaces all lore with the new input line.
+
+                        meta.lore(newLoreList)
+
+                        // Save the raw text to PDC for retrieval during setMenuItems
+                        meta.persistentDataContainer.set(
+                            TowerDefMC.LORE_KEY,
+                            PersistentDataType.STRING,
+                            cleanName
+                        )
+                    }
+                }
 
                 context.itemToRename.itemMeta = meta
                 currentMenu.inventory.setItem(context.sourceSlot, context.itemToRename)
 
                 awaitingRename.remove(playerUUID)
                 player.sendMessage(
-                    Component.text("Item successfully renamed to: ").color(TextColor.color(0x55FF55))
+                    Component.text("Item successfully updated: ").color(TextColor.color(0x55FF55))
                         .append(displayNameComponent)
                 )
 

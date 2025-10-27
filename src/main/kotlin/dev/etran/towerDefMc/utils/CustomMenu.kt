@@ -14,7 +14,7 @@ import org.bukkit.persistence.PersistentDataType
 
 abstract class CustomMenu(val player: Player, val size: Int, val title: String) {
     val inventory: Inventory = Bukkit.createInventory(player, size, title.toComponent())
-    private val RENAMABLE = "ITEM_IS_RENAMABLE"
+    private val RENAMABLE = TowerDefMC.RENAMABLE_MARKER_VALUE
 
     // Method to create the items for the menu. Each specific menu implements this.
     abstract fun setMenuItems()
@@ -26,15 +26,39 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         player.openInventory(inventory)
     }
 
-    protected fun createRenamableItem(material: Material, name: String, lore: List<String>): ItemStack {
+    protected fun createRenamableItem(
+        material: Material,
+        defaultName: String,
+        defaultLore: List<String>,
+        renameLoreMode: Boolean = true
+    ): ItemStack {
         val item = ItemStack(material)
         val meta = item.itemMeta
 
         val pdc = meta.persistentDataContainer
         pdc.set(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING, RENAMABLE)
 
-        meta.displayName(Component.text(name))
-        meta.lore(lore.map { Component.text(it) })
+        val mode = if (renameLoreMode) TowerDefMC.RENAME_MODE_LORE else TowerDefMC.RENAME_MODE_TITLE
+        pdc.set(TowerDefMC.RENAMABLE_TARGET_KEY, PersistentDataType.STRING, mode)
+
+        // Read saved title from PDC
+        val customTitle = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
+        val nameComponent = if (customTitle != null) {
+            TowerDefMC.MINI_MESSAGE.deserialize(customTitle.replace("§", "&"))
+        } else {
+            Component.text(defaultName)
+        }
+        meta.displayName(nameComponent)
+
+        // Read saved lore from PDC
+        val customLore = pdc.get(TowerDefMC.LORE_KEY, PersistentDataType.STRING)
+        val loreComponents = if (customLore != null) {
+            listOf(TowerDefMC.MINI_MESSAGE.deserialize(customLore.replace("§", "&")))
+        } else {
+            defaultLore.map { Component.text(it) }
+        }
+        meta.lore(loreComponents)
+
         item.itemMeta = meta
         return item
     }
@@ -59,7 +83,14 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
                 pdc.get(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING).equals(RENAMABLE)
     }
 
-    fun initiateRename(item: ItemStack, slot: Int) {
+    private fun getItemRenameMode(item: ItemStack?): String? {
+        val meta = item?.itemMeta ?: return null
+        val pdc = meta.persistentDataContainer
+
+        return pdc.get(TowerDefMC.RENAMABLE_TARGET_KEY, PersistentDataType.STRING)
+    }
+
+    fun initiateRename(item: ItemStack, slot: Int, renameMode: String) {
         val player = inventory.viewers.firstOrNull() as? Player ?: return
 
         player.closeInventory()
@@ -67,15 +98,22 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val context = MenuListener.RenameContext(
             itemToRename = item.clone(),
             sourceSlot = slot,
-            menuInstance = this
+            menuInstance = this,
+            renameMode = renameMode
         )
 
         MenuListener.awaitingRename[player.uniqueId] = context
 
-        // Send prompt messages using Adventure components
+        // Adjust prompt based on mode
+        val promptText = when (renameMode) {
+            TowerDefMC.RENAME_MODE_TITLE -> "new item name"
+            TowerDefMC.RENAME_MODE_LORE -> "new item description"
+            else -> "new text"
+        }
+
         player.sendMessage(Component.text("----------------------------------").color(TextColor.color(0x00FFFF)))
-        player.sendMessage(Component.text("Enter the new name for your item. Type 'cancel' to stop.").color(TextColor.color(0x00FF00)))
-        player.sendMessage(Component.text("The first line of your message will be the new item name.").color(TextColor.color(0x808080)))
+        player.sendMessage(Component.text("Enter the $promptText. Type 'cancel' to stop.").color(TextColor.color(0x00FF00)))
+        player.sendMessage(Component.text("The first line of your message will be the $promptText.").color(TextColor.color(0x808080)))
         player.sendMessage(Component.text("----------------------------------").color(TextColor.color(0x00FFFF)))
     }
 
@@ -83,9 +121,11 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val clickedItem = event.currentItem ?: return
         val slot = event.slot
 
-        if (isItemRenamable(clickedItem)) {
+        val renameMode = getItemRenameMode(clickedItem)
+
+        if (renameMode != null) {
             event.isCancelled = true
-            initiateRename(clickedItem, slot)
+            initiateRename(clickedItem, slot, renameMode)
             return
         }
         handleClick(event)
