@@ -2,11 +2,9 @@ package dev.etran.towerDefMc.menus
 
 import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.utils.CustomMenu
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 
 class HomeMenu(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Menu") {
     // Items in each slot

@@ -1,9 +1,7 @@
 package dev.etran.towerDefMc.commands
 
-import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.menus.HomeMenu
 import dev.etran.towerDefMc.menus.NewGame
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes.player
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender

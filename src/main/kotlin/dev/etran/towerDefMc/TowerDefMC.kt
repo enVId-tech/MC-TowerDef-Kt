@@ -23,11 +23,9 @@ import dev.etran.towerDefMc.utils.TaskUtility
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
-import org.bukkit.entity.TextDisplay
 import org.bukkit.plugin.java.JavaPlugin
 
 class TowerDefMC : JavaPlugin() {
-    val CHECK_INTERVAL_TICKS: Long = 4L
 
     companion object {
         // Set by onEnable, clear in onDisable
@@ -81,9 +79,9 @@ class TowerDefMC : JavaPlugin() {
             get() = NamespacedKey(instance, "targetRenamable")
 
         const val RENAMABLE_MARKER_VALUE = "ITEM_IS_RENAMABLE"
-        const val RENAME_MODE_KEY = "rename_mode_key"
         const val RENAME_MODE_TITLE = "title"
         const val RENAME_MODE_LORE = "lore"
+        const val CHECK_INTERVAL_TICKS: Long = 4L
     }
 
     override fun onEnable() {

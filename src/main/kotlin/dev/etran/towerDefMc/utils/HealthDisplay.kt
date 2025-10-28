@@ -4,7 +4,6 @@ import dev.etran.towerDefMc.TowerDefMC
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.TextDisplay

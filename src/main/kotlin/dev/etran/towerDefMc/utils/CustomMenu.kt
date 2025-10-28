@@ -14,7 +14,10 @@ import org.bukkit.persistence.PersistentDataType
 
 abstract class CustomMenu(val player: Player, val size: Int, val title: String) {
     val inventory: Inventory = Bukkit.createInventory(player, size, title.toComponent())
-    private val RENAMABLE = TowerDefMC.RENAMABLE_MARKER_VALUE
+
+    companion object {
+        const val RENAMABLE = TowerDefMC.RENAMABLE_MARKER_VALUE
+    }
 
     // Method to create the items for the menu. Each specific menu implements this.
     abstract fun setMenuItems()

@@ -7,12 +7,10 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.java.JavaPlugin
 
 object EnemyFactory {
     fun newBasicEnemy(amount: Int = 1): ItemStack {

@@ -1,11 +1,9 @@
 package dev.etran.towerDefMc.utils
 
-import dev.etran.towerDefMc.managers.CheckpointManager
-import dev.etran.towerDefMc.managers.CheckpointManager.amplifier
-import dev.etran.towerDefMc.managers.CheckpointManager.duration
+import dev.etran.towerDefMc.managers.CheckpointManager.AMPLIFIER
+import dev.etran.towerDefMc.managers.CheckpointManager.DURATION
 import dev.etran.towerDefMc.managers.CheckpointManager.effectType
 import dev.etran.towerDefMc.managers.CheckpointManager.standsAreVisible
-import org.bukkit.Effect
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -37,7 +35,7 @@ fun placeElement(event: PlayerInteractEvent, loggerName: String): Entity? {
     // Add NBT data to armor stands
     if (standsAreVisible) {
         entity.isInvisible = false
-        entity.addPotionEffect(PotionEffect(effectType, duration, amplifier))
+        entity.addPotionEffect(PotionEffect(effectType, DURATION, AMPLIFIER))
     } else {
         entity.isInvisible = true
         entity.removePotionEffect(effectType)

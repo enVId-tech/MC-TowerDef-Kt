@@ -2,10 +2,8 @@ package dev.etran.towerDefMc.utils
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.CheckpointManager
-import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mob
-import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 fun applyEnemyMovementLogic(entity: Entity) {
@@ -13,7 +11,6 @@ fun applyEnemyMovementLogic(entity: Entity) {
     val currentTargetId =
         container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
     var targetCheckpoint = CheckpointManager.checkpoints[currentTargetId]
-    val maxCheckpointId = CheckpointManager.checkpoints.keys.lastOrNull() ?: 1
 
     // Target Switch Logic (Continuous Flow)
     if (targetCheckpoint != null) {

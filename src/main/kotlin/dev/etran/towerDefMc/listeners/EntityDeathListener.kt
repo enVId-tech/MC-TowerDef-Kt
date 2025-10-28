@@ -3,9 +3,7 @@ package dev.etran.towerDefMc.listeners
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.utils.cleanUpEnemyHealthBar
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.TextDisplay
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent

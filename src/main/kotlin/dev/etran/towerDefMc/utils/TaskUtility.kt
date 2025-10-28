@@ -19,7 +19,7 @@ object TaskUtility {
 
     private lateinit var plugin: JavaPlugin
 
-    /** * Initializes the TaskUtility object with the necessaryt plugin instance
+    /** * Initializes the TaskUtility object with the necessary plugin instance
      * for running Bukkit scheduler tasks.
      */
     fun initialize(pluginInstance: JavaPlugin) {

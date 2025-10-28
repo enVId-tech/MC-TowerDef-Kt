@@ -6,7 +6,6 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
@@ -21,8 +20,8 @@ object CheckpointManager {
     var checkpoints: SortedMap<Int, ArmorStand> = TreeMap<Int, ArmorStand>()
     var standsAreVisible: Boolean = true
     val effectType = PotionEffectType.GLOWING
-    val duration = Int.MAX_VALUE
-    val amplifier = 255
+    const val DURATION = Int.MAX_VALUE
+    const val AMPLIFIER = 255
 
     private lateinit var plugin: Plugin
 
@@ -141,7 +140,7 @@ object CheckpointManager {
                 }.forEach { entity ->
                     if (standsAreVisible) {
                         entity.isInvisible = false
-                        entity.addPotionEffect(PotionEffect(effectType, duration, amplifier))
+                        entity.addPotionEffect(PotionEffect(effectType, DURATION, AMPLIFIER))
                     } else {
                         entity.isInvisible = true
                         entity.removePotionEffect(effectType)
