@@ -21,10 +21,10 @@ class NewGame(player: Player) : CustomMenu(player, 27, "Tower Defense - New Game
             13,
             createRenamableItem(
                 Material.EMERALD,
-                "Default Starting Cash: {VALUE}",
+                "Default Starting Cash: \${VALUE}",
                 listOf(
                     "The default starting cash.",
-                    "Current starting cash: {VALUE}"
+                    "Current starting cash: \${VALUE}"
                 ),
                 "200"
             )

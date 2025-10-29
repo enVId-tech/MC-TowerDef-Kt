@@ -47,8 +47,7 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
 
         val pdc = meta.persistentDataContainer
 
-        val usesValuePlaceholder = defaultLore.any { it.contains("{VALUE}") || it.contains("\${VALUE}") } ||
-                defaultName.contains("{VALUE}") || defaultName.contains("\${VALUE}")
+        val usesValuePlaceholder = defaultLore.any { it.contains("{VALUE}") || defaultName.contains("{VALUE}") }
 
         if (usesValuePlaceholder) {
             pdc.set(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING, RENAMABLE)
@@ -59,7 +58,12 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
 
         val customValue = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
 
-        val dynamicValueSource = customValue ?: placeholderCustomVal
+        var dynamicValueSource = customValue
+
+        if (dynamicValueSource == null) {
+            dynamicValueSource = placeholderCustomVal
+            pdc.set(TowerDefMC.TITLE_KEY, PersistentDataType.STRING, dynamicValueSource)
+        }
 
         val titleTemplate = customValue ?: defaultName
 

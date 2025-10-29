@@ -93,7 +93,6 @@ object MenuListener : Listener {
 
                 // Inject the new value (cleanName) into the reconstructed title template
                 val newProcessedTitle = titleTemplate.replace("{VALUE}", cleanName)
-                    .replace("\${VALUE}", cleanName)
 
                 val finalTitleComponent = TowerDefMC.MINI_MESSAGE.deserialize(newProcessedTitle.replace("§", "&"))
 
@@ -116,7 +115,6 @@ object MenuListener : Listener {
 
                     for (rawTemplateLine in rawLoreTemplates) {
                         val newProcessedLore = rawTemplateLine.replace("{VALUE}", cleanName)
-                            .replace("\${VALUE}", cleanName)
 
                         updatedLoreList.add(TowerDefMC.MINI_MESSAGE.deserialize(newProcessedLore.replace("§", "&")))
                     }
