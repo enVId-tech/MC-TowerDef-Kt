@@ -14,6 +14,7 @@ import org.bukkit.persistence.PersistentDataType
 
 abstract class CustomMenu(val player: Player, val size: Int, val title: String) {
     val inventory: Inventory = Bukkit.createInventory(player, size, title.toComponent())
+    private var isInitialized = false
 
     companion object {
         const val RENAMABLE = TowerDefMC.RENAMABLE_MARKER_VALUE
@@ -22,9 +23,15 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
     // Method to create the items for the menu. Each specific menu implements this.
     abstract fun setMenuItems()
 
+
     fun open() {
         player.closeInventory()
-        setMenuItems() // Populate the inventory
+
+        if (!isInitialized) {
+            setMenuItems() // Populate the inventory
+            isInitialized = true
+        }
+
         MenuListener.registerMenu(player, this)
         player.openInventory(inventory)
     }
@@ -33,35 +40,42 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         material: Material,
         defaultName: String,
         defaultLore: List<String>,
-        renameLoreMode: Boolean = true
+        placeholderCustomVal: String,
     ): ItemStack {
         val item = ItemStack(material)
         val meta = item.itemMeta
 
         val pdc = meta.persistentDataContainer
-        pdc.set(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING, RENAMABLE)
 
-        val mode = if (renameLoreMode) TowerDefMC.RENAME_MODE_LORE else TowerDefMC.RENAME_MODE_TITLE
-        pdc.set(TowerDefMC.RENAMABLE_TARGET_KEY, PersistentDataType.STRING, mode)
+        val usesValuePlaceholder = defaultLore.any { it.contains("{VALUE}") || it.contains("\${VALUE}") } ||
+                defaultName.contains("{VALUE}") || defaultName.contains("\${VALUE}")
 
-        // Read saved title from PDC
-        val customTitle = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
-        val nameComponent = if (customTitle != null) {
-            TowerDefMC.MINI_MESSAGE.deserialize(customTitle.replace("§", "&"))
-        } else {
-            Component.text(defaultName)
+        if (usesValuePlaceholder) {
+            pdc.set(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING, RENAMABLE)
         }
+
+        val customValue = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
+
+        val dynamicValueSource = customValue ?: placeholderCustomVal
+
+        val titleTemplate = customValue ?: defaultName
+
+        val processedTitle = titleTemplate.replace("{VALUE}", dynamicValueSource)
+            .replace("\${VALUE}", dynamicValueSource)
+
+        val nameComponent = TowerDefMC.MINI_MESSAGE.deserialize(processedTitle.replace("§", "&"))
         meta.displayName(nameComponent)
 
-        // Read saved lore from PDC
-        val customLore = pdc.get(TowerDefMC.LORE_KEY, PersistentDataType.STRING)
-        val loreComponents = if (customLore != null) {
-            listOf(TowerDefMC.MINI_MESSAGE.deserialize(customLore.replace("§", "&")))
-        } else {
-            defaultLore.map { Component.text(it) }
-        }
-        meta.lore(loreComponents)
+        val finalLoreComponents = mutableListOf<Component>()
 
+        for (rawLine in defaultLore) {
+            val processedLine = rawLine.replace("{VALUE}", dynamicValueSource)
+                .replace("\${VALUE}", dynamicValueSource)
+
+            finalLoreComponents.add(TowerDefMC.MINI_MESSAGE.deserialize(processedLine.replace("§", "&")))
+        }
+
+        meta.lore(finalLoreComponents)
         item.itemMeta = meta
         return item
     }
@@ -86,14 +100,7 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
                 pdc.get(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING).equals(RENAMABLE)
     }
 
-    private fun getItemRenameMode(item: ItemStack?): String? {
-        val meta = item?.itemMeta ?: return null
-        val pdc = meta.persistentDataContainer
-
-        return pdc.get(TowerDefMC.RENAMABLE_TARGET_KEY, PersistentDataType.STRING)
-    }
-
-    fun initiateRename(item: ItemStack, slot: Int, renameMode: String) {
+    fun initiateRename(item: ItemStack, slot: Int) {
         val player = inventory.viewers.firstOrNull() as? Player ?: return
 
         player.closeInventory()
@@ -101,18 +108,13 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val context = MenuListener.RenameContext(
             itemToRename = item.clone(),
             sourceSlot = slot,
-            menuInstance = this,
-            renameMode = renameMode
+            menuInstance = this
         )
 
         MenuListener.awaitingRename[player.uniqueId] = context
 
-        // Adjust prompt based on mode
-        val promptText = when (renameMode) {
-            TowerDefMC.RENAME_MODE_TITLE -> "new item name"
-            TowerDefMC.RENAME_MODE_LORE -> "new item description"
-            else -> "new text"
-        }
+        // Prompt is always for the new value
+        val promptText = "new value"
 
         player.sendMessage(Component.text("----------------------------------").color(TextColor.color(0x00FFFF)))
         player.sendMessage(Component.text("Enter the $promptText. Type 'cancel' to stop.").color(TextColor.color(0x00FF00)))
@@ -124,11 +126,9 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val clickedItem = event.currentItem ?: return
         val slot = event.slot
 
-        val renameMode = getItemRenameMode(clickedItem)
-
-        if (renameMode != null) {
+        if (isItemRenamable(clickedItem)) {
             event.isCancelled = true
-            initiateRename(clickedItem, slot, renameMode)
+            initiateRename(clickedItem, slot) // Call without mode
             return
         }
         handleClick(event)

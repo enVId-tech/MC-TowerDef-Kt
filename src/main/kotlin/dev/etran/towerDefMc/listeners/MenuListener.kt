@@ -24,8 +24,7 @@ object MenuListener : Listener {
     data class RenameContext(
         val itemToRename: ItemStack,
         val sourceSlot: Int,
-        val menuInstance: CustomMenu,
-        val renameMode: String
+        val menuInstance: CustomMenu
     )
 
     fun initialize(plugin: TowerDefMC) {
@@ -82,33 +81,48 @@ object MenuListener : Listener {
                 val displayNameComponent = TowerDefMC.MINI_MESSAGE.deserialize(rawName.replace("§", "&"))
                 val cleanName = PlainTextComponentSerializer.plainText().serialize(displayNameComponent).trim()
 
-                when (context.renameMode) {
-                    TowerDefMC.RENAME_MODE_TITLE -> {
-                        meta.displayName(displayNameComponent)
-                        meta.persistentDataContainer.set(
-                            TowerDefMC.TITLE_KEY,
-                            PersistentDataType.STRING,
-                            cleanName
-                        )
-                    }
-                    TowerDefMC.RENAME_MODE_LORE -> {
-                        val newLoreList = mutableListOf<Component>()
-                        newLoreList.add(displayNameComponent) // Set the first line of lore
+                // Title update code
+                val currentTitleComponent = meta.displayName() ?: Component.text("")
+                var titleTemplate = PlainTextComponentSerializer.plainText().serialize(currentTitleComponent)
 
-                        // Optional: If you want to replace existing lore, you'd load and modify it here.
-                        // This simple implementation replaces all lore with the new input line.
-
-                        meta.lore(newLoreList)
-
-                        // Save the raw text to PDC for retrieval during setMenuItems
-                        meta.persistentDataContainer.set(
-                            TowerDefMC.LORE_KEY,
-                            PersistentDataType.STRING,
-                            cleanName
-                        )
-                    }
+                titleTemplate = if (titleTemplate.contains(":")) {
+                    titleTemplate.substringBeforeLast(":").trim() + ": {VALUE}"
+                } else {
+                    "{VALUE}"
                 }
 
+                // Inject the new value (cleanName) into the reconstructed title template
+                val newProcessedTitle = titleTemplate.replace("{VALUE}", cleanName)
+                    .replace("\${VALUE}", cleanName)
+
+                val finalTitleComponent = TowerDefMC.MINI_MESSAGE.deserialize(newProcessedTitle.replace("§", "&"))
+
+                // Update Title Meta and PDC (Still saving only the VALUE to PDC)
+                meta.displayName(finalTitleComponent)
+                meta.persistentDataContainer.set(
+                    TowerDefMC.TITLE_KEY,
+                    PersistentDataType.STRING,
+                    cleanName
+                )
+
+                // Lore update code
+                val currentLoreList = meta.lore() // Get the current list of Component lore
+
+                if (currentLoreList != null) {
+                    val updatedLoreList = mutableListOf<Component>()
+
+                    for (loreComponent in currentLoreList) {
+                        val rawLoreLine = PlainTextComponentSerializer.plainText().serialize(loreComponent)
+
+                        val newProcessedLore = rawLoreLine.replace("{VALUE}", cleanName)
+                            .replace("\${VALUE}", cleanName)
+
+                        updatedLoreList.add(TowerDefMC.MINI_MESSAGE.deserialize(newProcessedLore.replace("§", "&")))
+                    }
+                    meta.lore(updatedLoreList)
+                }
+
+                // Finish updating lore and title
                 context.itemToRename.itemMeta = meta
                 currentMenu.inventory.setItem(context.sourceSlot, context.itemToRename)
 

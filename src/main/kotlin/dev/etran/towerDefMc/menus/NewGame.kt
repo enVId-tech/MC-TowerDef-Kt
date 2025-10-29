@@ -14,16 +14,19 @@ class NewGame(player: Player) : CustomMenu(player, 27, "Tower Defense - New Game
                 Material.REDSTONE_BLOCK,
                 "Max Health",
                 listOf("The default maximum game health."),
-                renameLoreMode = false
+                "100"
             )
         )
         inventory.setItem(
             13,
             createRenamableItem(
                 Material.EMERALD,
-                "Default Starting Cash",
-                listOf("The default starting cash."),
-                renameLoreMode = false
+                "Default Starting Cash: {VALUE}",
+                listOf(
+                    "The default starting cash.",
+                    "Current starting cash: {VALUE}"
+                ),
+                "200"
             )
         )
     }
