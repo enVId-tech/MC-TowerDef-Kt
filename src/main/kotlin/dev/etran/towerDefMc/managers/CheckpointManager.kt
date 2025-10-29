@@ -16,20 +16,21 @@ import java.util.SortedMap
 import java.util.TreeMap
 import kotlin.collections.mapOf
 
-object CheckpointManager {
+class CheckpointManager() {
     var checkpoints: SortedMap<Int, ArmorStand> = TreeMap<Int, ArmorStand>()
     var standsAreVisible: Boolean = true
     val effectType = PotionEffectType.GLOWING
-    const val DURATION = Int.MAX_VALUE
-    const val AMPLIFIER = 255
 
-    private lateinit var plugin: Plugin
 
-    /**
-     * Sets plugin reference
-     */
-    fun initialize(pluginInstance: TowerDefMC) {
-        plugin = pluginInstance
+
+    companion object {
+        const val DURATION = Int.MAX_VALUE
+        const val AMPLIFIER = 255
+        lateinit var plugin: Plugin
+    }
+
+    constructor(plugin: TowerDefMC) : this() {
+        CheckpointManager.plugin = plugin
     }
 
     /**
@@ -113,7 +114,7 @@ object CheckpointManager {
     fun clearAllCheckpoints(worlds: MutableList<World>): Boolean {
         try {
             checkpoints.clear()
-            StartpointManager.startpoints.clear()
+            StartpointManager().startpoints.clear()
             saveCheckpoints()
 
             worlds.flatMap { world -> world.entities }.filterIsInstance<ArmorStand>().filter {

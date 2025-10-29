@@ -17,6 +17,7 @@ import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.managers.CheckpointManager
+import dev.etran.towerDefMc.managers.GameManager
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import dev.etran.towerDefMc.utils.TaskUtility
@@ -26,7 +27,11 @@ import org.bukkit.NamespacedKey
 import org.bukkit.plugin.java.JavaPlugin
 
 class TowerDefMC : JavaPlugin() {
-
+    /* TODO: Set up managers such that managers are
+        * ready to be separate instances for each
+        * game, and not singleton objects for the
+        * entire Minecraft server
+        */
     companion object {
         // Set by onEnable, clear in onDisable
         lateinit var instance: TowerDefMC
@@ -90,8 +95,9 @@ class TowerDefMC : JavaPlugin() {
 
         // Register utils
         TaskUtility.initialize(this)
-        CheckpointManager.initialize(this)
+        CheckpointManager(this)
         MenuListener.initialize(this)
+        GameManager(this)
 
         logger.info {
             "Tower Defense Plugin - Primary Functions Initialized"
@@ -134,14 +140,6 @@ class TowerDefMC : JavaPlugin() {
             "Tower Defense Plugin - Scheduler Tasks Started"
         }
 
-        // Load configuration
-        CheckpointManager.checkpoints.clear()
-        CheckpointManager.loadCheckpoints()
-
-        logger.info {
-            "Tower Defense Plugin - File configuration loaded"
-        }
-
         logger.info {
             "Tower Defense Plugin - Initialization Process Complete!"
         }
@@ -153,7 +151,7 @@ class TowerDefMC : JavaPlugin() {
             "Tower Defense Plugin - File configuration saved"
         }
 
-        CheckpointManager.saveCheckpoints()
+        CheckpointManager().saveCheckpoints()
 
         logger.info {
             "Tower Defense Plugin - Shut down all tasks"

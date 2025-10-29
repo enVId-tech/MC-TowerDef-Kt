@@ -7,8 +7,8 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.SortedMap
 import java.util.TreeMap
 
-object StartpointManager {
-    var startpoints: SortedMap<Int, Entity> = TreeMap<Int, Entity>()
+class StartpointManager {
+    var startpoints: SortedMap<Int, Entity> = TreeMap()
 
     /**
      * @param entity The armor stand entity to insert

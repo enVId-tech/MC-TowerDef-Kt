@@ -1,11 +1,12 @@
 package dev.etran.towerDefMc.menus
 
+import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class NewGame(player: Player) : CustomMenu(player, 27, "Tower Defense - New Game") {
+class NewGame(player: Player) : CustomMenu(player, 36, "Tower Defense - New Game") {
     // Items in each slot
     override fun setMenuItems() {
         inventory.setItem(
@@ -17,6 +18,7 @@ class NewGame(player: Player) : CustomMenu(player, 27, "Tower Defense - New Game
                 "100"
             )
         )
+
         inventory.setItem(
             13,
             createRenamableItem(
@@ -29,18 +31,48 @@ class NewGame(player: Player) : CustomMenu(player, 27, "Tower Defense - New Game
                 "200"
             )
         )
+
+        inventory.setItem(
+            16,
+            createRenamableItem(
+                Material.OAK_SIGN,
+                "Game Name: {VALUE}",
+                listOf("Your saved game name"),
+                "Game"
+            )
+        )
+
+        inventory.setItem(
+            34,
+            createMenuItem(
+                Material.REDSTONE_BLOCK,
+                "Cancel",
+                listOf(
+                    "Cancels the current configuration",
+                    "WARNING: The current configuration will be LOST!"
+                    )
+            )
+        )
+
+        inventory.setItem(
+            35,
+            createMenuItem(
+                Material.EMERALD_BLOCK,
+                "Save",
+                listOf(
+                    "Saves the current configuration",
+                    "NOTE: You can adjust waves in the Modify Game menu."
+                )
+            )
+        )
     }
 
     // Slots
     override fun handleClick(event: InventoryClickEvent) {
-        val player = event.whoClicked as? Player ?: return
         event.isCancelled = true
 
-        // The target item we want to rename is placed in slot 13
-        val targetItem = inventory.getItem(13) ?: return
-
         when (event.slot) {
-
+            35 -> GameFactory.createGame(this)
         }
     }
 }
