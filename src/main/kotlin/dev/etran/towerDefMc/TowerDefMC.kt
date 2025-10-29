@@ -72,6 +72,8 @@ class TowerDefMC : JavaPlugin() {
             get() = NamespacedKey(instance, "titleVal")
         val RENAMABLE_KEY: NamespacedKey
             get() = NamespacedKey(instance, "isRenamableAttribute")
+        val LORE_TEMPLATE_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "loreTemplate")
         val MINI_MESSAGE: MiniMessage = MiniMessage.miniMessage()
 
         const val RENAMABLE_MARKER_VALUE = "ITEM_IS_RENAMABLE"

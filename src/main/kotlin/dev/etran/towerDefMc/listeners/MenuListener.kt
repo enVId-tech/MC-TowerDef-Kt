@@ -106,19 +106,21 @@ object MenuListener : Listener {
                 )
 
                 // Lore update code
-                val currentLoreList = meta.lore() // Get the current list of Component lore
+                val loreTemplateString = meta.persistentDataContainer.get(TowerDefMC.LORE_TEMPLATE_KEY, PersistentDataType.STRING)
 
-                if (currentLoreList != null) {
+                if (loreTemplateString != null) {
                     val updatedLoreList = mutableListOf<Component>()
 
-                    for (loreComponent in currentLoreList) {
-                        val rawLoreLine = PlainTextComponentSerializer.plainText().serialize(loreComponent)
+                    // Split the saved template string back into individual lines
+                    val rawLoreTemplates = loreTemplateString.split("|||")
 
-                        val newProcessedLore = rawLoreLine.replace("{VALUE}", cleanName)
+                    for (rawTemplateLine in rawLoreTemplates) {
+                        val newProcessedLore = rawTemplateLine.replace("{VALUE}", cleanName)
                             .replace("\${VALUE}", cleanName)
 
                         updatedLoreList.add(TowerDefMC.MINI_MESSAGE.deserialize(newProcessedLore.replace("§", "&")))
                     }
+
                     meta.lore(updatedLoreList)
                 }
 

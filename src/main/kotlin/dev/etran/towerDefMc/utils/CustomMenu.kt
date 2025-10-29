@@ -52,6 +52,9 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
 
         if (usesValuePlaceholder) {
             pdc.set(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING, RENAMABLE)
+
+            val loreTemplateString = defaultLore.joinToString("|||")
+            pdc.set(TowerDefMC.LORE_TEMPLATE_KEY, PersistentDataType.STRING, loreTemplateString)
         }
 
         val customValue = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
