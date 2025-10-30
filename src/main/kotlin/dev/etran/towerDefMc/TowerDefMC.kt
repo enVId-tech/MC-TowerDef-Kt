@@ -10,6 +10,7 @@ import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.commands.ToggleStandVisibility
 import dev.etran.towerDefMc.commands.TowerDefenseMenus
+import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
@@ -17,7 +18,7 @@ import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.managers.CheckpointManager
-import dev.etran.towerDefMc.managers.GameManager
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import dev.etran.towerDefMc.utils.TaskUtility
@@ -97,7 +98,8 @@ class TowerDefMC : JavaPlugin() {
         TaskUtility.initialize(this)
         CheckpointManager(this)
         MenuListener.initialize(this)
-        GameManager(this)
+        GameFactory.initialize(this)
+        GameRegistry.initialize(this)
 
         logger.info {
             "Tower Defense Plugin - Primary Functions Initialized"

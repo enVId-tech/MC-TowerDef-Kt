@@ -4,6 +4,7 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.utils.createHealthBar
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
@@ -60,5 +61,29 @@ object EnemyFactory {
         if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
+    }
+
+    fun enemyPlace(location: Location) { // Add entity type later on as an argument
+        val world = location.world
+        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
+
+        val scale = entity.getAttribute(Attribute.SCALE)
+
+        // Base value is a multiplier from the normal value, 2 is double size
+        if (scale != null) scale.baseValue = 1.5
+        entity.setAI(false)
+        entity.setAdult()
+        entity.isInvulnerable = false
+        entity.fireTicks = 0
+        entity.noDamageTicks = 0
+        entity.visualFire = TriState.TRUE
+        entity.isPersistent = true
+        entity.isSilent = true
+        entity.isCollidable = false
+        entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy")
+        entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, "Basic_Enemy_1")
+        entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
+
+        createHealthBar(entity)
     }
 }

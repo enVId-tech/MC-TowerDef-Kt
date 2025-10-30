@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.menus
 
 import dev.etran.towerDefMc.factories.GameFactory
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player

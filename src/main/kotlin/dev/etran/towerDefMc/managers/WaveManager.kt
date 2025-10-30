@@ -1,13 +1,15 @@
 package dev.etran.towerDefMc.managers
 
 class WaveManager {
+    private var currentWave = 0
+    private var enemiesRemaining = 0
+    private var timeRemaining = 0
 
-
-    fun add() {
-
+    fun checkWaveCompletion(): Boolean {
+        return enemiesRemaining <= 0 || timeRemaining <= 0
     }
 
-    fun remove() {
-
+    fun startNextWave() {
+        currentWave++
     }
 }
