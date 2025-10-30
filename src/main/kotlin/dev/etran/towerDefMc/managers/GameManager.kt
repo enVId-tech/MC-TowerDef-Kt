@@ -5,7 +5,8 @@ import dev.etran.towerDefMc.utils.GameSaveConfig
 import org.bukkit.plugin.Plugin
 
 class GameManager(
-    private val gameConfig: GameSaveConfig
+    private val gameId: Int,
+    val gameConfig: GameSaveConfig
 ) {
 
 }

@@ -87,12 +87,12 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         return item
     }
 
-    protected fun createMenuItem(material: Material, name: String, lore: List<String>): ItemStack {
+    protected fun createMenuItem(material: Material, name: String, lore: List<String>? = listOf("")): ItemStack {
         val item = ItemStack(material)
         val meta = item.itemMeta
 
         meta.displayName(Component.text(name))
-        meta.lore(lore.map { Component.text(it) })
+        meta.lore(lore?.map { Component.text(it) })
         item.itemMeta = meta
 
         return item

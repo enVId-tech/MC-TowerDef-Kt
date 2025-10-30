@@ -2,7 +2,6 @@ package dev.etran.towerDefMc.factories
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.GameManager
-import dev.etran.towerDefMc.managers.WaveManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import dev.etran.towerDefMc.utils.GameSaveConfig
@@ -84,7 +83,7 @@ object GameFactory {
             plugin.logger.severe("Failed to save new game configuration for ID $gameId: ${e.message}")
         }
 
-        val newGame = GameManager(gameConfigurationData)
+        val newGame = GameManager(gameId, gameConfigurationData)
         GameRegistry.addGame(newGame)
         return newGame
     }

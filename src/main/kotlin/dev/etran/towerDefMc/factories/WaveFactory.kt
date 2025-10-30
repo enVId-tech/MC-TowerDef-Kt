@@ -4,6 +4,4 @@ object WaveFactory {
     fun generateWave(waveNumber: Int) {
 
     }
-
-    fun getSpawnInterval()
 }
