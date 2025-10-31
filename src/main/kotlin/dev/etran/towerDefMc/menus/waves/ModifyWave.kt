@@ -39,15 +39,6 @@ class ModifyWave(
             maxTime = existingWave.maxTime
             waveHealth = existingWave.waveHealth
             cashGiven = existingWave.cashGiven
-        } else if (isNewWave) {
-            // Auto-generate wave using WaveFactory
-            val generatedWave = dev.etran.towerDefMc.factories.WaveFactory.generateWave(waveNum)
-            waveName = generatedWave.name
-            waveSequence.addAll(generatedWave.sequence)
-            minTime = generatedWave.minTime
-            maxTime = generatedWave.maxTime
-            waveHealth = generatedWave.waveHealth
-            cashGiven = generatedWave.cashGiven
         }
     }
 
@@ -209,14 +200,21 @@ class ModifyWave(
 
     private fun handleAddEnemies() {
         player.closeInventory()
-        val enemiesMenu = EnemiesSelection(player) { enemies, interval ->
-            // Callback from EnemiesSelection
-            waveSequence.add(EnemySpawnCommand(enemies, interval))
-            player.sendMessage("§aAdded enemy spawn command with ${enemies.values.sum()} enemies")
-            this.open()
-        }
+        val enemiesMenu = EnemiesSelection(
+            player,
+            { enemies, interval ->
+                // Callback from EnemiesSelection
+                waveSequence.add(EnemySpawnCommand(enemies, interval))
+                player.sendMessage("§aAdded enemy spawn command with ${enemies.values.sum()} enemies")
+                this.open()
+            },
+            waveNum,
+            gameId,
+            gameConfig
+        )
         enemiesMenu.open()
     }
+
 
     private fun handleRemoveEnemies() {
         val lastEnemyIndex = waveSequence.indexOfLast { it is EnemySpawnCommand }

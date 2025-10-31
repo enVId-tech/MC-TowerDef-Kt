@@ -1,6 +1,8 @@
 package dev.etran.towerDefMc.menus.waves
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.data.GameSaveConfig
+import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
@@ -9,7 +11,11 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.persistence.PersistentDataType
 
 class EnemiesSelection(
-    player: Player, private val onConfirm: (Map<String, Int>, Double) -> Unit
+    player: Player,
+    private val onConfirm: (Map<String, Int>, Double) -> Unit,
+    val waveNum: Int,
+    val gameId: Int,
+    val gameConfig: GameSaveConfig
 ) : CustomMenu(player, 54, "Tower Defense - Add Enemies") {
 
     private var currentPage: Int = 0
@@ -119,15 +125,21 @@ class EnemiesSelection(
 
         // Open number selector menu
         player.closeInventory()
-        val numberSelector = NumberSelector(player, enemy.displayName) { amount ->
-            if (amount > 0) {
-                selectedEnemies[enemy.id] = amount
-            } else {
-                selectedEnemies.remove(enemy.id)
-            }
-            // Reopen this menu
-            this.open()
-        }
+        val numberSelector = NumberSelector(
+            player, enemy.displayName,
+            { amount ->
+                if (amount > 0) {
+                    selectedEnemies[enemy.id] = amount
+                } else {
+                    selectedEnemies.remove(enemy.id)
+                }
+                // Reopen this menu
+                this.open()
+            },
+            gameId,
+            waveNum,
+            gameConfig,
+        )
         numberSelector.open()
     }
 
@@ -180,7 +192,12 @@ class EnemiesSelection(
 
     // Simple number selector menu
     private class NumberSelector(
-        player: Player, @Suppress("unused") private val itemName: String, private val onSelect: (Int) -> Unit
+        player: Player,
+        @Suppress("unused") private val itemName: String,
+        private val onSelect: (Int) -> Unit,
+        private val waveNum: Int,
+        private val gameId: Int,
+        private val config: GameSaveConfig
     ) : CustomMenu(player, 27, "Select Amount - $itemName") {
 
         override fun setMenuItems() {
@@ -215,29 +232,31 @@ class EnemiesSelection(
         override fun handleClick(event: InventoryClickEvent) {
             event.isCancelled = true
 
+            val menu = ModifyWave(player, waveNum, gameId = gameId, gameConfig = config)
+
             when (event.slot) {
                 10 -> {
-                    onSelect(1); player.closeInventory()
+                    onSelect(1); menu.open()
                 }
 
                 11 -> {
-                    onSelect(5); player.closeInventory()
+                    onSelect(5); menu.open()
                 }
 
                 12 -> {
-                    onSelect(10); player.closeInventory()
+                    onSelect(10); menu.open()
                 }
 
                 13 -> {
-                    onSelect(25); player.closeInventory()
+                    onSelect(25); menu.open()
                 }
 
                 14 -> {
-                    onSelect(50); player.closeInventory()
+                    onSelect(50); menu.open()
                 }
 
                 15 -> {
-                    onSelect(100); player.closeInventory()
+                    onSelect(100); menu.open()
                 }
 
                 18 -> {
