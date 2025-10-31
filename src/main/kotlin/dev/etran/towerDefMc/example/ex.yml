@@ -1,0 +1,12 @@
+game-data:
+  waves:
+    - name: First Blood
+      sequence:
+        - enemies:
+            zombie: 5
+          intervalSeconds: 0.5
+        - waitSeconds: 5.0
+        - enemies:
+            skeleton: 3
+            zombie: 2
+          intervalSeconds: 1.0

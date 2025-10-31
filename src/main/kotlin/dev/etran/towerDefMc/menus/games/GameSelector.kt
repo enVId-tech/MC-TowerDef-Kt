@@ -9,57 +9,49 @@ import org.bukkit.event.inventory.InventoryClickEvent
 
 class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Modify Games") {
     var currentMenuOpen = 0
-    lateinit var gamesList: List<GameManager>
+    lateinit var gamesList: Map<Int, GameManager>
 
     // Items in each slot
     override fun setMenuItems() {
         gamesList = GameRegistry.allGames
 
-        if (gamesList.size >= 54) {
+        if (gamesList.values.size >= 54) {
             for (i in 0 + (currentMenuOpen * 36)..35 + (currentMenuOpen * 36)) {
                 inventory.setItem(
-                    i,
-                    createMenuItem(
-                        Material.BOW,
-                        "",
-                        listOf()
+                    i, createMenuItem(
+                        Material.BOW, "", listOf()
                     )
                 )
             }
 
             for (i in 36..44) {
                 inventory.setItem(
-                    i,
-                    createMenuItem(
-                        Material.GRAY_STAINED_GLASS_PANE,
-                        ""
+                    i, createMenuItem(
+                        Material.GRAY_STAINED_GLASS_PANE, ""
                     )
                 )
             }
 
-            inventory.setItem(
-                45,
-                createMenuItem(
-                    Material.RED_CONCRETE,
-                    "Back Page"
+            if (currentMenuOpen > 0) {
+                inventory.setItem(
+                    45, createMenuItem(
+                        Material.RED_CONCRETE, "Back Page"
+                    )
                 )
-            )
+            }
 
-            inventory.setItem(
-                53,
-                createMenuItem(
-                    Material.GREEN_CONCRETE,
-                    "Next Page"
+            if (currentMenuOpen < (gamesList.values.size / 36)) {
+                inventory.setItem(
+                    53, createMenuItem(
+                        Material.GREEN_CONCRETE, "Next Page"
+                    )
                 )
-            )
+            }
         } else {
             for (i in 0..53) {
                 inventory.setItem(
-                    i,
-                    createMenuItem(
-                        Material.BOW,
-                        "",
-                        listOf()
+                    i, createMenuItem(
+                        Material.BOW, "", listOf()
                     )
                 )
             }

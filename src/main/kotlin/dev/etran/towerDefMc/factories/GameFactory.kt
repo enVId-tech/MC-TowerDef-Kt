@@ -4,7 +4,7 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.GameManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
-import dev.etran.towerDefMc.utils.GameSaveConfig
+import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.utils.getRenamableItemIntValue
 import dev.etran.towerDefMc.utils.getRenamableItemValue
 import org.bukkit.configuration.file.YamlConfiguration

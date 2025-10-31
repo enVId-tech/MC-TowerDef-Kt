@@ -1,9 +1,32 @@
 package dev.etran.towerDefMc.managers
 
-class WaveManager {
+import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.data.EnemySpawnCommand
+import dev.etran.towerDefMc.data.GameSaveConfig
+import dev.etran.towerDefMc.data.WaitCommand
+import dev.etran.towerDefMc.data.WaveData
+import dev.etran.towerDefMc.factories.EnemyFactory
+import org.bukkit.Location
+import org.bukkit.scheduler.BukkitRunnable
+
+class WaveManager(
+    private val gameConfig: GameSaveConfig,
+    private val startpoints: StartpointManager
+) {
+    private var currentWaveData: WaveData? = null
+    private var commandIndex = -1
     private var currentWave = 0
     private var enemiesRemaining = 0
-    private var timeRemaining = 0
+    private var timeRemaining = 0.0
+
+
+    companion object {
+        private lateinit var plugin: TowerDefMC
+
+        fun initialize(plugin: TowerDefMC) {
+            this.plugin = plugin
+        }
+    }
 
     fun checkWaveCompletion(): Boolean {
         return enemiesRemaining <= 0 || timeRemaining <= 0
@@ -11,5 +34,84 @@ class WaveManager {
 
     fun startNextWave() {
         currentWave++
+        val waveIndex = currentWave - 1
+
+        if (waveIndex >= 0 && waveIndex < gameConfig.waves.size) {
+            val waveDetails: WaveData = gameConfig.waves[waveIndex]
+
+            currentWaveData = waveDetails
+
+            timeRemaining = 0.0
+            enemiesRemaining = waveDetails.sequence.sumOf {
+                if (it is EnemySpawnCommand) it.enemies.values.sum() else 0
+            }
+
+            println("--- Starting Wave $currentWave: ${waveDetails.name} ---")
+            println("Total Enemies to spawn: $enemiesRemaining")
+
+            commandIndex = 0
+            processNextCommand()
+        } else {
+            println("Game Over! All waves completed.")
+        }
+    }
+
+    private fun processNextCommand() {
+        if (commandIndex >= currentWaveData!!.sequence.size) {
+            println("Wave completed!")
+            return // Wave is finished
+        }
+
+        val command = currentWaveData!!.sequence[commandIndex]
+
+        when (command) {
+            is WaitCommand -> handleWaitCommand(command)
+            is EnemySpawnCommand -> handleEnemySpawnCommand(command)
+        }
+    }
+
+    private fun handleWaitCommand(command: WaitCommand) {
+        plugin.server.scheduler.runTaskLater(plugin, Runnable {
+            commandIndex++;
+            processNextCommand()
+        }, (command.waitSeconds * 20).toLong())
+    }
+
+    private fun handleEnemySpawnCommand(command: EnemySpawnCommand) {
+        println("Command $commandIndex: Starting spawn sequence (Interval: ${command.intervalSeconds}s).")
+        commandIndex++
+
+        val intervalTicks = (command.intervalSeconds * 20).toLong()
+
+        val spawnQueue = command.enemies.toMutableMap()
+
+        object : BukkitRunnable() {
+            private var currentEnemyType: String? = null
+            private var currentQuantity = 0
+
+            override fun run() {
+                if (currentQuantity <= 0) {
+                    currentEnemyType = spawnQueue.keys.firstOrNull()
+                    if (currentEnemyType != null) {
+                        currentQuantity = spawnQueue.remove(currentEnemyType)!!
+                    }
+                }
+
+                // If no more enemies in this command's queue, cancel the task
+                if (currentEnemyType == null) {
+                    this.cancel()
+                    println("Spawn sequence finished for command.")
+                    return
+                }
+
+                val startpointLoc: Location = startpoints.startpoints.values.random().location
+
+                EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
+                enemiesRemaining--
+                currentQuantity--
+
+                println("Spawned: $currentEnemyType. Global remaining: $enemiesRemaining")
+            }
+        }.runTaskTimer(plugin, 0L, intervalTicks)
     }
 }

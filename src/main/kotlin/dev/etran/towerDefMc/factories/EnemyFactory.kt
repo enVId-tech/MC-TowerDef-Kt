@@ -7,6 +7,7 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
@@ -63,7 +64,8 @@ object EnemyFactory {
         }
     }
 
-    fun enemyPlace(location: Location) { // Add entity type later on as an argument
+    fun enemyPlace(enemyType: String, location: Location) { // Add entity type later on as an argument
+        val enemyFromEnemyType = enemyType // TODO: Implement this properly
         val world = location.world
         val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
 

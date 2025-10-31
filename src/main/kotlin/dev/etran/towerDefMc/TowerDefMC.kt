@@ -18,6 +18,7 @@ import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.managers.CheckpointManager
+import dev.etran.towerDefMc.managers.WaveManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
@@ -100,6 +101,7 @@ class TowerDefMC : JavaPlugin() {
         MenuListener.initialize(this)
         GameFactory.initialize(this)
         GameRegistry.initialize(this)
+        WaveManager.initialize(this)
 
         logger.info {
             "Tower Defense Plugin - Primary Functions Initialized"

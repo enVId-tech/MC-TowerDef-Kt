@@ -3,13 +3,14 @@ package dev.etran.towerDefMc.registries
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.managers.GameManager
-import dev.etran.towerDefMc.utils.GameSaveConfig
+import dev.etran.towerDefMc.data.GameSaveConfig
+import dev.etran.towerDefMc.data.WaveData
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
 object GameRegistry {
     val activeGames: MutableMap<Int, GameManager> = mutableMapOf()
-    lateinit var allGames: List<GameManager>
+    lateinit var allGames: MutableMap<Int, GameManager>
     lateinit var plugin: TowerDefMC
 
     fun initialize(plugin: TowerDefMC) {
@@ -56,7 +57,7 @@ object GameRegistry {
                 maxHealth = config.getInt("game-data.maxHealth"),
                 defaultCash = config.getInt("game-data.defaultCash"),
                 name = config.getString("game-data.name") ?: "",
-                waves = (config.getList("game-data.waves") ?: emptyList()) as List<Map<String, Any>>,
+                waves = (config.getList("game-data.waves") ?: emptyList()) as List<WaveData>,
                 allowedTowers = (config.getList("game-data.allowedTowers") ?: emptyList()) as List<String>
             )
 
@@ -65,7 +66,7 @@ object GameRegistry {
                 gameConfig = gameConfigurationData
             )
 
-            activeGames[gameId] = newGameManager
+            allGames[gameId] = newGameManager
             plugin.logger.info("Loaded Game $gameId (${newGameManager.gameConfig.name})")
         }
     }

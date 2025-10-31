@@ -12,6 +12,6 @@ class Waves(player: Player) : CustomMenu(player, 54, "Tower Defense - Waves") {
     override fun handleClick(event: InventoryClickEvent) {
         TODO("Not yet implemented")
         // Should implement auto saving
-        // Should implement redirect to new wave menu
+        // Should implement redirect to new/modify wave menu
     }
 }
