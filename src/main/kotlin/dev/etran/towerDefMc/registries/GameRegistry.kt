@@ -63,11 +63,11 @@ object GameRegistry {
 
             val newGameManager = GameManager(
                 gameId = gameId,
-                gameConfig = gameConfigurationData
+                config = gameConfigurationData
             )
 
             allGames[gameId] = newGameManager
-            plugin.logger.info("Loaded Game $gameId (${newGameManager.gameConfig.name})")
+            plugin.logger.info("Loaded Game $gameId (${newGameManager.config.name})")
         }
     }
 

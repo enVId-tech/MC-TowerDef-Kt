@@ -19,7 +19,8 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
             for (i in 0 + (currentMenuOpen * 36)..35 + (currentMenuOpen * 36)) {
                 inventory.setItem(
                     i, createMenuItem(
-                        Material.BOW, "", listOf()
+                        Material.BOW,
+                        gamesList.values.elementAt(i).config.name
                     )
                 )
             }
@@ -51,7 +52,8 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
             for (i in 0..53) {
                 inventory.setItem(
                     i, createMenuItem(
-                        Material.BOW, "", listOf()
+                        Material.BOW,
+                        gamesList.values.elementAt(i).config.name
                     )
                 )
             }
