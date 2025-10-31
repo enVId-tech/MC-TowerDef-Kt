@@ -1,14 +1,14 @@
-package dev.etran.towerDefMc.menus
+package dev.etran.towerDefMc.menus.games
 
-import dev.etran.towerDefMc.factories.GameFactory
-import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class NewGame(player: Player) : CustomMenu(player, 36, "Tower Defense - New Game") {
-    // Items in each slot
+class ModifyGame(
+    player: Player,
+    val slot: Int
+) : CustomMenu(player, 54, "Modify Game") {
     override fun setMenuItems() {
         inventory.setItem(
             10,
@@ -44,36 +44,33 @@ class NewGame(player: Player) : CustomMenu(player, 36, "Tower Defense - New Game
         )
 
         inventory.setItem(
-            34,
+            19,
             createMenuItem(
-                Material.REDSTONE_BLOCK,
-                "Cancel",
+                Material.ZOMBIE_HEAD,
+                "Waves",
                 listOf(
-                    "Cancels the current configuration",
-                    "WARNING: The current configuration will be LOST!"
-                    )
+                    "All wave configurations"
+                )
             )
         )
 
         inventory.setItem(
-            35,
+            21,
             createMenuItem(
-                Material.EMERALD_BLOCK,
-                "Save",
+                Material.BOW,
+                "Towers",
                 listOf(
-                    "Saves the current configuration",
-                    "NOTE: You can adjust waves in the Modify Game menu."
+                    "List of allowed towers"
                 )
             )
         )
     }
 
-    // Slots
     override fun handleClick(event: InventoryClickEvent) {
-        event.isCancelled = true
-
-        when (event.slot) {
-            35 -> GameFactory.createGame(this)
-        }
+        TODO("Not yet implemented")
+        /*
+        Should implement redirect to Waves list and Towers list
+        Should implement auto save whenever a value gets modified
+         */
     }
 }

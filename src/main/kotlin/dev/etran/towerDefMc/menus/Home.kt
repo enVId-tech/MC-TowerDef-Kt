@@ -1,12 +1,16 @@
 package dev.etran.towerDefMc.menus
 
 import dev.etran.towerDefMc.listeners.MenuListener
+import dev.etran.towerDefMc.menus.games.DeleteGame
+import dev.etran.towerDefMc.menus.games.GameSelector
+import dev.etran.towerDefMc.menus.games.ModifyGame
+import dev.etran.towerDefMc.menus.games.NewGame
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class HomeMenu(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Menu") {
+class Home(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Menu") {
     // Items in each slot
     override fun setMenuItems() {
         inventory.setItem(
@@ -36,11 +40,14 @@ class HomeMenu(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Me
                 menu.open()
             }
             13 -> {
-                player.performCommand("td modify game")
-                player.closeInventory()
+                val menu = GameSelector(player)
+                MenuListener.registerMenu(player, menu)
+                menu.open()
             }
             16 -> {
-                player.performCommand("td delete game")
+                val menu = DeleteGame(player)
+                MenuListener.registerMenu(player, menu)
+                menu.open()
             }
         }
     }

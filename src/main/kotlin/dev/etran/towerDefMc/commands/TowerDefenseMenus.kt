@@ -1,7 +1,7 @@
 package dev.etran.towerDefMc.commands
 
-import dev.etran.towerDefMc.menus.HomeMenu
-import dev.etran.towerDefMc.menus.NewGame
+import dev.etran.towerDefMc.menus.Home
+import dev.etran.towerDefMc.menus.games.NewGame
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -24,7 +24,7 @@ object TowerDefenseMenus : CommandExecutor {
             */
         when (args[0].lowercase()) {
             "menu" -> {
-                val menu = HomeMenu(sender)
+                val menu = Home(sender)
                 menu.open()
                 return true
             }
