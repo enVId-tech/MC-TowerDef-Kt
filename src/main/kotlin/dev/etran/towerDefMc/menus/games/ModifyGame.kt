@@ -4,6 +4,7 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.factories.WaypointFactory
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
+import dev.etran.towerDefMc.menus.enemies.PathsSelector
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
@@ -85,33 +86,17 @@ class ModifyGame(
             )
         )
 
-        // Third row - Spawn points
-        inventory.setItem(
-            28, createMenuItem(
-                Material.GREEN_WOOL, "§aSet Start Point", listOf(
-                    "§7Set where enemies spawn",
-                    "§7Right-click to place",
-                    "§7Type anything in chat to exit"
-                )
-            )
-        )
-
+        // Third row - Paths
+        val pathCount = gameManager.pathManager.getAllPaths().size
         inventory.setItem(
             30, createMenuItem(
-                Material.YELLOW_WOOL, "§eAdd Checkpoints", listOf(
-                    "§7Set path checkpoints for enemies",
-                    "§7Right-click to place",
-                    "§7Type anything in chat to exit"
-                )
-            )
-        )
-
-        inventory.setItem(
-            32, createMenuItem(
-                Material.RED_WOOL, "§cSet End Point", listOf(
-                    "§7Set where enemies reach goal",
-                    "§7Right-click to place",
-                    "§7Type anything in chat to exit"
+                Material.COMPASS, "§6Enemy Paths", listOf(
+                    "§7Manage enemy movement paths",
+                    "§7Total paths: $pathCount",
+                    "§7Create paths with start, checkpoints, and end",
+                    "§7Enemies will randomly choose a path",
+                    "",
+                    "§eClick to manage paths"
                 )
             )
         )
@@ -132,9 +117,7 @@ class ModifyGame(
         when (event.slot) {
             19 -> handleWavesClick()
             22 -> handleTowersClick()
-            28 -> handleStartPointClick()
-            30 -> handleCheckpointClick()
-            32 -> handleEndPointClick()
+            30 -> handlePathsClick()
             49 -> handleBack()
             10, 13, 16 -> handleValueUpdate(event)
         }
@@ -152,19 +135,10 @@ class ModifyGame(
         towerSelectionMenu.open()
     }
 
-    private fun handleStartPointClick() {
+    private fun handlePathsClick() {
         player.closeInventory()
-        WaypointFactory.startSpawnMode(player, gameId, WaypointFactory.WaypointType.START_POINT)
-    }
-
-    private fun handleCheckpointClick() {
-        player.closeInventory()
-        WaypointFactory.startSpawnMode(player, gameId, WaypointFactory.WaypointType.CHECKPOINT)
-    }
-
-    private fun handleEndPointClick() {
-        player.closeInventory()
-        WaypointFactory.startSpawnMode(player, gameId, WaypointFactory.WaypointType.END_POINT)
+        val pathsMenu = PathsSelector(player, gameId)
+        pathsMenu.open()
     }
 
     private fun handleBack() {

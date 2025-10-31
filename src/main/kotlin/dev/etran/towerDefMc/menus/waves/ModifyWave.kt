@@ -6,6 +6,7 @@ import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaitCommand
 import dev.etran.towerDefMc.data.WaveCommand
 import dev.etran.towerDefMc.data.WaveData
+import dev.etran.towerDefMc.menus.enemies.EnemiesSelection
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material

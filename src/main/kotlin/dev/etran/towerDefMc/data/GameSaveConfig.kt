@@ -5,5 +5,6 @@ data class GameSaveConfig(
     var defaultCash: Int,
     var name: String,
     var waves: List<WaveData>,
-    var allowedTowers: List<String>
+    var allowedTowers: List<String>,
+    var paths: List<SerializablePathData> = emptyList()
 )

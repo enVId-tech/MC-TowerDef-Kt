@@ -14,6 +14,7 @@ class GameManager(
     // -- External Managers (now game-specific, not global) --
     val waypointManager = WaypointManager()
     val waveManager = WaveManager(config, waypointManager, gameId)
+    val pathManager = PathManager()
 
     // -- Game State Properties --
     private var health: Int = config.maxHealth
@@ -134,6 +135,15 @@ class GameManager(
         GameRegistry.saveGame(this)
     }
 
+    /**
+     * Save the game including paths
+     */
+    fun saveGame() {
+        // Serialize paths before saving
+        config.paths = pathManager.serializePaths()
+        saveToFile()
+    }
+
     // -- Spawn Point Management --
     /**
      * Set the start point location
@@ -160,4 +170,11 @@ class GameManager(
     }
 
     // -- General Game Management --
+
+    init {
+        // Load paths from config
+        if (config.paths.isNotEmpty()) {
+            pathManager.loadPaths(config.paths)
+        }
+    }
 }
