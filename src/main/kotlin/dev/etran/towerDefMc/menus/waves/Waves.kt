@@ -166,8 +166,14 @@ class Waves(
     }
 
     private fun handleDone() {
+        // Auto-save the game configuration
+        dev.etran.towerDefMc.registries.GameRegistry.allGames.entries.find {
+            it.value.config == gameConfig
+        }?.let { entry ->
+            dev.etran.towerDefMc.registries.GameRegistry.saveGameConfig(entry.key, gameConfig)
+        }
+
         player.closeInventory()
-        player.sendMessage("§aWaves menu closed")
-        // TODO: Auto-save should happen here
+        player.sendMessage("§aWaves menu closed - changes saved")
     }
 }

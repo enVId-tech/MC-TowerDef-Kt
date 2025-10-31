@@ -175,9 +175,15 @@ class ModifyWave(
         if (waveNum - 1 < mutableWaves.size) {
             mutableWaves.removeAt(waveNum - 1)
 
-            // Update the game config (this will need proper save mechanism)
+            // Update the game config
             val updatedConfig = gameConfig.copy(waves = mutableWaves)
-            // TODO: Save updated config to registry
+
+            // Save updated config to registry
+            dev.etran.towerDefMc.registries.GameRegistry.allGames.entries.find {
+                it.value.config == gameConfig
+            }?.let { entry ->
+                dev.etran.towerDefMc.registries.GameRegistry.saveGameConfig(entry.key, updatedConfig)
+            }
 
             player.closeInventory()
             player.sendMessage("§aWave $waveNum deleted!")
@@ -234,7 +240,13 @@ class ModifyWave(
         }
 
         val updatedConfig = gameConfig.copy(waves = mutableWaves)
-        // TODO: Save updated config to GameRegistry
+
+        // Save updated config to GameRegistry
+        dev.etran.towerDefMc.registries.GameRegistry.allGames.entries.find {
+            it.value.config == gameConfig
+        }?.let { entry ->
+            dev.etran.towerDefMc.registries.GameRegistry.saveGameConfig(entry.key, updatedConfig)
+        }
 
         player.closeInventory()
         player.sendMessage("§aWave $waveNum saved successfully!")

@@ -10,16 +10,17 @@ import java.io.File
 
 object GameRegistry {
     val activeGames: MutableMap<Int, GameManager> = mutableMapOf()
-    lateinit var allGames: MutableMap<Int, GameManager>
+    var allGames: MutableMap<Int, GameManager> = mutableMapOf()
     lateinit var plugin: TowerDefMC
 
     fun initialize(plugin: TowerDefMC) {
         this.plugin = plugin
+        allGames = mutableMapOf()
     }
 
     fun saveAllActiveGames() {
         activeGames.values.forEach { game ->
-
+            saveGame(game)
         }
     }
 
@@ -71,19 +72,51 @@ object GameRegistry {
         }
     }
 
-    fun getNames(game: GameManager) {
-
+    fun getNames(game: GameManager): String {
+        return game.config.name
     }
 
     fun saveGame(game: GameManager) {
+        saveGameConfig(game.gameId, game.config)
+    }
 
+    fun saveGameConfig(gameId: Int, config: GameSaveConfig) {
+        val gamesDir = File(plugin.dataFolder, "games")
+        if (!gamesDir.exists()) {
+            gamesDir.mkdirs()
+        }
+
+        val configFile = File(gamesDir, "game_$gameId.yml")
+        val yamlConfig = YamlConfiguration()
+
+        yamlConfig.set("game-data.maxHealth", config.maxHealth)
+        yamlConfig.set("game-data.defaultCash", config.defaultCash)
+        yamlConfig.set("game-data.name", config.name)
+        yamlConfig.set("game-data.waves", config.waves)
+        yamlConfig.set("game-data.allowedTowers", config.allowedTowers)
+
+        yamlConfig.save(configFile)
+        plugin.logger.info("Saved Game $gameId (${config.name})")
     }
 
     fun addGame(game: GameManager) {
-        activeGames[activeGames.size] = game
+        val newId = (allGames.keys.maxOrNull() ?: -1) + 1
+        allGames[newId] = game
+        activeGames[newId] = game
+        saveGame(game)
     }
 
     fun removeGame(game: GameManager) {
+        val gameId = game.gameId
+        allGames.remove(gameId)
+        activeGames.remove(gameId)
 
+        // Delete the file
+        val gamesDir = File(plugin.dataFolder, "games")
+        val configFile = File(gamesDir, "game_${gameId}.yml")
+        if (configFile.exists()) {
+            configFile.delete()
+            plugin.logger.info("Deleted Game $gameId (${game.config.name})")
+        }
     }
 }

@@ -1,5 +1,7 @@
 package dev.etran.towerDefMc.menus.games
 
+import dev.etran.towerDefMc.menus.waves.Waves
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -7,16 +9,27 @@ import org.bukkit.event.inventory.InventoryClickEvent
 
 class ModifyGame(
     player: Player,
-    val slot: Int
+    val gameId: Int
 ) : CustomMenu(player, 54, "Modify Game") {
+
+    private val gameManager = GameRegistry.allGames[gameId]
+
     override fun setMenuItems() {
+        if (gameManager == null) {
+            player.sendMessage("§cError: Game not found!")
+            player.closeInventory()
+            return
+        }
+
+        val config = gameManager.config
+
         inventory.setItem(
             10,
             createRenamableItem(
                 Material.REDSTONE_BLOCK,
-                "Max Health",
-                listOf("The default maximum game health."),
-                "100"
+                "Max Health: {VALUE}",
+                listOf("The default maximum game health.", "Current: {VALUE}"),
+                config.maxHealth.toString()
             )
         )
 
@@ -24,12 +37,12 @@ class ModifyGame(
             13,
             createRenamableItem(
                 Material.EMERALD,
-                "Default Starting Cash: \${VALUE}",
+                "Default Starting Cash: {VALUE}",
                 listOf(
                     "The default starting cash.",
-                    "Current starting cash: \${VALUE}"
+                    "Current starting cash: {VALUE}"
                 ),
-                "200"
+                config.defaultCash.toString()
             )
         )
 
@@ -38,8 +51,8 @@ class ModifyGame(
             createRenamableItem(
                 Material.OAK_SIGN,
                 "Game Name: {VALUE}",
-                listOf("Your saved game name"),
-                "Game"
+                listOf("Your saved game name", "Current: {VALUE}"),
+                config.name
             )
         )
 
@@ -49,7 +62,9 @@ class ModifyGame(
                 Material.ZOMBIE_HEAD,
                 "Waves",
                 listOf(
-                    "All wave configurations"
+                    "All wave configurations",
+                    "§7Total waves: ${config.waves.size}",
+                    "§eClick to manage waves"
                 )
             )
         )
@@ -60,17 +75,81 @@ class ModifyGame(
                 Material.BOW,
                 "Towers",
                 listOf(
-                    "List of allowed towers"
+                    "List of allowed towers",
+                    "§7Allowed: ${config.allowedTowers.size}",
+                    "§eClick to manage towers"
                 )
+            )
+        )
+
+        inventory.setItem(
+            49,
+            createMenuItem(
+                Material.BARRIER,
+                "§cBack",
+                listOf("Return to game selection")
             )
         )
     }
 
     override fun handleClick(event: InventoryClickEvent) {
-        TODO("Not yet implemented")
-        /*
-        Should implement redirect to Waves list and Towers list
-        Should implement auto save whenever a value gets modified
-         */
+        event.isCancelled = true
+
+        if (gameManager == null) return
+
+        when (event.slot) {
+            19 -> handleWavesClick()
+            21 -> handleTowersClick()
+            49 -> handleBack()
+            10, 13, 16 -> handleValueUpdate(event)
+        }
+    }
+
+    private fun handleWavesClick() {
+        player.closeInventory()
+        val wavesMenu = Waves(player, gameManager!!.config)
+        wavesMenu.open()
+    }
+
+    private fun handleTowersClick() {
+        player.sendMessage("§eTowers management coming soon!")
+        // TODO: Implement towers management menu
+    }
+
+    private fun handleBack() {
+        player.closeInventory()
+        player.sendMessage("§aReturning to game selection")
+        // TODO: Open game selector menu
+    }
+
+    private fun handleValueUpdate(event: InventoryClickEvent) {
+        // Auto-save when values are modified via renamable items
+        val item = event.currentItem ?: return
+        val meta = item.itemMeta ?: return
+        val pdc = meta.persistentDataContainer
+
+        val value = pdc.get(
+            dev.etran.towerDefMc.TowerDefMC.TITLE_KEY,
+            org.bukkit.persistence.PersistentDataType.STRING
+        ) ?: return
+
+        val updatedConfig = when (event.slot) {
+            10 -> {
+                val maxHealth = value.toIntOrNull() ?: gameManager!!.config.maxHealth
+                gameManager!!.config.copy(maxHealth = maxHealth)
+            }
+            13 -> {
+                val defaultCash = value.toIntOrNull() ?: gameManager!!.config.defaultCash
+                gameManager!!.config.copy(defaultCash = defaultCash)
+            }
+            16 -> {
+                gameManager!!.config.copy(name = value)
+            }
+            else -> return
+        }
+
+        // Save the updated config
+        GameRegistry.saveGameConfig(gameId, updatedConfig)
+        player.sendMessage("§aGame configuration saved!")
     }
 }
