@@ -15,12 +15,15 @@ class DeleteGame(player: Player) : CustomMenu(player, 54, "Tower Defense - Delet
         gamesList = GameRegistry.allGames
 
         if (gamesList.values.size >= 54) {
+            // Multi-page mode for 54+ games
             for (i in 0 + (currentMenuOpen * 36)..35 + (currentMenuOpen * 36)) {
-                inventory.setItem(
-                    i, createMenuItem(
-                        Material.BOW, gamesList.values.elementAt(i).config.name, listOf()
+                if (i < gamesList.values.size) {
+                    inventory.setItem(
+                        i - (currentMenuOpen * 36), createMenuItem(
+                            Material.BOW, gamesList.values.elementAt(i).config.name, listOf()
+                        )
                     )
-                )
+                }
             }
 
             for (i in 36..44) {
@@ -47,13 +50,23 @@ class DeleteGame(player: Player) : CustomMenu(player, 54, "Tower Defense - Delet
                 )
             }
         } else {
-            for (i in 0..53) {
-                inventory.setItem(
-                    i, createMenuItem(
-                        Material.BOW, "", listOf()
+            // Single page mode - only fill slots for actual games
+            gamesList.values.forEachIndexed { index, game ->
+                if (index < 45) { // Only use first 45 slots (rows 1-5)
+                    inventory.setItem(
+                        index, createMenuItem(
+                            Material.BOW, game.config.name, listOf("§cClick to delete this game")
+                        )
                     )
-                )
+                }
             }
+
+            // Add back button at bottom
+            inventory.setItem(
+                49, createMenuItem(
+                    Material.BARRIER, "§cBack", listOf("Return to home menu")
+                )
+            )
         }
     }
 
@@ -66,24 +79,45 @@ class DeleteGame(player: Player) : CustomMenu(player, 54, "Tower Defense - Delet
             45 -> {
                 if (currentMenuOpen > 0) {
                     currentMenuOpen--
+                    setMenuItems()
                 }
+            }
+
+            49 -> {
+                // Back button
+                player.closeInventory()
+                val homeMenu = dev.etran.towerDefMc.menus.Home(player)
+                homeMenu.open()
             }
 
             53 -> {
                 if (currentMenuOpen < (gamesList.values.size / 36)) {
                     currentMenuOpen++
+                    setMenuItems()
                 }
             }
         }
 
-        if (gamesList.values.size < 54) {
-            val gameAtSlot = gamesList.values.elementAt(slot)
-            GameRegistry.removeGame(gameAtSlot)
-            player.sendMessage("Game")
-        } else {
+        // Handle game deletion
+        if (gamesList.values.size >= 54) {
+            // Multi-page mode
             val gameIndex = slot + (currentMenuOpen * 36)
-            val gameAtSlot = gamesList.values.elementAt(gameIndex)
-            GameRegistry.removeGame(gameAtSlot)
+            if (gameIndex < gamesList.values.size && slot in 0..35) {
+                val gameAtSlot = gamesList.values.elementAt(gameIndex)
+                GameRegistry.removeGame(gameAtSlot)
+                player.sendMessage("§aGame '${gameAtSlot.config.name}' deleted!")
+                // Refresh menu
+                open()
+            }
+        } else {
+            // Single page mode
+            if (slot < gamesList.values.size && slot in 0..44) {
+                val gameAtSlot = gamesList.values.elementAt(slot)
+                GameRegistry.removeGame(gameAtSlot)
+                player.sendMessage("§aGame '${gameAtSlot.config.name}' deleted!")
+                // Refresh menu
+                open()
+            }
         }
     }
 }

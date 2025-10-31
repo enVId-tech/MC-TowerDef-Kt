@@ -2,7 +2,6 @@ package dev.etran.towerDefMc.menus.waves
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
-import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
@@ -15,12 +14,14 @@ class EnemiesSelection(
     private val onConfirm: (Map<String, Int>, Double) -> Unit,
     val waveNum: Int,
     val gameId: Int,
-    val gameConfig: GameSaveConfig
+    val gameConfig: GameSaveConfig,
+    preSelectedEnemies: Map<String, Int> = emptyMap(),
+    preSelectedInterval: Double = 1.0
 ) : CustomMenu(player, 54, "Tower Defense - Add Enemies") {
 
     private var currentPage: Int = 0
-    private val selectedEnemies: MutableMap<String, Int> = mutableMapOf()
-    private var spawnInterval: Double = 1.0
+    private val selectedEnemies: MutableMap<String, Int> = preSelectedEnemies.toMutableMap()
+    private var spawnInterval: Double = preSelectedInterval
 
     // Load enemy types from registry
     private val availableEnemies: List<EnemyType> = EnemyRegistry.getAllEnemies().map {
@@ -136,9 +137,9 @@ class EnemiesSelection(
                 // Reopen this menu
                 this.open()
             },
-            gameId,
             waveNum,
-            gameConfig,
+            gameId,
+            gameConfig
         )
         numberSelector.open()
     }
@@ -232,31 +233,35 @@ class EnemiesSelection(
         override fun handleClick(event: InventoryClickEvent) {
             event.isCancelled = true
 
-            val menu = ModifyWave(player, waveNum, gameId = gameId, gameConfig = config)
-
             when (event.slot) {
                 10 -> {
-                    onSelect(1); menu.open()
+                    onSelect(1)
+                    player.closeInventory()
                 }
 
                 11 -> {
-                    onSelect(5); menu.open()
+                    onSelect(5)
+                    player.closeInventory()
                 }
 
                 12 -> {
-                    onSelect(10); menu.open()
+                    onSelect(10)
+                    player.closeInventory()
                 }
 
                 13 -> {
-                    onSelect(25); menu.open()
+                    onSelect(25)
+                    player.closeInventory()
                 }
 
                 14 -> {
-                    onSelect(50); menu.open()
+                    onSelect(50)
+                    player.closeInventory()
                 }
 
                 15 -> {
-                    onSelect(100); menu.open()
+                    onSelect(100)
+                    player.closeInventory()
                 }
 
                 18 -> {
@@ -268,12 +273,13 @@ class EnemiesSelection(
                         val customValue = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
                         val amount = customValue?.toIntOrNull() ?: 1
                         onSelect(amount)
-                        menu.open()
+                        player.closeInventory()
                     }
                 }
 
                 22 -> {
-                    onSelect(0); menu.open()
+                    onSelect(0)
+                    player.closeInventory()
                 }
             }
         }

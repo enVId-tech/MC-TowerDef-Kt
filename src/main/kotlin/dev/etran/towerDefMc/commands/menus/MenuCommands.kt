@@ -22,8 +22,8 @@ object MenuCommands : CommandExecutor, TabCompleter {
         }
 
         if (args.isEmpty()) {
-            sender.sendMessage("§cUsage: /tdmenu <home|new|modify|delete|waves> [gameId]")
-            return false
+            openHomeMenu(sender)
+            return true
         }
 
         when (args[0].lowercase()) {

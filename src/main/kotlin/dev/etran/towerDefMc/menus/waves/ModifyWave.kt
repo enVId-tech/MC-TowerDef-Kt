@@ -151,11 +151,10 @@ class ModifyWave(
 
                 is EnemySpawnCommand -> {
                     val enemyList = command.enemies.entries.joinToString(", ") { "${it.key}: ${it.value}x" }
-                    createRenamableItem(
+                    createMenuItem(
                         Material.ZOMBIE_SPAWN_EGG,
                         "Spawn Enemies",
-                        listOf("Interval: {VALUE}s", "Enemies: $enemyList"),
-                        "0.5"
+                        listOf("Interval: ${command.intervalSeconds}s", "Enemies: $enemyList", "§7Click to edit")
                     )
                 }
 
@@ -168,7 +167,31 @@ class ModifyWave(
     override fun handleClick(event: InventoryClickEvent) {
         event.isCancelled = true
 
-        when (event.slot) {
+        // Handle clicks on wave sequence items (slots 0-26) to edit them
+        val slot = event.slot
+        if (slot in 0..26 && slot < waveSequence.size) {
+            val command = waveSequence[slot]
+            // Allow both left and right click on enemy spawn commands
+            if (command is EnemySpawnCommand) {
+                player.closeInventory()
+                EnemiesSelection(
+                    player,
+                    { enemies, interval ->
+                        waveSequence[slot] = EnemySpawnCommand(enemies, interval)
+                        player.sendMessage("§aUpdated enemy spawn command")
+                        this.open()
+                    },
+                    waveNum,
+                    gameId,
+                    gameConfig,
+                    command.enemies,
+                    command.intervalSeconds
+                ).open()
+                return
+            }
+        }
+
+        when (slot) {
             36 -> handleAddWaitTime()
             37 -> handleRemoveWaitTime()
             39 -> handleAddEnemies()
@@ -382,3 +405,4 @@ class ModifyWave(
         }
     }
 }
+
