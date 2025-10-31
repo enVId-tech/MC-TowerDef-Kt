@@ -13,9 +13,9 @@ class GameManager(
     val gameId: Int,
     val config: GameSaveConfig,
 ) {
-    // -- External Managers --
+    // -- External Managers (now game-specific, not global) --
     private val startpointManager = StartpointManager()
-    private val waveManager = WaveManager(config, startpointManager)
+    private val waveManager = WaveManager(config, startpointManager, gameId)
     private val checkpointManager = CheckpointManager()
 
     // -- Game State Properties --
@@ -31,6 +31,11 @@ class GameManager(
             this.plugin = plugin
         }
     }
+
+    // Expose managers for game-specific operations
+    fun getCheckpointManager(): CheckpointManager = checkpointManager
+    fun getStartpointManager(): StartpointManager = startpointManager
+    fun getWaveManager(): WaveManager = waveManager
 
     // -- Wave Management --
     val currentWave: Int
@@ -54,6 +59,9 @@ class GameManager(
 
         plugin.logger.info("Game $gameId ended. Result: ${if (win) "Win" else "Loss"}")
 
+        // Clean up all entities for this game
+        dev.etran.towerDefMc.managers.GameInstanceTracker.clearGame(gameId)
+
         GameRegistry.removeGame(this)
     }
 
@@ -62,9 +70,8 @@ class GameManager(
 
         if (health <= 0) {
             endGame(false)
-
         } else {
-            println("Game $gameId health remaining: $health")
+            plugin.logger.info("Game $gameId health remaining: $health")
         }
     }
 

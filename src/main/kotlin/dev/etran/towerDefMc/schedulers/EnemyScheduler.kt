@@ -8,7 +8,10 @@ import org.bukkit.persistence.PersistentDataType
 
 object EnemyScheduler {
     fun checkAndHandleEnemies(world: World) {
-        // Only get the entities in the world
+        // Get all active games
+        val activeGames = dev.etran.towerDefMc.registries.GameRegistry.activeGames
+
+        // Only get the entities in the world that are enemies
         world.getEntitiesByClass(LivingEntity::class.java).forEach { entity ->
             val container = entity.persistentDataContainer
 
@@ -16,7 +19,20 @@ object EnemyScheduler {
             if (!container.has(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING)) return@forEach
             entity.isCollidable = false
 
-            applyEnemyMovementLogic(entity)
+            // Get the game ID this enemy belongs to
+            val gameId = dev.etran.towerDefMc.managers.GameInstanceTracker.getGameId(entity)
+
+            if (gameId != null) {
+                val game = activeGames[gameId]
+                if (game != null) {
+                    // Use the game-specific checkpoint manager
+                    applyEnemyMovementLogic(entity, game.getCheckpointManager(), gameId)
+                } else {
+                    // Game not found, remove this orphaned enemy
+                    entity.remove()
+                    dev.etran.towerDefMc.managers.GameInstanceTracker.unregisterEntity(entity)
+                }
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.managers.CheckpointManager
+import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.GameManager
 import dev.etran.towerDefMc.managers.WaveManager
 import dev.etran.towerDefMc.registries.EnemyRegistry
@@ -106,6 +107,7 @@ class TowerDefMC : JavaPlugin() {
         GameManager.initialize(this)
         WaveManager.initialize(this)
         EnemyRegistry.initialize(this)
+        GameInstanceTracker.initialize(this)
 
         logger.info {
             "Tower Defense Plugin - Primary Functions Initialized"
@@ -134,6 +136,7 @@ class TowerDefMC : JavaPlugin() {
         getCommand("clearTDallenemies")?.setExecutor(ClearEnemies)
         getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility)
         getCommand("td")?.setExecutor(TowerDefenseMenus)
+        getCommand("tdmenu")?.setExecutor(dev.etran.towerDefMc.commands.menus.MenuCommands)
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"

@@ -11,7 +11,8 @@ import org.bukkit.scheduler.BukkitRunnable
 
 class WaveManager(
     private val gameConfig: GameSaveConfig,
-    private val startpoints: StartpointManager
+    private val startpoints: StartpointManager,
+    private val gameId: Int
 ) {
     private var currentWaveData: WaveData? = null
     private var commandIndex = -1
@@ -106,11 +107,16 @@ class WaveManager(
 
                 val startpointLoc: Location = startpoints.startpoints.values.random().location
 
-                EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
+                // Spawn the enemy and register it to this game
+                val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
+                if (entity != null) {
+                    dev.etran.towerDefMc.managers.GameInstanceTracker.registerEntity(entity, gameId)
+                }
+
                 enemiesRemaining--
                 currentQuantity--
 
-                println("Spawned: $currentEnemyType. Global remaining: $enemiesRemaining")
+                println("Spawned: $currentEnemyType for Game $gameId. Global remaining: $enemiesRemaining")
             }
         }.runTaskTimer(plugin, 0L, intervalTicks)
     }

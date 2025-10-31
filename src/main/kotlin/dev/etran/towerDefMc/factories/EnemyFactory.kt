@@ -64,7 +64,7 @@ object EnemyFactory {
         }
     }
 
-    fun enemyPlace(enemyType: String, location: Location) {
+    fun enemyPlace(enemyType: String, location: Location): org.bukkit.entity.Zombie? {
         // Get enemy configuration from registry
         val enemyConfig = dev.etran.towerDefMc.registries.EnemyRegistry.getEnemy(enemyType)
 
@@ -107,5 +107,7 @@ object EnemyFactory {
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
 
         createHealthBar(entity)
+
+        return entity
     }
 }

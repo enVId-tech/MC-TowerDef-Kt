@@ -44,3 +44,9 @@ commands:
     description: The main command for the Tower Defense plugin.
     usage: /<command> [setup|upgrade] <args...>
     permission: towerdef.admin
+
+  tdmenu:
+    description: Open Tower Defense menus with structured commands
+    usage: /<command> <home|new|modify|delete|waves|select> [gameId]
+    permission: towerdef.menu
+    aliases: [tdm, menu]
