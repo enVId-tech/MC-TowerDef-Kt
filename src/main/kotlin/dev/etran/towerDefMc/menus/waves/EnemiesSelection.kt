@@ -7,12 +7,13 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
 class EnemiesSelection(
-    player: Player
+    player: Player,
+    private val onConfirm: (Map<String, Int>, Double) -> Unit
 ) : CustomMenu(player, 54, "Tower Defense - Add Enemies") {
 
     private var currentPage: Int = 0
     private val selectedEnemies: MutableMap<String, Int> = mutableMapOf()
-    private var selectedEnemyForCount: String? = null
+    private var spawnInterval: Double = 1.0
 
     // TODO: This should be loaded from a registry/config in the future
     private val availableEnemies: List<EnemyType> = listOf(
@@ -65,7 +66,7 @@ class EnemiesSelection(
                     "Time between each enemy spawn",
                     "Current: {VALUE} seconds"
                 ),
-                "1.0"
+                spawnInterval.toString()
             )
         )
 
@@ -124,7 +125,7 @@ class EnemiesSelection(
         when (slot) {
             in 0..35 -> handleEnemyClick(slot)
             46 -> handleCancel()
-            47 -> handleConfirm()
+            47 -> handleConfirm(event)
             51 -> handleBackPage()
             53 -> handleNextPage()
             // Slot 45 is a renamable item for spawn interval, handled by CustomMenu
@@ -136,7 +137,6 @@ class EnemiesSelection(
         if (enemyIndex >= availableEnemies.size) return
 
         val enemy = availableEnemies[enemyIndex]
-        selectedEnemyForCount = enemy.id
 
         // Open number selector menu
         player.closeInventory()
@@ -155,21 +155,28 @@ class EnemiesSelection(
     private fun handleCancel() {
         player.closeInventory()
         player.sendMessage("§cEnemy selection cancelled")
-        // TODO: Return to ModifyWave menu
     }
 
-    private fun handleConfirm() {
+    private fun handleConfirm(event: InventoryClickEvent) {
         if (selectedEnemies.isEmpty()) {
             player.sendMessage("§cYou must select at least one enemy!")
             return
         }
 
-        // TODO: Get spawn interval from renamable item
-        // TODO: Create EnemySpawnCommand and pass back to ModifyWave
+        // Get spawn interval from renamable item
+        inventory.getItem(45)?.let { item ->
+            val meta = item.itemMeta
+            val pdc = meta.persistentDataContainer
+            pdc.get(TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)?.let {
+                spawnInterval = it.toDoubleOrNull() ?: spawnInterval
+            }
+        }
 
         player.closeInventory()
         player.sendMessage("§aAdded ${selectedEnemies.values.sum()} enemies to wave!")
-        // TODO: Return to ModifyWave menu with selected enemies
+
+        // Call the callback with selected enemies and interval
+        onConfirm(selectedEnemies.toMap(), spawnInterval)
     }
 
     private fun handleBackPage() {
