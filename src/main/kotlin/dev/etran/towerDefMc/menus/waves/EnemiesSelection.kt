@@ -1,14 +1,15 @@
 package dev.etran.towerDefMc.menus.waves
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.persistence.PersistentDataType
 
 class EnemiesSelection(
-    player: Player,
-    private val onConfirm: (Map<String, Int>, Double) -> Unit
+    player: Player, private val onConfirm: (Map<String, Int>, Double) -> Unit
 ) : CustomMenu(player, 54, "Tower Defense - Add Enemies") {
 
     private var currentPage: Int = 0
@@ -16,7 +17,7 @@ class EnemiesSelection(
     private var spawnInterval: Double = 1.0
 
     // Load enemy types from registry
-    private val availableEnemies: List<EnemyType> = dev.etran.towerDefMc.registries.EnemyRegistry.getAllEnemies().map {
+    private val availableEnemies: List<EnemyType> = EnemyRegistry.getAllEnemies().map {
         EnemyType(it.id, it.icon, it.displayName, it.description)
     }
 
@@ -42,8 +43,7 @@ class EnemiesSelection(
             lore.add("§7Click to select amount")
 
             inventory.setItem(
-                slotIndex,
-                createMenuItem(enemy.icon, "§f${enemy.displayName}", lore)
+                slotIndex, createMenuItem(enemy.icon, "§f${enemy.displayName}", lore)
             )
         }
 
@@ -55,35 +55,23 @@ class EnemiesSelection(
         // Bottom row controls (slots 45-53)
         // Left side: Configuration
         inventory.setItem(
-            45,
-            createRenamableItem(
-                Material.CLOCK,
-                "Spawn Interval: {VALUE}s",
-                listOf(
-                    "Time between each enemy spawn",
-                    "Current: {VALUE} seconds"
-                ),
-                spawnInterval.toString()
+            45, createRenamableItem(
+                Material.CLOCK, "Spawn Interval: {VALUE}s", listOf(
+                    "Time between each enemy spawn", "Current: {VALUE} seconds"
+                ), spawnInterval.toString()
             )
         )
 
         inventory.setItem(
-            46,
-            createMenuItem(
-                Material.BARRIER,
-                "§cCancel",
-                listOf("Return without adding enemies")
+            46, createMenuItem(
+                Material.BARRIER, "§cCancel", listOf("Return without adding enemies")
             )
         )
 
         inventory.setItem(
-            47,
-            createMenuItem(
-                Material.EMERALD_BLOCK,
-                "§aConfirm",
-                listOf(
-                    "Add selected enemies to wave",
-                    "Total enemies: ${selectedEnemies.values.sum()}"
+            47, createMenuItem(
+                Material.EMERALD_BLOCK, "§aConfirm", listOf(
+                    "Add selected enemies to wave", "Total enemies: ${selectedEnemies.values.sum()}"
                 )
             )
         )
@@ -93,22 +81,16 @@ class EnemiesSelection(
 
         if (currentPage > 0) {
             inventory.setItem(
-                51,
-                createMenuItem(
-                    Material.RED_CONCRETE,
-                    "§cBack Page",
-                    listOf("Page ${currentPage} of $totalPages")
+                51, createMenuItem(
+                    Material.RED_CONCRETE, "§cBack Page", listOf("Page ${currentPage} of $totalPages")
                 )
             )
         }
 
         if (currentPage < totalPages - 1) {
             inventory.setItem(
-                53,
-                createMenuItem(
-                    Material.GREEN_CONCRETE,
-                    "§aNext Page",
-                    listOf("Page ${currentPage + 2} of $totalPages")
+                53, createMenuItem(
+                    Material.GREEN_CONCRETE, "§aNext Page", listOf("Page ${currentPage + 2} of $totalPages")
                 )
             )
         }
@@ -164,7 +146,7 @@ class EnemiesSelection(
         inventory.getItem(45)?.let { item ->
             val meta = item.itemMeta
             val pdc = meta.persistentDataContainer
-            pdc.get(TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)?.let {
+            pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)?.let {
                 spawnInterval = it.toDoubleOrNull() ?: spawnInterval
             }
         }
@@ -193,17 +175,12 @@ class EnemiesSelection(
 
     // Helper data class for enemy types
     private data class EnemyType(
-        val id: String,
-        val icon: Material,
-        val displayName: String,
-        val description: List<String>
+        val id: String, val icon: Material, val displayName: String, val description: List<String>
     )
 
     // Simple number selector menu
     private class NumberSelector(
-        player: Player,
-        @Suppress("unused") private val itemName: String,
-        private val onSelect: (Int) -> Unit
+        player: Player, @Suppress("unused") private val itemName: String, private val onSelect: (Int) -> Unit
     ) : CustomMenu(player, 27, "Select Amount - $itemName") {
 
         override fun setMenuItems() {
@@ -213,35 +190,24 @@ class EnemiesSelection(
                 val slot = 10 + index
                 if (slot < 17) {
                     inventory.setItem(
-                        slot,
-                        createMenuItem(
-                            Material.SLIME_BALL,
-                            "§a$amount",
-                            listOf("§7Select $amount enemies")
+                        slot, createMenuItem(
+                            Material.SLIME_BALL, "§a$amount", listOf("§7Select $amount enemies")
                         )
                     )
                 }
             }
 
             inventory.setItem(
-                18,
-                createRenamableItem(
-                    Material.PAPER,
-                    "Custom: {VALUE}",
-                    listOf(
-                        "Enter a custom amount",
-                        "Current: {VALUE}"
-                    ),
-                    "1"
+                18, createRenamableItem(
+                    Material.PAPER, "Custom: {VALUE}", listOf(
+                        "Enter a custom amount", "Current: {VALUE}"
+                    ), "1"
                 )
             )
 
             inventory.setItem(
-                22,
-                createMenuItem(
-                    Material.BARRIER,
-                    "§cRemove/Cancel",
-                    listOf("Set amount to 0 or cancel")
+                22, createMenuItem(
+                    Material.BARRIER, "§cRemove/Cancel", listOf("Set amount to 0 or cancel")
                 )
             )
         }
@@ -250,25 +216,46 @@ class EnemiesSelection(
             event.isCancelled = true
 
             when (event.slot) {
-                10 -> { onSelect(1); player.closeInventory() }
-                11 -> { onSelect(5); player.closeInventory() }
-                12 -> { onSelect(10); player.closeInventory() }
-                13 -> { onSelect(25); player.closeInventory() }
-                14 -> { onSelect(50); player.closeInventory() }
-                15 -> { onSelect(100); player.closeInventory() }
+                10 -> {
+                    onSelect(1); player.closeInventory()
+                }
+
+                11 -> {
+                    onSelect(5); player.closeInventory()
+                }
+
+                12 -> {
+                    onSelect(10); player.closeInventory()
+                }
+
+                13 -> {
+                    onSelect(25); player.closeInventory()
+                }
+
+                14 -> {
+                    onSelect(50); player.closeInventory()
+                }
+
+                15 -> {
+                    onSelect(100); player.closeInventory()
+                }
+
                 18 -> {
                     // Custom amount from renamable item
                     val item = event.currentItem
                     val meta = item?.itemMeta
                     if (meta != null) {
                         val pdc = meta.persistentDataContainer
-                        val customValue = pdc.get(TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)
+                        val customValue = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
                         val amount = customValue?.toIntOrNull() ?: 1
                         onSelect(amount)
                         player.closeInventory()
                     }
                 }
-                22 -> { onSelect(0); player.closeInventory() }
+
+                22 -> {
+                    onSelect(0); player.closeInventory()
+                }
             }
         }
     }

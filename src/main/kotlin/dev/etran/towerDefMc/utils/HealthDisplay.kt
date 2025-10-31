@@ -40,39 +40,24 @@ fun getHealthBarComponent(currentHealth: Double, maxHealth: Double): Component {
     val numericalHealth = String.format("%.1f", displayHealth)
     val numericalMaxHealth = String.format("%.1f", maxHealth)
 
-    val graphicalBar = Component.text()
-        .decorate(TextDecoration.BOLD)
-        .append(
-            Component.text(filled.repeat(filledCount))
-                .color(healthColor)
-        )
-        .append(
-            Component.text(empty.repeat(emptyCount))
-                .color(emptyColor)
-        )
-        .append(Component.space()) // Add space between bar and numbers
+    val graphicalBar = Component.text().decorate(TextDecoration.BOLD).append(
+        Component.text(filled.repeat(filledCount)).color(healthColor)
+    ).append(
+        Component.text(empty.repeat(emptyCount)).color(emptyColor)
+    ).append(Component.space()) // Add space between bar and numbers
         .build()
 
-    val numericalDisplay = Component.text()
-        .append(
-            Component.text(numericalHealth)
-                .color(healthColor) // Current health uses the same color as the bar
-        )
-        .append(
-            Component.text("/")
-                .color(TextColor.color(0xFFFFFF)) // White slash
-        )
-        .append(
-            Component.text(numericalMaxHealth)
-                .color(TextColor.color(0xFFFFFF)) // White max health
-        )
-        .build()
+    val numericalDisplay = Component.text().append(
+        Component.text(numericalHealth).color(healthColor) // Current health uses the same color as the bar
+    ).append(
+        Component.text("/").color(TextColor.color(0xFFFFFF)) // White slash
+    ).append(
+        Component.text(numericalMaxHealth).color(TextColor.color(0xFFFFFF)) // White max health
+    ).build()
 
-    return Component.text()
-        .append(graphicalBar)
-        .append(numericalDisplay)
-        .build()
+    return Component.text().append(graphicalBar).append(numericalDisplay).build()
 }
+
 fun updateHealthBar(enemy: LivingEntity, healthBar: TextDisplay, calculatedHealth: Double) {
     val maxHealth = enemy.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
 
@@ -94,9 +79,7 @@ fun createHealthBar(enemy: LivingEntity): TextDisplay {
     textDisplay.setGravity(false)
 
     textDisplay.persistentDataContainer.set(
-        TowerDefMC.HEALTH_OWNER_UUID,
-        PersistentDataType.STRING,
-        enemy.uniqueId.toString()
+        TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING, enemy.uniqueId.toString()
     )
 
     enemy.addPassenger(textDisplay)
@@ -110,14 +93,15 @@ fun cleanUpEnemyHealthBar(enemy: Entity) {
     val deadMobUUID = enemy.uniqueId.toString()
 
     // 1. Search near the enemy's location for the TextDisplay owner link
-    enemy.getNearbyEntities(2.0, 2.0, 2.0)
-        .filterIsInstance<TextDisplay>()
-        .forEach { textDisplay ->
-            if (textDisplay.persistentDataContainer.get(TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING) == deadMobUUID) {
-                textDisplay.remove()
-                return@forEach
-            }
+    enemy.getNearbyEntities(2.0, 2.0, 2.0).filterIsInstance<TextDisplay>().forEach { textDisplay ->
+        if (textDisplay.persistentDataContainer.get(
+                TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING
+            ) == deadMobUUID
+        ) {
+            textDisplay.remove()
+            return@forEach
         }
+    }
 
     enemy.passengers.forEach { passenger ->
         if (passenger is TextDisplay) {

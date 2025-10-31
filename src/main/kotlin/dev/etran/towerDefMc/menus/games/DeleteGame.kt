@@ -18,9 +18,7 @@ class DeleteGame(player: Player) : CustomMenu(player, 0, "Tower Defense - Delete
             for (i in 0 + (currentMenuOpen * 36)..35 + (currentMenuOpen * 36)) {
                 inventory.setItem(
                     i, createMenuItem(
-                        Material.BOW,
-                        gamesList.values.elementAt(i).config.name,
-                        listOf()
+                        Material.BOW, gamesList.values.elementAt(i).config.name, listOf()
                     )
                 )
             }
@@ -70,6 +68,7 @@ class DeleteGame(player: Player) : CustomMenu(player, 0, "Tower Defense - Delete
                     currentMenuOpen--
                 }
             }
+
             53 -> {
                 if (currentMenuOpen < (gamesList.values.size / 36)) {
                     currentMenuOpen++

@@ -52,8 +52,7 @@ object GiveEndPoint : CommandExecutor {
         // Throws out remaining items in leftovers
         leftovers.values.forEach { endpointItemStack ->
             player.world.dropItemNaturally(
-                player.location,
-                endpointItemStack
+                player.location, endpointItemStack
             )
         }
 

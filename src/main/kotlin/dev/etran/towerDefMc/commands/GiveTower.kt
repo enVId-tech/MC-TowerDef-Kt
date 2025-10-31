@@ -28,6 +28,7 @@ object GiveTower : CommandExecutor {
                 targetPlayer = sender as Player
                 // Amount defaults to 1
             }
+
             1 -> {
                 // Case 1: /givettower <player> OR /givettower <amount>
 
@@ -56,6 +57,7 @@ object GiveTower : CommandExecutor {
                     targetPlayer = player
                 }
             }
+
             2 -> {
                 // Case 2: /givettower <player> <amount>
                 val player = Bukkit.getPlayer(args[0])
@@ -78,6 +80,7 @@ object GiveTower : CommandExecutor {
                     return false
                 }
             }
+
             else -> {
                 sender.sendMessage("§cToo many arguments.")
                 sender.sendMessage(usageMessage)
@@ -108,8 +111,7 @@ object GiveTower : CommandExecutor {
             sender.sendMessage("§e${targetPlayer.name}'s inventory was full. Remaining items were dropped at their location.")
             leftovers.values.forEach { towerItemStack ->
                 targetPlayer.world.dropItemNaturally(
-                    targetPlayer.location,
-                    towerItemStack
+                    targetPlayer.location, towerItemStack
                 )
             }
         }

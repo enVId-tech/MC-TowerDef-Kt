@@ -24,7 +24,8 @@ object PlayerHoldListener : Listener {
         val isTaskRunning = activeMouseTasks.containsKey(playerId)
 
         val newItem = player.inventory.getItem(event.newSlot)
-        val towerRange: Double? = newItem?.itemMeta?.persistentDataContainer?.get(TOWER_RANGE_KEY, PersistentDataType.DOUBLE)
+        val towerRange: Double? =
+            newItem?.itemMeta?.persistentDataContainer?.get(TOWER_RANGE_KEY, PersistentDataType.DOUBLE)
         val towerMaterial: Material? = newItem?.type
 
         val isTowerItem = towerRange != null && towerMaterial != null
@@ -32,11 +33,7 @@ object PlayerHoldListener : Listener {
         if (isTowerItem && !isTaskRunning) {
             // Case A: Switching TO a tower item -> START the preview task
             TaskUtility.startTargetHighlightTask(
-                player,
-                activeMouseTasks,
-                particleTickRate,
-                towerRange,
-                towerMaterial
+                player, activeMouseTasks, particleTickRate, towerRange, towerMaterial
             )
         } else if (!isTowerItem && isTaskRunning) {
             // Case B: Switching AWAY from a tower item -> STOP the preview task
@@ -50,7 +47,8 @@ object PlayerHoldListener : Listener {
         val itemInHand = event.itemInHand
 
         // Check if the item placed was a tower (by checking for the range tag)
-        val isTowerItem = itemInHand.itemMeta?.persistentDataContainer?.has(TOWER_RANGE_KEY, PersistentDataType.DOUBLE) ?: false
+        val isTowerItem =
+            itemInHand.itemMeta?.persistentDataContainer?.has(TOWER_RANGE_KEY, PersistentDataType.DOUBLE) ?: false
 
         if (isTowerItem && activeMouseTasks.containsKey(player.uniqueId)) {
             // If the player successfully placed a tower block while the task was running, stop it.

@@ -1,4 +1,3 @@
 package dev.etran.towerDefMc.data
 
-interface WaveCommand {
-}
+interface WaveCommand {}

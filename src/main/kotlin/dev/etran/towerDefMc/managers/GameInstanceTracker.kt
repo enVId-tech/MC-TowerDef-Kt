@@ -71,8 +71,7 @@ object GameInstanceTracker {
     fun getLivingEntitiesInGame(gameId: Int): List<LivingEntity> {
         val entityUUIDs = gameToEntities[gameId] ?: return emptyList()
         return entityUUIDs.mapNotNull { uuid ->
-            plugin.server.worlds.asSequence()
-                .flatMap { it.entities }
+            plugin.server.worlds.asSequence().flatMap { it.entities }
                 .firstOrNull { it.uniqueId == uuid } as? LivingEntity
         }
     }

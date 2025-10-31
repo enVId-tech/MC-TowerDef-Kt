@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
+import dev.etran.towerDefMc.data.WaveData
 import dev.etran.towerDefMc.factories.CheckpointFactory
 import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.event.player.PlayerInteractEvent
@@ -18,6 +19,7 @@ class GameManager(
 
     // -- Game State Properties --
     private var health: Int = config.maxHealth
+
     @Suppress("unused")
     private var cash: Int = config.defaultCash
     private var isRunning: Boolean = false
@@ -114,7 +116,7 @@ class GameManager(
     /**
      * Update the waves list and save to file
      */
-    fun updateWaves(newWaves: List<dev.etran.towerDefMc.data.WaveData>) {
+    fun updateWaves(newWaves: List<WaveData>) {
         config.waves = newWaves
         saveToFile()
     }

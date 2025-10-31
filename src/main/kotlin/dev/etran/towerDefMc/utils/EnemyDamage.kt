@@ -29,9 +29,7 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
         enemy.noDamageTicks = 0
         enemy.damage(
             tower.persistentDataContainer.getOrDefault(
-                TowerDefMC.TOWER_DMG,
-                PersistentDataType.DOUBLE,
-                5.0
+                TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 5.0
             )
         )
     }

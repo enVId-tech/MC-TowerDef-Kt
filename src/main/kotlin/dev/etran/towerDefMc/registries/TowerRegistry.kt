@@ -60,11 +60,11 @@ object TowerRegistry {
         // Basic Tower
         config.set("towers.Basic_Tower_1.displayName", "Basic Archer")
         config.set("towers.Basic_Tower_1.icon", "BOW")
-        config.set("towers.Basic_Tower_1.description", listOf(
-            "Standard tower",
-            "Medium range",
-            "Low damage"
-        ))
+        config.set(
+            "towers.Basic_Tower_1.description", listOf(
+                "Standard tower", "Medium range", "Low damage"
+            )
+        )
         config.set("towers.Basic_Tower_1.range", 5.0)
         config.set("towers.Basic_Tower_1.damage", 2.5)
         config.set("towers.Basic_Tower_1.attackSpeed", 1.0)
@@ -72,12 +72,11 @@ object TowerRegistry {
         // Sniper Tower
         config.set("towers.Sniper_Tower.displayName", "Sniper Tower")
         config.set("towers.Sniper_Tower.icon", "CROSSBOW")
-        config.set("towers.Sniper_Tower.description", listOf(
-            "Long range tower",
-            "High range",
-            "Medium damage",
-            "Slow attack speed"
-        ))
+        config.set(
+            "towers.Sniper_Tower.description", listOf(
+                "Long range tower", "High range", "Medium damage", "Slow attack speed"
+            )
+        )
         config.set("towers.Sniper_Tower.range", 15.0)
         config.set("towers.Sniper_Tower.damage", 10.0)
         config.set("towers.Sniper_Tower.attackSpeed", 0.3)
@@ -85,12 +84,11 @@ object TowerRegistry {
         // Machine Gun Tower
         config.set("towers.Machine_Gun_Tower.displayName", "Machine Gun")
         config.set("towers.Machine_Gun_Tower.icon", "IRON_SHOVEL")
-        config.set("towers.Machine_Gun_Tower.description", listOf(
-            "Fast firing tower",
-            "Short range",
-            "Low damage",
-            "Very fast attack speed"
-        ))
+        config.set(
+            "towers.Machine_Gun_Tower.description", listOf(
+                "Fast firing tower", "Short range", "Low damage", "Very fast attack speed"
+            )
+        )
         config.set("towers.Machine_Gun_Tower.range", 4.0)
         config.set("towers.Machine_Gun_Tower.damage", 1.0)
         config.set("towers.Machine_Gun_Tower.attackSpeed", 5.0)
@@ -98,12 +96,11 @@ object TowerRegistry {
         // Cannon Tower
         config.set("towers.Cannon_Tower.displayName", "Cannon")
         config.set("towers.Cannon_Tower.icon", "TNT")
-        config.set("towers.Cannon_Tower.description", listOf(
-            "Heavy damage tower",
-            "Medium range",
-            "Very high damage",
-            "Slow attack speed"
-        ))
+        config.set(
+            "towers.Cannon_Tower.description", listOf(
+                "Heavy damage tower", "Medium range", "Very high damage", "Slow attack speed"
+            )
+        )
         config.set("towers.Cannon_Tower.range", 7.0)
         config.set("towers.Cannon_Tower.damage", 25.0)
         config.set("towers.Cannon_Tower.attackSpeed", 0.2)
@@ -111,12 +108,11 @@ object TowerRegistry {
         // Support Tower
         config.set("towers.Support_Tower.displayName", "Support Tower")
         config.set("towers.Support_Tower.icon", "ENCHANTED_BOOK")
-        config.set("towers.Support_Tower.description", listOf(
-            "Buff tower",
-            "Short range",
-            "No damage",
-            "Buffs nearby towers"
-        ))
+        config.set(
+            "towers.Support_Tower.description", listOf(
+                "Buff tower", "Short range", "No damage", "Buffs nearby towers"
+            )
+        )
         config.set("towers.Support_Tower.range", 6.0)
         config.set("towers.Support_Tower.damage", 0.0)
         config.set("towers.Support_Tower.attackSpeed", 0.5)

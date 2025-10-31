@@ -33,8 +33,8 @@ object EndpointFactory {
 
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "EndPoint")
-        entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER,
-            (checkpointManager.checkpoints.size + 1)
+        entity.persistentDataContainer.set(
+            TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, (checkpointManager.checkpoints.size + 1)
         )
         checkpointManager.add(entity as ArmorStand)
 

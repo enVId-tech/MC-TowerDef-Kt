@@ -10,11 +10,9 @@ object ClearEnemies : CommandExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         try {
             Bukkit.getWorlds().forEach { world ->
-                world.entities
-                    .filter { it.persistentDataContainer.has(TowerDefMC.ENEMY_TYPES) }
-                    .forEach { entity ->
-                        entity.remove()
-                    }
+                world.entities.filter { it.persistentDataContainer.has(TowerDefMC.ENEMY_TYPES) }.forEach { entity ->
+                    entity.remove()
+                }
             }
             return true
         } catch (e: Exception) {

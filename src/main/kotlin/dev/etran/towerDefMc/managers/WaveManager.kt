@@ -10,9 +10,7 @@ import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
 
 class WaveManager(
-    private val gameConfig: GameSaveConfig,
-    private val startpoints: StartpointManager,
-    private val gameId: Int
+    private val gameConfig: GameSaveConfig, private val startpoints: StartpointManager, private val gameId: Int
 ) {
     private var currentWaveData: WaveData? = null
     private var commandIndex = -1
@@ -111,7 +109,7 @@ class WaveManager(
                 // Spawn the enemy and register it to this game
                 val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
                 if (entity != null) {
-                    dev.etran.towerDefMc.managers.GameInstanceTracker.registerEntity(entity, gameId)
+                    GameInstanceTracker.registerEntity(entity, gameId)
                 }
 
                 enemiesRemaining--

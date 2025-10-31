@@ -18,12 +18,10 @@ class Home(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Menu")
             createMenuItem(Material.BOW, "Create a new game", listOf("Click to create the structure for a new game"))
         )
         inventory.setItem(
-            13,
-            createMenuItem(Material.SHEARS, "Modify an existing game", listOf("Click to modify an existing game"))
+            13, createMenuItem(Material.SHEARS, "Modify an existing game", listOf("Click to modify an existing game"))
         )
         inventory.setItem(
-            16,
-            createMenuItem(Material.BARRIER, "Delete an existing game", listOf("Click to remove an existing game"))
+            16, createMenuItem(Material.BARRIER, "Delete an existing game", listOf("Click to remove an existing game"))
         )
     }
 
@@ -39,11 +37,13 @@ class Home(player: Player) : CustomMenu(player, 27, "Tower Defense - Home Menu")
                 MenuListener.registerMenu(player, menu)
                 menu.open()
             }
+
             13 -> {
                 val menu = GameSelector(player)
                 MenuListener.registerMenu(player, menu)
                 menu.open()
             }
+
             16 -> {
                 val menu = DeleteGame(player)
                 MenuListener.registerMenu(player, menu)

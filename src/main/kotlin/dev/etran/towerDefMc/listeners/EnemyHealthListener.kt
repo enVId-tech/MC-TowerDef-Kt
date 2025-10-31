@@ -24,12 +24,12 @@ object EnemyHealthListener : Listener {
 
         val newHealth = enemy.health - damage
 
-        val healthBar = enemy.getNearbyEntities(1.0, 2.0, 1.0)
-            .filterIsInstance<TextDisplay>()
-            .firstOrNull {
-                it.passengers.contains(enemy)
-                it.persistentDataContainer.get(TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING) == enemy.uniqueId.toString()
-            }
+        val healthBar = enemy.getNearbyEntities(1.0, 2.0, 1.0).filterIsInstance<TextDisplay>().firstOrNull {
+            it.passengers.contains(enemy)
+            it.persistentDataContainer.get(
+                TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING
+            ) == enemy.uniqueId.toString()
+        }
         if (healthBar != null) {
             // Update the text component with the new health
             updateHealthBar(enemy, healthBar, newHealth)

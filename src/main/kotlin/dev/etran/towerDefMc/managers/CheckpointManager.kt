@@ -18,6 +18,7 @@ import kotlin.collections.mapOf
 class CheckpointManager() {
     var checkpoints: SortedMap<Int, ArmorStand> = TreeMap<Int, ArmorStand>()
     var standsAreVisible: Boolean = true
+
     companion object {
         val effectType = PotionEffectType.GLOWING
         const val DURATION = Int.MAX_VALUE

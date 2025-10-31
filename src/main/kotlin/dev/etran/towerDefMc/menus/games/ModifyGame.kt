@@ -1,5 +1,6 @@
 package dev.etran.towerDefMc.menus.games
 
+import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.registries.GameRegistry
@@ -7,10 +8,10 @@ import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.persistence.PersistentDataType
 
 class ModifyGame(
-    player: Player,
-    val gameId: Int
+    player: Player, val gameId: Int
 ) : CustomMenu(player, 54, "Modify Game") {
 
     private val gameManager = GameRegistry.allGames[gameId]
@@ -25,8 +26,7 @@ class ModifyGame(
         val config = gameManager.config
 
         inventory.setItem(
-            10,
-            createRenamableItem(
+            10, createRenamableItem(
                 Material.REDSTONE_BLOCK,
                 "Max Health: {VALUE}",
                 listOf("The default maximum game health.", "Current: {VALUE}"),
@@ -35,60 +35,38 @@ class ModifyGame(
         )
 
         inventory.setItem(
-            13,
-            createRenamableItem(
-                Material.EMERALD,
-                "Default Starting Cash: {VALUE}",
-                listOf(
-                    "The default starting cash.",
-                    "Current starting cash: {VALUE}"
-                ),
-                config.defaultCash.toString()
+            13, createRenamableItem(
+                Material.EMERALD, "Default Starting Cash: {VALUE}", listOf(
+                    "The default starting cash.", "Current starting cash: {VALUE}"
+                ), config.defaultCash.toString()
             )
         )
 
         inventory.setItem(
-            16,
-            createRenamableItem(
-                Material.OAK_SIGN,
-                "Game Name: {VALUE}",
-                listOf("Your saved game name", "Current: {VALUE}"),
-                config.name
+            16, createRenamableItem(
+                Material.OAK_SIGN, "Game Name: {VALUE}", listOf("Your saved game name", "Current: {VALUE}"), config.name
             )
         )
 
         inventory.setItem(
-            19,
-            createMenuItem(
-                Material.ZOMBIE_HEAD,
-                "Waves",
-                listOf(
-                    "All wave configurations",
-                    "§7Total waves: ${config.waves.size}",
-                    "§eClick to manage waves"
+            19, createMenuItem(
+                Material.ZOMBIE_HEAD, "Waves", listOf(
+                    "All wave configurations", "§7Total waves: ${config.waves.size}", "§eClick to manage waves"
                 )
             )
         )
 
         inventory.setItem(
-            22,
-            createMenuItem(
-                Material.BOW,
-                "Towers",
-                listOf(
-                    "List of allowed towers",
-                    "§7Allowed: ${config.allowedTowers.size}",
-                    "§eClick to manage towers"
+            22, createMenuItem(
+                Material.BOW, "Towers", listOf(
+                    "List of allowed towers", "§7Allowed: ${config.allowedTowers.size}", "§eClick to manage towers"
                 )
             )
         )
 
         inventory.setItem(
-            49,
-            createMenuItem(
-                Material.BARRIER,
-                "§cBack",
-                listOf("Return to game selection")
+            49, createMenuItem(
+                Material.BARRIER, "§cBack", listOf("Return to game selection")
             )
         )
     }
@@ -108,7 +86,7 @@ class ModifyGame(
 
     private fun handleWavesClick() {
         player.closeInventory()
-        val wavesMenu = Waves(player, gameManager!!.config, gameId=gameId)
+        val wavesMenu = Waves(player, gameManager!!.config, gameId = gameId)
         wavesMenu.open()
     }
 
@@ -131,8 +109,7 @@ class ModifyGame(
         val pdc = meta.persistentDataContainer
 
         val value = pdc.get(
-            dev.etran.towerDefMc.TowerDefMC.TITLE_KEY,
-            org.bukkit.persistence.PersistentDataType.STRING
+            TowerDefMC.TITLE_KEY, PersistentDataType.STRING
         ) ?: return
 
         when (event.slot) {
@@ -145,6 +122,7 @@ class ModifyGame(
                     player.sendMessage("§cInvalid number for Max Health!")
                 }
             }
+
             13 -> {
                 val defaultCash = value.toIntOrNull()
                 if (defaultCash != null) {
@@ -154,6 +132,7 @@ class ModifyGame(
                     player.sendMessage("§cInvalid number for Default Cash!")
                 }
             }
+
             16 -> {
                 gameManager!!.updateGameName(value)
                 player.sendMessage("§aGame name updated to '$value' and saved!")
@@ -175,6 +154,7 @@ class ModifyGame(
                     player.sendMessage("§cInvalid number for Max Health!")
                 }
             }
+
             13 -> {
                 val defaultCash = newValue.toIntOrNull()
                 if (defaultCash != null) {
@@ -184,6 +164,7 @@ class ModifyGame(
                     player.sendMessage("§cInvalid number for Default Cash!")
                 }
             }
+
             16 -> {
                 gameManager.updateGameName(newValue)
                 player.sendMessage("§aGame name updated to '$newValue' and saved!")

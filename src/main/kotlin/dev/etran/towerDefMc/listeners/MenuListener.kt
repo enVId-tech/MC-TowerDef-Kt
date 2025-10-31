@@ -22,9 +22,7 @@ object MenuListener : Listener {
     private lateinit var plugin: TowerDefMC
 
     data class RenameContext(
-        val itemToRename: ItemStack,
-        val sourceSlot: Int,
-        val menuInstance: CustomMenu
+        val itemToRename: ItemStack, val sourceSlot: Int, val menuInstance: CustomMenu
     )
 
     fun initialize(plugin: TowerDefMC) {
@@ -99,13 +97,12 @@ object MenuListener : Listener {
                 // Update Title Meta and PDC (Still saving only the VALUE to PDC)
                 meta.displayName(finalTitleComponent)
                 meta.persistentDataContainer.set(
-                    TowerDefMC.TITLE_KEY,
-                    PersistentDataType.STRING,
-                    cleanName
+                    TowerDefMC.TITLE_KEY, PersistentDataType.STRING, cleanName
                 )
 
                 // Lore update code
-                val loreTemplateString = meta.persistentDataContainer.get(TowerDefMC.LORE_TEMPLATE_KEY, PersistentDataType.STRING)
+                val loreTemplateString =
+                    meta.persistentDataContainer.get(TowerDefMC.LORE_TEMPLATE_KEY, PersistentDataType.STRING)
 
                 if (loreTemplateString != null) {
                     val updatedLoreList = mutableListOf<Component>()

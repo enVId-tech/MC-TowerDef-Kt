@@ -1,5 +1,6 @@
 package dev.etran.towerDefMc.menus.towers
 
+import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.menus.games.ModifyGame
 import dev.etran.towerDefMc.registries.TowerRegistry
@@ -9,12 +10,10 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 
 class TowerSelection(
-    player: Player,
-    private val gameConfig: GameSaveConfig,
-    private val gameId: Int
+    player: Player, private val gameConfig: GameSaveConfig, private val gameId: Int
 ) : CustomMenu(player, 54, "Tower Defense - Tower Limits") {
 
     private var currentPage: Int = 0
@@ -70,10 +69,7 @@ class TowerSelection(
             lore.add("§7Set to -1 for no limit")
 
             val item = createRenamableItem(
-                tower.icon,
-                "${if (isEnabled) "§a" else "§c"}${tower.displayName}: {VALUE}",
-                lore,
-                limitDisplay
+                tower.icon, "${if (isEnabled) "§a" else "§c"}${tower.displayName}: {VALUE}", lore, limitDisplay
             )
 
             // Add enchantment glint if enabled
@@ -98,44 +94,31 @@ class TowerSelection(
         // Left side - Back page button
         if (currentPage > 0) {
             inventory.setItem(
-                45,
-                createMenuItem(
-                    Material.RED_CONCRETE,
-                    "§cBack Page",
-                    listOf("Go to page $currentPage")
+                45, createMenuItem(
+                    Material.RED_CONCRETE, "§cBack Page", listOf("Go to page $currentPage")
                 )
             )
         }
 
         // Refresh button (slot 46)
         inventory.setItem(
-            46,
-            createMenuItem(
-                Material.LIME_DYE,
-                "§aRefresh",
-                listOf("§7Reload the towers list", "§7Useful after making changes")
+            46, createMenuItem(
+                Material.LIME_DYE, "§aRefresh", listOf("§7Reload the towers list", "§7Useful after making changes")
             )
         )
 
         // Close/Done button
         inventory.setItem(
-            47,
-            createMenuItem(
-                Material.BARRIER,
-                "§cDone",
-                listOf("Close towers menu and save")
+            47, createMenuItem(
+                Material.BARRIER, "§cDone", listOf("Close towers menu and save")
             )
         )
 
         // Center - Clear all limits button
         inventory.setItem(
-            49,
-            createMenuItem(
-                Material.TNT,
-                "§cClear All Limits",
-                listOf(
-                    "§7Remove all tower limits",
-                    "§7All towers will have no limit"
+            49, createMenuItem(
+                Material.TNT, "§cClear All Limits", listOf(
+                    "§7Remove all tower limits", "§7All towers will have no limit"
                 )
             )
         )
@@ -143,11 +126,8 @@ class TowerSelection(
         // Right side - Next page button
         if (currentPage < totalPages - 1) {
             inventory.setItem(
-                53,
-                createMenuItem(
-                    Material.GREEN_CONCRETE,
-                    "§aNext Page",
-                    listOf("Go to page ${currentPage + 2}")
+                53, createMenuItem(
+                    Material.GREEN_CONCRETE, "§aNext Page", listOf("Go to page ${currentPage + 2}")
                 )
             )
         }
@@ -187,8 +167,7 @@ class TowerSelection(
         val pdc = meta.persistentDataContainer
 
         val limitStr = pdc.get(
-            dev.etran.towerDefMc.TowerDefMC.TITLE_KEY,
-            org.bukkit.persistence.PersistentDataType.STRING
+            TowerDefMC.TITLE_KEY, PersistentDataType.STRING
         ) ?: "-1"
 
         val limit = when (limitStr) {

@@ -9,12 +9,12 @@ import org.bukkit.persistence.PersistentDataType
 object FireproofListener : Listener {
     @EventHandler
     fun onEntityDamage(event: EntityDamageEvent) {
-        if (event.entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) == null) return
+        if (event.entity.persistentDataContainer.get(
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
+            ) == null
+        ) return
 
-        if (event.cause == EntityDamageEvent.DamageCause.FIRE ||
-            event.cause == EntityDamageEvent.DamageCause.FIRE_TICK ||
-            event.cause == EntityDamageEvent.DamageCause.LAVA ||
-            event.cause == EntityDamageEvent.DamageCause.HOT_FLOOR) {
+        if (event.cause == EntityDamageEvent.DamageCause.FIRE || event.cause == EntityDamageEvent.DamageCause.FIRE_TICK || event.cause == EntityDamageEvent.DamageCause.LAVA || event.cause == EntityDamageEvent.DamageCause.HOT_FLOOR) {
 
             event.isCancelled = true
 

@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.applyEnemyMovementLogic
 import org.bukkit.World
 import org.bukkit.entity.LivingEntity
@@ -9,7 +10,7 @@ import org.bukkit.persistence.PersistentDataType
 object EnemyScheduler {
     fun checkAndHandleEnemies(world: World) {
         // Get all active games
-        val activeGames = dev.etran.towerDefMc.registries.GameRegistry.activeGames
+        val activeGames = GameRegistry.activeGames
 
         // Only get the entities in the world that are enemies
         world.getEntitiesByClass(LivingEntity::class.java).forEach { entity ->

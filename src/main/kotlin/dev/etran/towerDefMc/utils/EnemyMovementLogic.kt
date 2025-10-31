@@ -8,8 +8,7 @@ import org.bukkit.persistence.PersistentDataType
 
 fun applyEnemyMovementLogic(entity: Entity, checkpointManager: CheckpointManager, gameId: Int) {
     val container = entity.persistentDataContainer
-    val currentTargetId =
-        container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
+    val currentTargetId = container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
     var targetCheckpoint = checkpointManager.checkpoints[currentTargetId]
 
     // Target Switch Logic (Continuous Flow)
@@ -23,8 +22,7 @@ fun applyEnemyMovementLogic(entity: Entity, checkpointManager: CheckpointManager
 
             // Check for EndPoint or Max Checkpoint
             val isEndPoint = targetCheckpoint.persistentDataContainer.get(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
             ) == "EndPoint"
 
             // If the current target was an EndPoint OR the next ID is out of bounds, remove the entity
@@ -62,9 +60,7 @@ fun applyEnemyMovementLogic(entity: Entity, checkpointManager: CheckpointManager
             dev.etran.towerDefMc.managers.GameInstanceTracker.unregisterEntity(entity)
         } else {
             container.set(
-                TowerDefMC.TARGET_CHECKPOINT_ID,
-                PersistentDataType.INTEGER,
-                currentTargetId + 1
+                TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, currentTargetId + 1
             )
         }
 

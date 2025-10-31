@@ -1,14 +1,17 @@
 package dev.etran.towerDefMc.menus.waves
 
+import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.EnemySpawnCommand
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaitCommand
 import dev.etran.towerDefMc.data.WaveCommand
 import dev.etran.towerDefMc.data.WaveData
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.persistence.PersistentDataType
 
 class ModifyWave(
     player: Player,
@@ -36,6 +39,15 @@ class ModifyWave(
             maxTime = existingWave.maxTime
             waveHealth = existingWave.waveHealth
             cashGiven = existingWave.cashGiven
+        } else if (isNewWave) {
+            // Auto-generate wave using WaveFactory
+            val generatedWave = dev.etran.towerDefMc.factories.WaveFactory.generateWave(waveNum)
+            waveName = generatedWave.name
+            waveSequence.addAll(generatedWave.sequence)
+            minTime = generatedWave.minTime
+            maxTime = generatedWave.maxTime
+            waveHealth = generatedWave.waveHealth
+            cashGiven = generatedWave.cashGiven
         }
     }
 
@@ -48,36 +60,88 @@ class ModifyWave(
         }
 
         // Bottom 2 rows - action items
-        inventory.setItem(36, createMenuItem(Material.CLOCK, "Add Wait Time",
-            listOf("Add a wait command to the wave", "Enemies spawn after the wait")))
-        inventory.setItem(37, createMenuItem(Material.BARRIER, "Remove Wait Time",
-            listOf("Remove the last wait command", "from the wave sequence")))
-        inventory.setItem(39, createMenuItem(Material.ZOMBIE_HEAD, "Add Enemies",
-            listOf("Add enemy spawn commands", "to the wave sequence")))
-        inventory.setItem(40, createMenuItem(Material.BONE, "Remove Enemies",
-            listOf("Remove the last enemy spawn", "command from the wave")))
+        inventory.setItem(
+            36, createMenuItem(
+                Material.CLOCK,
+                "Add Wait Time",
+                listOf("Add a wait command to the wave", "Enemies spawn after the wait")
+            )
+        )
+        inventory.setItem(
+            37, createMenuItem(
+                Material.BARRIER, "Remove Wait Time", listOf("Remove the last wait command", "from the wave sequence")
+            )
+        )
+        inventory.setItem(
+            39, createMenuItem(
+                Material.ZOMBIE_HEAD, "Add Enemies", listOf("Add enemy spawn commands", "to the wave sequence")
+            )
+        )
+        inventory.setItem(
+            40, createMenuItem(
+                Material.BONE, "Remove Enemies", listOf("Remove the last enemy spawn", "command from the wave")
+            )
+        )
 
-        inventory.setItem(43, createRenamableItem(Material.NAME_TAG, "Wave Name: {VALUE}",
-            listOf("The name of this wave", "Current: {VALUE}"), waveName))
+        inventory.setItem(
+            43, createRenamableItem(
+                Material.NAME_TAG, "Wave Name: {VALUE}", listOf("The name of this wave", "Current: {VALUE}"), waveName
+            )
+        )
 
-        inventory.setItem(45, createRenamableItem(Material.GREEN_STAINED_GLASS, "Min Time: {VALUE}s",
-            listOf("Minimum time for the wave", "Current: {VALUE} seconds"), minTime.toString()))
-        inventory.setItem(46, createRenamableItem(Material.RED_STAINED_GLASS, "Max Time: {VALUE}s",
-            listOf("Maximum time for the wave", "Cannot be less than total wait time", "Current: {VALUE} seconds"), maxTime.toString()))
-        inventory.setItem(48, createRenamableItem(Material.REDSTONE_BLOCK, "Wave Health: {VALUE}",
-            listOf("Custom health for this wave", "Leave as 'default' for normal health", "Current: {VALUE}"), waveHealth?.toString() ?: "default"))
-        inventory.setItem(49, createRenamableItem(Material.GOLD_INGOT, "Cash Given: {VALUE}",
-            listOf("Cash awarded on wave completion", "Current: {VALUE}"), cashGiven.toString()))
+        inventory.setItem(
+            45, createRenamableItem(
+                Material.GREEN_STAINED_GLASS,
+                "Min Time: {VALUE}s",
+                listOf("Minimum time for the wave", "Current: {VALUE} seconds"),
+                minTime.toString()
+            )
+        )
+        inventory.setItem(
+            46, createRenamableItem(
+                Material.RED_STAINED_GLASS,
+                "Max Time: {VALUE}s",
+                listOf("Maximum time for the wave", "Cannot be less than total wait time", "Current: {VALUE} seconds"),
+                maxTime.toString()
+            )
+        )
+        inventory.setItem(
+            48, createRenamableItem(
+                Material.REDSTONE_BLOCK,
+                "Wave Health: {VALUE}",
+                listOf("Custom health for this wave", "Leave as 'default' for normal health", "Current: {VALUE}"),
+                waveHealth?.toString() ?: "default"
+            )
+        )
+        inventory.setItem(
+            49, createRenamableItem(
+                Material.GOLD_INGOT,
+                "Cash Given: {VALUE}",
+                listOf("Cash awarded on wave completion", "Current: {VALUE}"),
+                cashGiven.toString()
+            )
+        )
 
         if (!isNewWave) {
-            inventory.setItem(51, createMenuItem(Material.TNT, "§cDelete Wave",
-                listOf("§4WARNING: This will delete the wave!", "This cannot be undone")))
+            inventory.setItem(
+                51, createMenuItem(
+                    Material.TNT,
+                    "§cDelete Wave",
+                    listOf("§4WARNING: This will delete the wave!", "This cannot be undone")
+                )
+            )
         }
 
-        inventory.setItem(52, createMenuItem(Material.BARRIER, "Cancel",
-            listOf("Return without saving", "WARNING: Changes will be lost!")))
-        inventory.setItem(53, createMenuItem(Material.EMERALD_BLOCK, "Save Wave",
-            listOf("Save the wave configuration", "and return to waves menu")))
+        inventory.setItem(
+            52, createMenuItem(
+                Material.BARRIER, "Cancel", listOf("Return without saving", "WARNING: Changes will be lost!")
+            )
+        )
+        inventory.setItem(
+            53, createMenuItem(
+                Material.EMERALD_BLOCK, "Save Wave", listOf("Save the wave configuration", "and return to waves menu")
+            )
+        )
     }
 
     private fun displayWaveSequence() {
@@ -89,13 +153,19 @@ class ModifyWave(
             if (index >= 27) break
 
             val item = when (command) {
-                is WaitCommand -> createMenuItem(Material.CLOCK, "Wait: ${command.waitSeconds}s",
-                    listOf("Wait for ${command.waitSeconds} seconds"))
+                is WaitCommand -> createMenuItem(
+                    Material.CLOCK, "Wait: ${command.waitSeconds}s", listOf("Wait for ${command.waitSeconds} seconds")
+                )
+
                 is EnemySpawnCommand -> {
                     val enemyList = command.enemies.entries.joinToString(", ") { "${it.key}: ${it.value}x" }
-                    createMenuItem(Material.ZOMBIE_SPAWN_EGG, "Spawn Enemies",
-                        listOf("Interval: ${command.intervalSeconds}s", "Enemies: $enemyList"))
+                    createMenuItem(
+                        Material.ZOMBIE_SPAWN_EGG,
+                        "Spawn Enemies",
+                        listOf("Interval: ${command.intervalSeconds}s", "Enemies: $enemyList")
+                    )
                 }
+
                 else -> createMenuItem(Material.PAPER, "Unknown Command", listOf())
             }
             inventory.setItem(index, item)
@@ -165,8 +235,7 @@ class ModifyWave(
         val pdc = meta.persistentDataContainer
 
         val newName = pdc.get(
-            dev.etran.towerDefMc.TowerDefMC.TITLE_KEY,
-            org.bukkit.persistence.PersistentDataType.STRING
+            TowerDefMC.TITLE_KEY, PersistentDataType.STRING
         ) ?: waveName
 
         waveName = newName
@@ -184,10 +253,10 @@ class ModifyWave(
             val updatedConfig = gameConfig.copy(waves = mutableWaves)
 
             // Save updated config to registry
-            dev.etran.towerDefMc.registries.GameRegistry.allGames.entries.find {
+            GameRegistry.allGames.entries.find {
                 it.value.config == gameConfig
             }?.let { entry ->
-                dev.etran.towerDefMc.registries.GameRegistry.saveGameConfig(entry.key, updatedConfig)
+                GameRegistry.saveGameConfig(entry.key, updatedConfig)
             }
 
             player.closeInventory()
@@ -252,7 +321,7 @@ class ModifyWave(
         gameConfig.waves = mutableWaves
 
         // Find the game manager and update its config, then save
-        val gameManager = dev.etran.towerDefMc.registries.GameRegistry.allGames[gameId]
+        val gameManager = GameRegistry.allGames[gameId]
         if (gameManager != null) {
             gameManager.updateWaves(mutableWaves)
             player.sendMessage("§aWave $waveNum saved successfully!")
@@ -271,7 +340,7 @@ class ModifyWave(
         inventory.getItem(43)?.let { item ->
             val meta = item.itemMeta
             val pdc = meta.persistentDataContainer
-            pdc.get(dev.etran.towerDefMc.TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)?.let {
+            pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)?.let {
                 waveName = it
             }
         }
@@ -280,7 +349,7 @@ class ModifyWave(
         inventory.getItem(45)?.let { item ->
             val meta = item.itemMeta
             val pdc = meta.persistentDataContainer
-            pdc.get(dev.etran.towerDefMc.TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)?.let {
+            pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)?.let {
                 minTime = it.toDoubleOrNull() ?: minTime
             }
         }
@@ -289,7 +358,7 @@ class ModifyWave(
         inventory.getItem(46)?.let { item ->
             val meta = item.itemMeta
             val pdc = meta.persistentDataContainer
-            pdc.get(dev.etran.towerDefMc.TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)?.let {
+            pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)?.let {
                 maxTime = it.toDoubleOrNull() ?: maxTime
             }
         }
@@ -298,7 +367,7 @@ class ModifyWave(
         inventory.getItem(48)?.let { item ->
             val meta = item.itemMeta
             val pdc = meta.persistentDataContainer
-            pdc.get(dev.etran.towerDefMc.TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)?.let {
+            pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)?.let {
                 waveHealth = if (it == "default") null else it.toDoubleOrNull()
             }
         }
@@ -307,7 +376,7 @@ class ModifyWave(
         inventory.getItem(49)?.let { item ->
             val meta = item.itemMeta
             val pdc = meta.persistentDataContainer
-            pdc.get(dev.etran.towerDefMc.TowerDefMC.TITLE_KEY, org.bukkit.persistence.PersistentDataType.STRING)?.let {
+            pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)?.let {
                 cashGiven = it.toIntOrNull() ?: cashGiven
             }
         }

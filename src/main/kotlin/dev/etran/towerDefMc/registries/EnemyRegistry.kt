@@ -60,11 +60,11 @@ object EnemyRegistry {
         // Basic Enemy
         config.set("enemies.Basic_Enemy_1.displayName", "Basic Zombie")
         config.set("enemies.Basic_Enemy_1.icon", "ZOMBIE_HEAD")
-        config.set("enemies.Basic_Enemy_1.description", listOf(
-            "Standard enemy",
-            "Medium speed",
-            "Low health"
-        ))
+        config.set(
+            "enemies.Basic_Enemy_1.description", listOf(
+                "Standard enemy", "Medium speed", "Low health"
+            )
+        )
         config.set("enemies.Basic_Enemy_1.health", 20.0)
         config.set("enemies.Basic_Enemy_1.speed", 1.0)
         config.set("enemies.Basic_Enemy_1.damage", 1)
@@ -72,11 +72,11 @@ object EnemyRegistry {
         // Fast Enemy
         config.set("enemies.Fast_Enemy.displayName", "Fast Runner")
         config.set("enemies.Fast_Enemy.icon", "LEATHER_BOOTS")
-        config.set("enemies.Fast_Enemy.description", listOf(
-            "Fast enemy",
-            "High speed",
-            "Low health"
-        ))
+        config.set(
+            "enemies.Fast_Enemy.description", listOf(
+                "Fast enemy", "High speed", "Low health"
+            )
+        )
         config.set("enemies.Fast_Enemy.health", 15.0)
         config.set("enemies.Fast_Enemy.speed", 2.0)
         config.set("enemies.Fast_Enemy.damage", 1)
@@ -84,11 +84,11 @@ object EnemyRegistry {
         // Tank Enemy
         config.set("enemies.Tank_Enemy.displayName", "Tank")
         config.set("enemies.Tank_Enemy.icon", "IRON_CHESTPLATE")
-        config.set("enemies.Tank_Enemy.description", listOf(
-            "Slow enemy",
-            "Low speed",
-            "High health"
-        ))
+        config.set(
+            "enemies.Tank_Enemy.description", listOf(
+                "Slow enemy", "Low speed", "High health"
+            )
+        )
         config.set("enemies.Tank_Enemy.health", 100.0)
         config.set("enemies.Tank_Enemy.speed", 0.5)
         config.set("enemies.Tank_Enemy.damage", 2)
@@ -96,11 +96,11 @@ object EnemyRegistry {
         // Boss Enemy
         config.set("enemies.Boss_Enemy.displayName", "Boss")
         config.set("enemies.Boss_Enemy.icon", "WITHER_SKELETON_SKULL")
-        config.set("enemies.Boss_Enemy.description", listOf(
-            "Boss enemy",
-            "Medium speed",
-            "Very high health"
-        ))
+        config.set(
+            "enemies.Boss_Enemy.description", listOf(
+                "Boss enemy", "Medium speed", "Very high health"
+            )
+        )
         config.set("enemies.Boss_Enemy.health", 500.0)
         config.set("enemies.Boss_Enemy.speed", 0.8)
         config.set("enemies.Boss_Enemy.damage", 5)

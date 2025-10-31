@@ -24,6 +24,7 @@ object GiveStartPoint : CommandExecutor {
                 }
                 targetPlayer = sender
             }
+
             1 -> {
                 val potentialAmount = args[0].toIntOrNull()
 
@@ -48,6 +49,7 @@ object GiveStartPoint : CommandExecutor {
                     targetPlayer = player
                 }
             }
+
             2 -> {
                 val player = Bukkit.getPlayer(args[0])
                 if (player == null) {
@@ -69,6 +71,7 @@ object GiveStartPoint : CommandExecutor {
                     return false
                 }
             }
+
             else -> {
                 sender.sendMessage("§cToo many arguments.")
                 sender.sendMessage(usageMessage)
@@ -91,8 +94,7 @@ object GiveStartPoint : CommandExecutor {
         if (leftovers.isNotEmpty()) {
             leftovers.values.forEach { elementItemStack ->
                 targetPlayer.world.dropItemNaturally(
-                    targetPlayer.location,
-                    elementItemStack
+                    targetPlayer.location, elementItemStack
                 )
             }
             targetPlayer.sendMessage("§eSome items couldn't fit and were dropped on the ground.")

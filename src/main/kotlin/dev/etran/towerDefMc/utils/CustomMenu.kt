@@ -67,8 +67,8 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
 
         val titleTemplate = customValue ?: defaultName
 
-        val processedTitle = titleTemplate.replace("{VALUE}", dynamicValueSource)
-            .replace("\${VALUE}", dynamicValueSource)
+        val processedTitle =
+            titleTemplate.replace("{VALUE}", dynamicValueSource).replace("\${VALUE}", dynamicValueSource)
 
         val nameComponent = TowerDefMC.MINI_MESSAGE.deserialize(processedTitle.replace("§", "&"))
         meta.displayName(nameComponent)
@@ -76,8 +76,7 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val finalLoreComponents = mutableListOf<Component>()
 
         for (rawLine in defaultLore) {
-            val processedLine = rawLine.replace("{VALUE}", dynamicValueSource)
-                .replace("\${VALUE}", dynamicValueSource)
+            val processedLine = rawLine.replace("{VALUE}", dynamicValueSource).replace("\${VALUE}", dynamicValueSource)
 
             finalLoreComponents.add(TowerDefMC.MINI_MESSAGE.deserialize(processedLine.replace("§", "&")))
         }
@@ -103,8 +102,9 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val pdc = meta.persistentDataContainer
 
         // Check if the item has the "renamable" item marker
-        return pdc.has(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING) &&
-                pdc.get(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING).equals(RENAMABLE)
+        return pdc.has(TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING) && pdc.get(
+            TowerDefMC.RENAMABLE_KEY, PersistentDataType.STRING
+        ).equals(RENAMABLE)
     }
 
     fun initiateRename(item: ItemStack, slot: Int) {
@@ -113,9 +113,7 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         player.closeInventory()
 
         val context = MenuListener.RenameContext(
-            itemToRename = item.clone(),
-            sourceSlot = slot,
-            menuInstance = this
+            itemToRename = item.clone(), sourceSlot = slot, menuInstance = this
         )
 
         MenuListener.awaitingRename[player.uniqueId] = context
@@ -124,8 +122,12 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val promptText = "new value"
 
         player.sendMessage(Component.text("----------------------------------").color(TextColor.color(0x00FFFF)))
-        player.sendMessage(Component.text("Enter the $promptText. Type 'cancel' to stop.").color(TextColor.color(0x00FF00)))
-        player.sendMessage(Component.text("The first line of your message will be the $promptText.").color(TextColor.color(0x808080)))
+        player.sendMessage(
+            Component.text("Enter the $promptText. Type 'cancel' to stop.").color(TextColor.color(0x00FF00))
+        )
+        player.sendMessage(
+            Component.text("The first line of your message will be the $promptText.").color(TextColor.color(0x808080))
+        )
         player.sendMessage(Component.text("----------------------------------").color(TextColor.color(0x00FFFF)))
     }
 

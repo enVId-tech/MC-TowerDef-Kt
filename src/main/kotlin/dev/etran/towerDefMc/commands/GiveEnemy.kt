@@ -45,8 +45,7 @@ object GiveEnemy : CommandExecutor {
         // Throws out remaining items in leftovers
         leftovers.values.forEach { enemyItemStack ->
             player.world.dropItemNaturally(
-                player.location,
-                enemyItemStack
+                player.location, enemyItemStack
             )
         }
 

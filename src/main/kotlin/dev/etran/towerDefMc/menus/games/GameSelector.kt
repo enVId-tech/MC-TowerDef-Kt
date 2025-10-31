@@ -22,8 +22,7 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
                 if (i < gamesList.values.size) {
                     inventory.setItem(
                         i - (currentMenuOpen * 36), createMenuItem(
-                            Material.BOW,
-                            gamesList.values.elementAt(i).config.name
+                            Material.BOW, gamesList.values.elementAt(i).config.name
                         )
                     )
                 }
@@ -46,17 +45,14 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
             }
 
             inventory.setItem(
-                47,
-                createMenuItem(
-                    Material.REDSTONE_BLOCK,
-                    "Back Menu"
+                47, createMenuItem(
+                    Material.REDSTONE_BLOCK, "Back Menu"
                 )
             )
 
             // Refresh button (slot 49)
             inventory.setItem(
-                49,
-                createMenuItem(
+                49, createMenuItem(
                     Material.LIME_DYE,
                     "§aRefresh",
                     listOf("§7Reload the games list", "§7Useful after creating or deleting games")
@@ -76,25 +72,21 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
                 if (index < 45) {
                     inventory.setItem(
                         index, createMenuItem(
-                            Material.BOW,
-                            game.config.name
+                            Material.BOW, game.config.name
                         )
                     )
                 }
             }
 
             inventory.setItem(
-                47,
-                createMenuItem(
-                    Material.REDSTONE_BLOCK,
-                    "Back Menu"
+                47, createMenuItem(
+                    Material.REDSTONE_BLOCK, "Back Menu"
                 )
             )
 
             // Refresh button for single page mode (slot 49)
             inventory.setItem(
-                49,
-                createMenuItem(
+                49, createMenuItem(
                     Material.LIME_DYE,
                     "§aRefresh",
                     listOf("§7Reload the games list", "§7Useful after creating or deleting games")
@@ -119,16 +111,19 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
                 }
                 return
             }
+
             47 -> {
                 val menu = Home(player)
                 menu.open()
             }
+
             49 -> {
                 // Refresh button
                 open() // Refresh the menu
                 player.sendMessage("§aGames list refreshed")
                 return
             }
+
             53 -> {
                 // Next page button
                 if (currentMenuOpen < (gamesList.values.size / 36)) {
@@ -137,6 +132,7 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
                 }
                 return
             }
+
             in 36..44 -> {
                 // Gray glass pane separator - do nothing
                 return

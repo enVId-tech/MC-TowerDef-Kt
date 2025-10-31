@@ -44,8 +44,7 @@ object GiveCheckpoint : CommandExecutor {
         // Throws out remaining items in leftovers
         leftovers.values.forEach { checkpointItemStack ->
             player.world.dropItemNaturally(
-                player.location,
-                checkpointItemStack
+                player.location, checkpointItemStack
             )
         }
 

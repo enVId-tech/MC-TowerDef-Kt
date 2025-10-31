@@ -63,8 +63,7 @@ object GameRegistry {
             )
 
             val newGameManager = GameManager(
-                gameId = gameId,
-                config = gameConfigurationData
+                gameId = gameId, config = gameConfigurationData
             )
 
             allGames[gameId] = newGameManager
