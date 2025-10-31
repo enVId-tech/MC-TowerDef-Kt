@@ -20,8 +20,6 @@ class CheckpointManager() {
     var standsAreVisible: Boolean = true
     val effectType = PotionEffectType.GLOWING
 
-
-
     companion object {
         const val DURATION = Int.MAX_VALUE
         const val AMPLIFIER = 255

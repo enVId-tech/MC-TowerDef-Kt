@@ -4,6 +4,6 @@ data class GameSaveConfig(
     val maxHealth: Int,
     val defaultCash: Int,
     val name: String,
-    val waves: List<Wave>,
+    val waves: List<WaveData>,
     val allowedTowers: List<String>
 )

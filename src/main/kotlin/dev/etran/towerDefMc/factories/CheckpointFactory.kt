@@ -25,17 +25,17 @@ object CheckpointFactory {
         return checkPointSpawn
     }
 
-    fun checkPointPlace(event: PlayerInteractEvent) {
+    fun checkPointPlace(event: PlayerInteractEvent, checkpointManager: CheckpointManager) {
         val entity = placeElement(event, "checkpoint")
         val player = event.player
 
         if (entity == null) return
 
-        val lastCheckpoint = CheckpointManager.checkpoints.values.lastOrNull()
+        val lastCheckpoint = checkpointManager.checkpoints.values.lastOrNull()
 
         // Only check if the checkpoint isn't empty to avoid NoSuchElementException
         // If the final checkpoint ID is an endpoint, do not allow additional checkpoints
-        if (lastCheckpoint != null && CheckpointManager.checkpoints.values.last().persistentDataContainer.get(
+        if (lastCheckpoint != null && checkpointManager.checkpoints.values.last().persistentDataContainer.get(
                 TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
             ).equals("EndPoint")
         ) {
@@ -44,7 +44,7 @@ object CheckpointFactory {
             return
         }
 
-        val correctNewId = CheckpointManager.add(entity as ArmorStand)
+        val correctNewId = checkpointManager.add(entity as ArmorStand)
 
         // Set the PDC with the correct ID.
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, correctNewId)

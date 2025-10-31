@@ -2,8 +2,11 @@ package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
+import dev.etran.towerDefMc.factories.CheckpointFactory
 import dev.etran.towerDefMc.registries.GameRegistry
+import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
 class GameManager(
@@ -72,5 +75,10 @@ class GameManager(
 
     fun removePlayer(player: UUID) {
         players.remove(player)
+    }
+
+    // -- General Game Management --
+    fun addCheckpoint(event: PlayerInteractEvent) {
+        CheckpointFactory.checkPointPlace(event, checkpointManager)
     }
 }
