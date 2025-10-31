@@ -27,11 +27,24 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
 
     if (!enemy.isDead) {
         enemy.noDamageTicks = 0
-        enemy.damage(
-            tower.persistentDataContainer.getOrDefault(
-                TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 5.0
-            )
+        val damage = tower.persistentDataContainer.getOrDefault(
+            TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 5.0
         )
+        enemy.damage(damage)
+
+        // Track damage dealt - find the tower's owner/placer if possible
+        // For now, we'll track damage per game via the GameInstanceTracker
+        val gameId = dev.etran.towerDefMc.managers.GameInstanceTracker.getGameId(tower)
+        if (gameId != null) {
+            // Award damage to all players in the game for now
+            // In future, could track tower ownership per player
+            val game = dev.etran.towerDefMc.registries.GameRegistry.allGames[gameId]
+            if (game != null) {
+                dev.etran.towerDefMc.managers.PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                    dev.etran.towerDefMc.managers.PlayerStatsManager.recordDamage(gameId, playerUUID, damage)
+                }
+            }
+        }
     }
 
     tower.persistentDataContainer.set(TowerDefMC.READY_TIME, PersistentDataType.LONG, nextReadyTime)

@@ -85,9 +85,24 @@ object TowerFactory {
             )
         )
 
+        // Initialize tower at level 1
+        entity.persistentDataContainer.set(
+            TowerDefMC.createKey("towerLevel"),
+            PersistentDataType.INTEGER,
+            1
+        )
+
+        // Record tower placement in player stats
+        val game = dev.etran.towerDefMc.registries.GameRegistry.getGameByPlayer(player.uniqueId)
+        if (game != null) {
+            dev.etran.towerDefMc.managers.PlayerStatsManager.recordTowerPlaced(game.gameId, player.uniqueId)
+        }
+
         // Take away 1 from the user if they aren't in creative or spectator mode.
         if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
+
+        player.sendMessage("§aTower placed! §7Sneak + Right-click to upgrade.")
     }
 }

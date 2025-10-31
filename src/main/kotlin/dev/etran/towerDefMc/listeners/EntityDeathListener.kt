@@ -31,6 +31,20 @@ object EntityDeathListener : Listener {
                         GameRegistry.activeGames[gameId]?.waypointManager?.remove(gameElement)
                     }
                 }
+                "Enemy" -> {
+                    // Track enemy kills for all players in the game
+                    val gameId = GameInstanceTracker.getGameId(gameElement)
+                    if (gameId != null) {
+                        dev.etran.towerDefMc.managers.PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                            dev.etran.towerDefMc.managers.PlayerStatsManager.recordKill(gameId, playerUUID)
+                        }
+
+                        // Award cash for killing enemy (50 cash per kill)
+                        dev.etran.towerDefMc.managers.PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                            dev.etran.towerDefMc.managers.PlayerStatsManager.awardCash(gameId, playerUUID, 50)
+                        }
+                    }
+                }
             }
         }
     }

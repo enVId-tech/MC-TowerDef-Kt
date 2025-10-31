@@ -35,6 +35,7 @@ object PlayerPlaceListener : Listener {
             when (name) {
                 "Tower 1" -> TowerFactory.towerPlace(event)
                 "Enemy 1" -> EnemyFactory.enemyPlace(event)
+                "Stats_Tracker" -> dev.etran.towerDefMc.factories.StatsTrackerFactory.placeStatsTracker(event)
                 else -> event.player.sendMessage("This game element doesn't exist.")
             }
 

@@ -76,11 +76,23 @@ class GameManager(
     @Suppress("unused")
     fun addPlayer(player: UUID) {
         players.add(player)
+
+        // Initialize stats for new player
+        if (isRunning) {
+            dev.etran.towerDefMc.managers.PlayerStatsManager.initializePlayer(
+                gameId,
+                player,
+                config.defaultCash
+            )
+        }
     }
 
     @Suppress("unused")
     fun removePlayer(player: UUID) {
         players.remove(player)
+
+        // Remove player stats
+        dev.etran.towerDefMc.managers.PlayerStatsManager.removePlayer(gameId, player)
     }
 
     fun hasPlayer(player: UUID): Boolean {
