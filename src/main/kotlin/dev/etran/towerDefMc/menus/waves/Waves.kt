@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.menus.waves
 
 import dev.etran.towerDefMc.data.GameSaveConfig
+import dev.etran.towerDefMc.menus.games.ModifyGame
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -8,7 +9,8 @@ import org.bukkit.event.inventory.InventoryClickEvent
 
 class Waves(
     player: Player,
-    private val gameConfig: GameSaveConfig
+    private val gameConfig: GameSaveConfig,
+    private val gameId: Int
 ) : CustomMenu(player, 54, "Tower Defense - Waves") {
 
     private var currentPage: Int = 0
@@ -134,7 +136,7 @@ class Waves(
         player.closeInventory()
 
         // Open ModifyWave menu for this wave
-        val modifyWaveMenu = ModifyWave(player, waveNumber, gameConfig)
+        val modifyWaveMenu = ModifyWave(player, waveNumber, gameConfig, gameId = this.gameId)
         modifyWaveMenu.open()
     }
 
@@ -157,7 +159,7 @@ class Waves(
         player.closeInventory()
 
         // Open ModifyWave for new wave at this position
-        val modifyWaveMenu = ModifyWave(player, position, gameConfig, isNewWave = true)
+        val modifyWaveMenu = ModifyWave(player, position, gameConfig, isNewWave = true, this.gameId)
         modifyWaveMenu.open()
     }
 
@@ -184,7 +186,8 @@ class Waves(
             dev.etran.towerDefMc.registries.GameRegistry.saveGameConfig(entry.key, gameConfig)
         }
 
-        player.closeInventory()
+        val prevMenu = ModifyGame(player, gameId)
+        prevMenu.open()
         player.sendMessage("§aWaves menu closed - changes saved")
     }
 

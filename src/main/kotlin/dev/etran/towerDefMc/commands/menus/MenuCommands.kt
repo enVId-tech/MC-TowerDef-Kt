@@ -93,7 +93,7 @@ object MenuCommands : CommandExecutor, TabCompleter {
             return
         }
 
-        Waves(player, game.config).open()
+        Waves(player, game.config, gameId).open()
     }
 
     private fun openGameSelector(player: Player) {

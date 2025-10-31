@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.MenuListener
+import dev.etran.towerDefMc.menus.Home
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -73,10 +74,13 @@ class NewGame(player: Player) : CustomMenu(player, 36, "Tower Defense - New Game
         event.isCancelled = true
 
         when (event.slot) {
+            34 -> {
+                val menu = Home(player)
+                menu.open()
+            }
             35 -> {
                 GameFactory.createGame(this)
-                val menu = NewGame(player)
-                MenuListener.registerMenu(player, menu)
+                val menu = Home(player)
                 menu.open()
             }
         }

@@ -107,7 +107,7 @@ class ModifyGame(
 
     private fun handleWavesClick() {
         player.closeInventory()
-        val wavesMenu = Waves(player, gameManager!!.config)
+        val wavesMenu = Waves(player, gameManager!!.config, gameId=gameId)
         wavesMenu.open()
     }
 
@@ -118,8 +118,8 @@ class ModifyGame(
 
     private fun handleBack() {
         player.closeInventory()
-        player.sendMessage("§aReturning to game selection")
-        // TODO: Open game selector menu
+        val gameSelectorMenu = GameSelector(player)
+        gameSelectorMenu.open()
     }
 
     private fun handleValueUpdate(event: InventoryClickEvent) {

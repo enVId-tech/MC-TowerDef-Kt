@@ -100,9 +100,9 @@ object GameRegistry {
     }
 
     fun addGame(game: GameManager) {
-        val newId = (allGames.keys.maxOrNull() ?: -1) + 1
-        allGames[newId] = game
-        activeGames[newId] = game
+        // Use the game's existing ID instead of generating a new one
+        allGames[game.gameId] = game
+        activeGames[game.gameId] = game
         saveGame(game)
     }
 

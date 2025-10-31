@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.managers.GameManager
+import dev.etran.towerDefMc.menus.Home
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
@@ -15,7 +16,7 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
     override fun setMenuItems() {
         gamesList = GameRegistry.allGames
 
-        if (gamesList.values.size >= 54) {
+        if (gamesList.values.size > 45) {
             for (i in 0 + (currentMenuOpen * 36)..35 + (currentMenuOpen * 36)) {
                 // Check if the index is valid before accessing
                 if (i < gamesList.values.size) {
@@ -44,6 +45,14 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
                 )
             }
 
+            inventory.setItem(
+                47,
+                createMenuItem(
+                    Material.REDSTONE_BLOCK,
+                    "Back Menu"
+                )
+            )
+
             // Refresh button (slot 49)
             inventory.setItem(
                 49,
@@ -64,7 +73,7 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
         } else {
             // For less than 54 games, display them all
             gamesList.values.forEachIndexed { index, game ->
-                if (index < 54) {
+                if (index < 45) {
                     inventory.setItem(
                         index, createMenuItem(
                             Material.BOW,
@@ -73,6 +82,14 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
                     )
                 }
             }
+
+            inventory.setItem(
+                47,
+                createMenuItem(
+                    Material.REDSTONE_BLOCK,
+                    "Back Menu"
+                )
+            )
 
             // Refresh button for single page mode (slot 49)
             inventory.setItem(
@@ -101,6 +118,10 @@ class GameSelector(player: Player) : CustomMenu(player, 54, "Tower Defense - Mod
                     open() // Refresh the menu
                 }
                 return
+            }
+            47 -> {
+                val menu = Home(player)
+                menu.open()
             }
             49 -> {
                 // Refresh button

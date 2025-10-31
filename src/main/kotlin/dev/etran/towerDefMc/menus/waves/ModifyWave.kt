@@ -14,7 +14,8 @@ class ModifyWave(
     player: Player,
     val waveNum: Int,
     private val gameConfig: GameSaveConfig,
-    private val isNewWave: Boolean = false
+    private val isNewWave: Boolean = false,
+    private val gameId: Int
 ) : CustomMenu(player, 54, "Tower Defense - Wave $waveNum") {
 
     private var waveSequence: MutableList<WaveCommand> = mutableListOf()
@@ -193,7 +194,7 @@ class ModifyWave(
             player.sendMessage("§aWave $waveNum deleted!")
 
             // Return to Waves menu
-            Waves(player, updatedConfig).open()
+            Waves(player, updatedConfig, gameId).open()
         }
     }
 
@@ -201,7 +202,7 @@ class ModifyWave(
         player.closeInventory()
         player.sendMessage("§cWave modification cancelled")
         // Return to Waves menu
-        Waves(player, gameConfig).open()
+        Waves(player, gameConfig, gameId).open()
     }
 
     private fun handleSave(@Suppress("UNUSED_PARAMETER") event: InventoryClickEvent) {
@@ -260,7 +261,7 @@ class ModifyWave(
         player.sendMessage("§aWave $waveNum saved successfully!")
 
         // Return to Waves menu
-        Waves(player, updatedConfig).open()
+        Waves(player, updatedConfig, gameId).open()
     }
 
     private fun updateValuesFromInventory() {
