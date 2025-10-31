@@ -30,7 +30,11 @@ class ModifyWave(
             val existingWave = gameConfig.waves[waveNum - 1]
             waveName = existingWave.name
             waveSequence.addAll(existingWave.sequence)
-            // TODO: Load other wave properties when WaveData is extended
+            // Load other wave properties
+            minTime = existingWave.minTime
+            maxTime = existingWave.maxTime
+            waveHealth = existingWave.waveHealth
+            cashGiven = existingWave.cashGiven
         }
     }
 
@@ -219,7 +223,11 @@ class ModifyWave(
         // Create the wave data
         val waveData = WaveData(
             name = waveName,
-            sequence = waveSequence.toList()
+            sequence = waveSequence.toList(),
+            minTime = minTime,
+            maxTime = maxTime,
+            waveHealth = waveHealth,
+            cashGiven = cashGiven
         )
 
         // Update the game config

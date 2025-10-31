@@ -58,7 +58,7 @@ object GameFactory {
             maxHealth = maxHealth ?: 100,
             defaultCash = defaultCash ?: 500,
             name = gameName ?: "Default Game Name",
-            waves = emptyList(), // TODO: Change any to a proper wave type once a wave system has been established
+            waves = emptyList(), // Start with empty waves list - can be added via Waves menu
             allowedTowers = emptyList()
         )
 

@@ -15,13 +15,10 @@ class EnemiesSelection(
     private val selectedEnemies: MutableMap<String, Int> = mutableMapOf()
     private var spawnInterval: Double = 1.0
 
-    // TODO: This should be loaded from a registry/config in the future
-    private val availableEnemies: List<EnemyType> = listOf(
-        EnemyType("Basic_Enemy_1", Material.ZOMBIE_HEAD, "Basic Zombie", listOf("Standard enemy", "Medium speed", "Low health")),
-        EnemyType("Fast_Enemy", Material.LEATHER_BOOTS, "Fast Runner", listOf("Fast enemy", "High speed", "Low health")),
-        EnemyType("Tank_Enemy", Material.IRON_CHESTPLATE, "Tank", listOf("Slow enemy", "Low speed", "High health")),
-        EnemyType("Boss_Enemy", Material.WITHER_SKELETON_SKULL, "Boss", listOf("Boss enemy", "Medium speed", "Very high health"))
-    )
+    // Load enemy types from registry
+    private val availableEnemies: List<EnemyType> = dev.etran.towerDefMc.registries.EnemyRegistry.getAllEnemies().map {
+        EnemyType(it.id, it.icon, it.displayName, it.description)
+    }
 
     private val enemiesPerPage = 36
 
