@@ -8,7 +8,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.io.File
@@ -26,11 +25,11 @@ class CheckpointManager() {
     companion object {
         const val DURATION = Int.MAX_VALUE
         const val AMPLIFIER = 255
-        lateinit var plugin: Plugin
-    }
+        lateinit var plugin: TowerDefMC
 
-    constructor(plugin: TowerDefMC) : this() {
-        CheckpointManager.plugin = plugin
+        fun initialize(plugin: TowerDefMC) {
+            this.plugin = plugin
+        }
     }
 
     /**

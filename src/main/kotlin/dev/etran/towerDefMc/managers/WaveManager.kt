@@ -15,7 +15,7 @@ class WaveManager(
 ) {
     private var currentWaveData: WaveData? = null
     private var commandIndex = -1
-    private var currentWave = 0
+    var currentWave = 0
     private var enemiesRemaining = 0
     private var timeRemaining = 0.0
 

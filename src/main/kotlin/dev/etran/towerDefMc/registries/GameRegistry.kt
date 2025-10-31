@@ -82,4 +82,8 @@ object GameRegistry {
     fun addGame(game: GameManager) {
         activeGames[activeGames.size] = game
     }
+
+    fun removeGame(game: GameManager) {
+
+    }
 }
