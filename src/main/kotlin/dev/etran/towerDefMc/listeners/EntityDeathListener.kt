@@ -1,7 +1,8 @@
 package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
-import dev.etran.towerDefMc.managers.CheckpointManager
+import dev.etran.towerDefMc.managers.GameInstanceTracker
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.cleanUpEnemyHealthBar
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
@@ -23,8 +24,13 @@ object EntityDeathListener : Listener {
         if (gameElementId != null) {
             cleanUpEnemyHealthBar(gameElement)
             when (gameElementId) {
-                "Checkpoint" -> if (gameElement is ArmorStand) CheckpointManager.remove(gameElement)
-                "EndPoint" -> if (gameElement is ArmorStand) CheckpointManager.remove(gameElement)
+                "Checkpoint", "EndPoint" -> if (gameElement is ArmorStand) {
+                    // Find which game this checkpoint belongs to and remove it
+                    val gameId = GameInstanceTracker.getGameId(gameElement)
+                    if (gameId != null) {
+                        GameRegistry.activeGames[gameId]?.getCheckpointManager()?.remove(gameElement)
+                    }
+                }
             }
         }
     }

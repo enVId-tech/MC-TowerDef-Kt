@@ -25,7 +25,7 @@ object EndpointFactory {
         return endPointSpawn
     }
 
-    fun endPointPlace(event: PlayerInteractEvent) {
+    fun endPointPlace(event: PlayerInteractEvent, checkpointManager: CheckpointManager) {
         val entity = placeElement(event, "endpoint")
         val player = event.player
 
@@ -34,9 +34,9 @@ object EndpointFactory {
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "EndPoint")
         entity.persistentDataContainer.set(TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER,
-            (CheckpointManager.checkpoints.size + 1)
+            (checkpointManager.checkpoints.size + 1)
         )
-        CheckpointManager.add(entity as ArmorStand)
+        checkpointManager.add(entity as ArmorStand)
 
         // Take away 1 from the user if they aren't in creative or spectator mode.
         if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
