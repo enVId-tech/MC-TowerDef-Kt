@@ -144,6 +144,12 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
     // Method to handle a specific slot click. Each specific menu implements this.
     abstract fun handleClick(event: InventoryClickEvent)
 
+    // Method called after an item is renamed via chat input
+    open fun onItemRenamed(slot: Int, newValue: String) {
+        // Default implementation does nothing
+        // Subclasses can override to handle auto-save or other logic
+    }
+
     // Helper to allow Adventure Component
     private fun String.toComponent(): Component = Component.text(this)
 }

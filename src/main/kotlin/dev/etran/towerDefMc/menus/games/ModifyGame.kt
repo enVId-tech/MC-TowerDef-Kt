@@ -71,7 +71,7 @@ class ModifyGame(
         )
 
         inventory.setItem(
-            21,
+            22,
             createMenuItem(
                 Material.BOW,
                 "Towers",
@@ -100,7 +100,7 @@ class ModifyGame(
 
         when (event.slot) {
             19 -> handleWavesClick()
-            21 -> handleTowersClick()
+            22 -> handleTowersClick()
             49 -> handleBack()
             10, 13, 16 -> handleValueUpdate(event)
         }
@@ -157,6 +157,36 @@ class ModifyGame(
             16 -> {
                 gameManager!!.updateGameName(value)
                 player.sendMessage("§aGame name updated to '$value' and saved!")
+            }
+        }
+    }
+
+    override fun onItemRenamed(slot: Int, newValue: String) {
+        // Called after a rename completes - auto-save the changes
+        if (gameManager == null) return
+
+        when (slot) {
+            10 -> {
+                val maxHealth = newValue.toIntOrNull()
+                if (maxHealth != null) {
+                    gameManager.updateMaxHealth(maxHealth)
+                    player.sendMessage("§aMax Health updated to $maxHealth and saved!")
+                } else {
+                    player.sendMessage("§cInvalid number for Max Health!")
+                }
+            }
+            13 -> {
+                val defaultCash = newValue.toIntOrNull()
+                if (defaultCash != null) {
+                    gameManager.updateDefaultCash(defaultCash)
+                    player.sendMessage("§aDefault Cash updated to $defaultCash and saved!")
+                } else {
+                    player.sendMessage("§cInvalid number for Default Cash!")
+                }
+            }
+            16 -> {
+                gameManager.updateGameName(newValue)
+                player.sendMessage("§aGame name updated to '$newValue' and saved!")
             }
         }
     }

@@ -132,6 +132,9 @@ object MenuListener : Listener {
                         .append(displayNameComponent)
                 )
 
+                // Notify the menu that a rename was completed
+                currentMenu.onItemRenamed(context.sourceSlot, cleanName)
+
                 currentMenu.open()
             }
         }.runTask(plugin)
