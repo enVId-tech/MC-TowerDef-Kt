@@ -139,6 +139,9 @@ class Waves(
     }
 
     private fun handleInsertWave(event: InventoryClickEvent) {
+        // Only execute on right-click, left-click is handled by rename
+        if (!event.isRightClick) return
+
         val item = event.currentItem ?: return
         val meta = item.itemMeta ?: return
         val pdc = meta.persistentDataContainer
@@ -161,6 +164,9 @@ class Waves(
     }
 
     private fun handleBulkGenerate(event: InventoryClickEvent) {
+        // Only execute on right-click, left-click is handled by rename
+        if (!event.isRightClick) return
+
         val item = event.currentItem ?: return
         val meta = item.itemMeta ?: return
         val pdc = meta.persistentDataContainer
@@ -190,7 +196,7 @@ class Waves(
         gameConfig.waves = mutableWaves
 
         // Save to file
-        val gameManager = dev.etran.towerDefMc.registries.GameRegistry.allGames[gameId]
+        val gameManager = GameRegistry.allGames[gameId]
         if (gameManager != null) {
             gameManager.updateWaves(mutableWaves)
             player.sendMessage("§aGenerated $amount new waves (Wave $startWaveNumber to Wave ${startWaveNumber + amount - 1})")

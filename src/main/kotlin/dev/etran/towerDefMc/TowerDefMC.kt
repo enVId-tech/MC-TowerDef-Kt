@@ -9,7 +9,6 @@ import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.commands.ToggleStandVisibility
-import dev.etran.towerDefMc.commands.TowerDefenseMenus
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
@@ -140,7 +139,6 @@ class TowerDefMC : JavaPlugin() {
         getCommand("clearTDalltowers")?.setExecutor(ClearTowers)
         getCommand("clearTDallenemies")?.setExecutor(ClearEnemies)
         getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility)
-        getCommand("td")?.setExecutor(TowerDefenseMenus)
         getCommand("tdmenu")?.setExecutor(dev.etran.towerDefMc.commands.menus.MenuCommands)
 
         logger.info {
