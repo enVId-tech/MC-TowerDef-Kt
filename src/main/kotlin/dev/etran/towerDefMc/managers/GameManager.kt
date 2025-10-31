@@ -3,9 +3,7 @@ package dev.etran.towerDefMc.managers
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaveData
-import dev.etran.towerDefMc.factories.CheckpointFactory
 import dev.etran.towerDefMc.registries.GameRegistry
-import org.bukkit.Location
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
@@ -14,9 +12,8 @@ class GameManager(
     val config: GameSaveConfig,
 ) {
     // -- External Managers (now game-specific, not global) --
-    val startpointManager = StartpointManager()
-    val waveManager = WaveManager(config, startpointManager, gameId)
-    val checkpointManager = CheckpointManager()
+    val waypointManager = WaypointManager()
+    val waveManager = WaveManager(config, waypointManager, gameId)
 
     // -- Game State Properties --
     private var health: Int = config.maxHealth
@@ -141,93 +138,26 @@ class GameManager(
     /**
      * Set the start point location
      */
-    fun setStartPoint(location: Location) {
-        // Remove old start point if exists
-        startpointManager.startpoints.values.firstOrNull()?.remove()
-        startpointManager.startpoints.clear()
-
-        // Create new armor stand at location
-        val world = location.world ?: return
-        val armorStand = world.spawn(location, org.bukkit.entity.ArmorStand::class.java) { stand ->
-            stand.isVisible = true
-            stand.setGravity(false)
-            stand.isInvulnerable = true
-            stand.customName(net.kyori.adventure.text.Component.text("§a§lSTART POINT"))
-            stand.isCustomNameVisible = true
-            stand.persistentDataContainer.set(
-                TowerDefMC.GAME_ID_KEY,
-                org.bukkit.persistence.PersistentDataType.INTEGER,
-                gameId
-            )
-        }
-
-        startpointManager.add(armorStand)
+    fun setStartPoint(location: org.bukkit.Location) {
+        waypointManager.setStartPoint(location)
         saveToFile()
     }
 
     /**
      * Set the end point location
      */
-    fun setEndPoint(location: Location) {
-        // Store as special checkpoint with ID 999999 (end point marker)
-        checkpointManager.checkpoints[999999]?.remove()
-
-        val world = location.world ?: return
-        val armorStand = world.spawn(location, org.bukkit.entity.ArmorStand::class.java) { stand ->
-            stand.isVisible = true
-            stand.setGravity(false)
-            stand.isInvulnerable = true
-            stand.customName(net.kyori.adventure.text.Component.text("§c§lEND POINT"))
-            stand.isCustomNameVisible = true
-            stand.persistentDataContainer.set(
-                TowerDefMC.GAME_ID_KEY,
-                org.bukkit.persistence.PersistentDataType.INTEGER,
-                gameId
-            )
-            stand.persistentDataContainer.set(
-                TowerDefMC.CHECKPOINT_ID,
-                org.bukkit.persistence.PersistentDataType.INTEGER,
-                999999
-            )
-        }
-
-        checkpointManager.checkpoints[999999] = armorStand
+    fun setEndPoint(location: org.bukkit.Location) {
+        waypointManager.setEndPoint(location)
         saveToFile()
     }
 
     /**
      * Add a checkpoint location
      */
-    fun addCheckpoint(location: Location) {
-        val world = location.world ?: return
-        val nextId = (checkpointManager.checkpoints.keys.filter { it < 999999 }.maxOrNull() ?: 0) + 1
-
-        val armorStand = world.spawn(location, org.bukkit.entity.ArmorStand::class.java) { stand ->
-            stand.isVisible = true
-            stand.setGravity(false)
-            stand.isInvulnerable = true
-            stand.customName(net.kyori.adventure.text.Component.text("§e§lCHECKPOINT #$nextId"))
-            stand.isCustomNameVisible = true
-            stand.persistentDataContainer.set(
-                TowerDefMC.GAME_ID_KEY,
-                org.bukkit.persistence.PersistentDataType.INTEGER,
-                gameId
-            )
-            stand.persistentDataContainer.set(
-                TowerDefMC.CHECKPOINT_ID,
-                org.bukkit.persistence.PersistentDataType.INTEGER,
-                nextId
-            )
-        }
-
-        checkpointManager.checkpoints[nextId] = armorStand
+    fun addCheckpoint(location: org.bukkit.Location) {
+        waypointManager.addCheckpoint(location)
         saveToFile()
     }
 
     // -- General Game Management --
-    @Suppress("unused")
-    fun addCheckpoint(event: PlayerInteractEvent) {
-        CheckpointFactory.checkPointPlace(event, checkpointManager)
-    }
 }
-

@@ -1,15 +1,15 @@
 package dev.etran.towerDefMc.utils
 
 import dev.etran.towerDefMc.TowerDefMC
-import dev.etran.towerDefMc.managers.CheckpointManager
+import dev.etran.towerDefMc.managers.WaypointManager
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mob
 import org.bukkit.persistence.PersistentDataType
 
-fun applyEnemyMovementLogic(entity: Entity, checkpointManager: CheckpointManager, gameId: Int) {
+fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, gameId: Int) {
     val container = entity.persistentDataContainer
     val currentTargetId = container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
-    var targetCheckpoint = checkpointManager.checkpoints[currentTargetId]
+    var targetCheckpoint = waypointManager.checkpoints[currentTargetId]
 
     // Target Switch Logic (Continuous Flow)
     if (targetCheckpoint != null) {
@@ -26,7 +26,7 @@ fun applyEnemyMovementLogic(entity: Entity, checkpointManager: CheckpointManager
             ) == "EndPoint"
 
             // If the current target was an EndPoint OR the next ID is out of bounds, remove the entity
-            if (isEndPoint || !checkpointManager.checkpoints.containsKey(nextId)) {
+            if (isEndPoint || !waypointManager.checkpoints.containsKey(nextId)) {
                 cleanUpEnemyHealthBar(entity)
                 entity.remove()
 
@@ -46,14 +46,14 @@ fun applyEnemyMovementLogic(entity: Entity, checkpointManager: CheckpointManager
             container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
 
             // Immediately update targetCheckpoint object to the new location for continuous pathing
-            targetCheckpoint = checkpointManager.checkpoints[nextId]
+            targetCheckpoint = waypointManager.checkpoints[nextId]
         }
     } else {
         // The current target ID is invalid (e.g., checkpoint was destroyed).
         // Skip it and increment the ID to find the next valid checkpoint.
         val nextPotentialId = currentTargetId + 1
 
-        if (!checkpointManager.checkpoints.containsKey(nextPotentialId)) {
+        if (!waypointManager.checkpoints.containsKey(nextPotentialId)) {
             // No more valid checkpoints available after the current missing one, assume end of path.
             cleanUpEnemyHealthBar(entity)
             entity.remove()

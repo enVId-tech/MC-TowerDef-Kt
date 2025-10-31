@@ -8,21 +8,9 @@ commands:
     description: A command to give a zombie tower with no AI.
     usage: /<command> [player] [amount]
 
-  giveTDcheckpoint:
-    description: A command to give a checkpoint armor stand for enemies.
-    usage: /<command> [amount]
-
   giveTDenemy:
     description: A command to give an enemy spawn with limited AI.
     usage: /<command> [amount]
-
-  giveTDstartpoint:
-    description: A command to give a spawn point for the enemies
-    usage: /<command>
-
-  giveTDendpoint:
-    description: A command to give an end point for the enemies
-    usage: /<command>
 
   clearTDallwaypoints:
     description: A command to clear all startpoints, checkpoints and endpoints

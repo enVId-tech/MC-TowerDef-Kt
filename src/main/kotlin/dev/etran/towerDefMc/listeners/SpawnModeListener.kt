@@ -1,6 +1,6 @@
 package dev.etran.towerDefMc.listeners
 
-import dev.etran.towerDefMc.managers.SpawnModeManager
+import dev.etran.towerDefMc.factories.WaypointFactory
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 /**
- * Handles spawn mode interactions
+ * Handles waypoint spawn mode interactions
  */
 class SpawnModeListener : Listener {
 
@@ -19,7 +19,7 @@ class SpawnModeListener : Listener {
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = event.player
 
-        if (!SpawnModeManager.isInSpawnMode(player)) return
+        if (!WaypointFactory.isInSpawnMode(player)) return
 
         if (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) {
             event.isCancelled = true
@@ -30,7 +30,7 @@ class SpawnModeListener : Listener {
                 player.location
             }
 
-            SpawnModeManager.placeSpawn(player, location)
+            WaypointFactory.placeWaypoint(player, location)
         }
     }
 
@@ -38,14 +38,14 @@ class SpawnModeListener : Listener {
     fun onPlayerChat(event: AsyncChatEvent) {
         val player = event.player
 
-        if (SpawnModeManager.isInSpawnMode(player)) {
+        if (WaypointFactory.isInSpawnMode(player)) {
             event.isCancelled = true
 
             // Exit spawn mode on main thread
             Bukkit.getScheduler().runTask(
                 dev.etran.towerDefMc.TowerDefMC.instance,
                 Runnable {
-                    SpawnModeManager.endSpawnMode(player)
+                    WaypointFactory.endSpawnMode(player)
                 }
             )
         }
@@ -54,9 +54,8 @@ class SpawnModeListener : Listener {
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         // Clean up if player leaves while in spawn mode
-        if (SpawnModeManager.isInSpawnMode(event.player)) {
-            SpawnModeManager.endSpawnMode(event.player)
+        if (WaypointFactory.isInSpawnMode(event.player)) {
+            WaypointFactory.endSpawnMode(event.player)
         }
     }
 }
-

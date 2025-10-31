@@ -10,7 +10,7 @@ import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
 
 class WaveManager(
-    private val gameConfig: GameSaveConfig, private val startpoints: StartpointManager, private val gameId: Int
+    private val gameConfig: GameSaveConfig, private val waypointManager: WaypointManager, private val gameId: Int
 ) {
     private var currentWaveData: WaveData? = null
     private var commandIndex = -1
@@ -94,7 +94,7 @@ class WaveManager(
                     currentEnemyType = spawnQueue.keys.firstOrNull()
                     if (currentEnemyType != null) {
                         currentQuantity = spawnQueue.remove(currentEnemyType)!!
-                    }
+                      }
                 }
 
                 // If no more enemies in this command's queue, cancel the task
@@ -104,7 +104,7 @@ class WaveManager(
                     return
                 }
 
-                val startpointLoc: Location = startpoints.startpoints.values.random().location
+                val startpointLoc: Location = waypointManager.startpoints.values.random().location
 
                 // Spawn the enemy and register it to this game
                 val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)

@@ -1,7 +1,7 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.TowerDefMC
-import dev.etran.towerDefMc.managers.SpawnModeManager
+import dev.etran.towerDefMc.factories.WaypointFactory
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.registries.GameRegistry
@@ -154,17 +154,17 @@ class ModifyGame(
 
     private fun handleStartPointClick() {
         player.closeInventory()
-        SpawnModeManager.startSpawnMode(player, gameId, SpawnModeManager.SpawnType.START_POINT)
+        WaypointFactory.startSpawnMode(player, gameId, WaypointFactory.WaypointType.START_POINT)
     }
 
     private fun handleCheckpointClick() {
         player.closeInventory()
-        SpawnModeManager.startSpawnMode(player, gameId, SpawnModeManager.SpawnType.CHECKPOINT)
+        WaypointFactory.startSpawnMode(player, gameId, WaypointFactory.WaypointType.CHECKPOINT)
     }
 
     private fun handleEndPointClick() {
         player.closeInventory()
-        SpawnModeManager.startSpawnMode(player, gameId, SpawnModeManager.SpawnType.END_POINT)
+        WaypointFactory.startSpawnMode(player, gameId, WaypointFactory.WaypointType.END_POINT)
     }
 
     private fun handleBack() {
@@ -243,4 +243,3 @@ class ModifyGame(
         }
     }
 }
-

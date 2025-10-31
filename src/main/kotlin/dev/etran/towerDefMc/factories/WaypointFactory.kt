@@ -1,20 +1,24 @@
-package dev.etran.towerDefMc.managers
+package dev.etran.towerDefMc.factories
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.registries.GameRegistry
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
 /**
- * Manages spawn point placement mode for players
+ * Factory for creating and managing waypoint spawn mode sessions
+ * Handles the spawning of start points, checkpoints, and end points
  */
-object SpawnModeManager {
+object WaypointFactory {
 
-    enum class SpawnType {
+    enum class WaypointType {
         START_POINT,
         END_POINT,
         CHECKPOINT
@@ -23,18 +27,18 @@ object SpawnModeManager {
     private data class SpawnModeSession(
         val player: Player,
         val gameId: Int,
-        val spawnType: SpawnType,
+        val waypointType: WaypointType,
         val savedInventory: Array<ItemStack?>,
         val savedArmor: Array<ItemStack?>
     ) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is SpawnModeSession) return false
-            return player == other.player && gameId == other.gameId && spawnType == other.spawnType
+            return player == other.player && gameId == other.gameId && waypointType == other.waypointType
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(player, gameId, spawnType)
+            return Objects.hash(player, gameId, waypointType)
         }
     }
 
@@ -43,7 +47,7 @@ object SpawnModeManager {
     /**
      * Start spawn mode for a player
      */
-    fun startSpawnMode(player: Player, gameId: Int, spawnType: SpawnType) {
+    fun startSpawnMode(player: Player, gameId: Int, waypointType: WaypointType) {
         if (activeSessions.containsKey(player.uniqueId)) {
             player.sendMessage("§cYou are already in spawn mode!")
             return
@@ -58,18 +62,18 @@ object SpawnModeManager {
         player.inventory.armorContents = arrayOfNulls(4)
 
         // Give spawn item
-        val spawnItem = createSpawnItem(spawnType)
+        val spawnItem = createSpawnItem(waypointType)
         player.inventory.setItem(4, spawnItem) // Middle slot
 
         // Create session
-        val session = SpawnModeSession(player, gameId, spawnType, savedInventory, savedArmor)
+        val session = SpawnModeSession(player, gameId, waypointType, savedInventory, savedArmor)
         activeSessions[player.uniqueId] = session
 
         // Send instructions
         player.sendMessage("§e§l=================================")
-        player.sendMessage("§6Spawn Mode - ${getSpawnTypeName(spawnType)}")
+        player.sendMessage("§6Spawn Mode - ${getWaypointTypeName(waypointType)}")
         player.sendMessage("§e=================================")
-        player.sendMessage("§aRight-click with the item to place a ${getSpawnTypeName(spawnType).lowercase()}")
+        player.sendMessage("§aRight-click with the item to place a ${getWaypointTypeName(waypointType).lowercase()}")
         player.sendMessage("§aType anything in chat to exit spawn mode")
         player.sendMessage("§e=================================")
     }
@@ -98,72 +102,72 @@ object SpawnModeManager {
     /**
      * Handle spawn placement
      */
-    fun placeSpawn(player: Player, location: Location): Boolean {
+    fun placeWaypoint(player: Player, location: Location): Boolean {
         val session = activeSessions[player.uniqueId] ?: return false
 
-        // Save spawn location to game config
+        // Get the waypoint manager for this game
         val gameManager = GameRegistry.allGames[session.gameId]
         if (gameManager == null) {
             player.sendMessage("§cError: Game not found!")
             return false
         }
 
-        // Store location based on spawn type
-        when (session.spawnType) {
-            SpawnType.START_POINT -> {
-                gameManager.setStartPoint(location)
+        // Place waypoint based on type
+        when (session.waypointType) {
+            WaypointType.START_POINT -> {
+                gameManager.waypointManager.setStartPoint(location)
                 player.sendMessage("§aStart point set at: §e${formatLocation(location)}")
             }
-            SpawnType.END_POINT -> {
-                gameManager.setEndPoint(location)
+            WaypointType.END_POINT -> {
+                gameManager.waypointManager.setEndPoint(location)
                 player.sendMessage("§aEnd point set at: §e${formatLocation(location)}")
             }
-            SpawnType.CHECKPOINT -> {
-                gameManager.addCheckpoint(location)
+            WaypointType.CHECKPOINT -> {
+                gameManager.waypointManager.addCheckpoint(location)
                 player.sendMessage("§aCheckpoint added at: §e${formatLocation(location)}")
             }
         }
 
         // Play effects
-        player.world.playSound(location, org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f)
-        player.world.spawnParticle(org.bukkit.Particle.HAPPY_VILLAGER, location, 20, 0.5, 0.5, 0.5)
+        player.world.playSound(location, Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f)
+        player.world.spawnParticle(Particle.HAPPY_VILLAGER, location, 20, 0.5, 0.5, 0.5)
 
         return true
     }
 
-    private fun createSpawnItem(spawnType: SpawnType): ItemStack {
-        val material = when (spawnType) {
-            SpawnType.START_POINT -> Material.GREEN_WOOL
-            SpawnType.END_POINT -> Material.RED_WOOL
-            SpawnType.CHECKPOINT -> Material.YELLOW_WOOL
+    private fun createSpawnItem(waypointType: WaypointType): ItemStack {
+        val material = when (waypointType) {
+            WaypointType.START_POINT -> Material.GREEN_WOOL
+            WaypointType.END_POINT -> Material.RED_WOOL
+            WaypointType.CHECKPOINT -> Material.YELLOW_WOOL
         }
 
         val item = ItemStack(material)
         val meta = item.itemMeta
 
-        meta.displayName(net.kyori.adventure.text.Component.text("§6${getSpawnTypeName(spawnType)} Placer"))
+        meta.displayName(Component.text("§6${getWaypointTypeName(waypointType)} Placer"))
         meta.lore(listOf(
-            net.kyori.adventure.text.Component.text("§7Right-click to place a ${getSpawnTypeName(spawnType).lowercase()}"),
-            net.kyori.adventure.text.Component.text("§7Type anything in chat to exit")
+            Component.text("§7Right-click to place a ${getWaypointTypeName(waypointType).lowercase()}"),
+            Component.text("§7Type anything in chat to exit")
         ))
 
         // Mark as spawn item
         val pdc = meta.persistentDataContainer
         pdc.set(
-            org.bukkit.NamespacedKey(TowerDefMC.instance, "spawn_item"),
+            org.bukkit.NamespacedKey(TowerDefMC.instance, "waypoint_item"),
             PersistentDataType.STRING,
-            spawnType.name
+            waypointType.name
         )
 
         item.itemMeta = meta
         return item
     }
 
-    private fun getSpawnTypeName(spawnType: SpawnType): String {
-        return when (spawnType) {
-            SpawnType.START_POINT -> "Start Point"
-            SpawnType.END_POINT -> "End Point"
-            SpawnType.CHECKPOINT -> "Checkpoint"
+    private fun getWaypointTypeName(waypointType: WaypointType): String {
+        return when (waypointType) {
+            WaypointType.START_POINT -> "Start Point"
+            WaypointType.END_POINT -> "End Point"
+            WaypointType.CHECKPOINT -> "Checkpoint"
         }
     }
 

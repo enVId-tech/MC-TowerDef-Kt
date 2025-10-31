@@ -28,7 +28,7 @@ object EntityDeathListener : Listener {
                     // Find which game this checkpoint belongs to and remove it
                     val gameId = GameInstanceTracker.getGameId(gameElement)
                     if (gameId != null) {
-                        GameRegistry.activeGames[gameId]?.checkpointManager?.remove(gameElement)
+                        GameRegistry.activeGames[gameId]?.waypointManager?.remove(gameElement)
                     }
                 }
             }

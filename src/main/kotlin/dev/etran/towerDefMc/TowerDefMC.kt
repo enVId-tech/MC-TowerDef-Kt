@@ -3,12 +3,10 @@ package dev.etran.towerDefMc
 import dev.etran.towerDefMc.commands.ClearCheckpoints
 import dev.etran.towerDefMc.commands.ClearEnemies
 import dev.etran.towerDefMc.commands.ClearTowers
-import dev.etran.towerDefMc.commands.GiveCheckpoint
-import dev.etran.towerDefMc.commands.GiveEndPoint
 import dev.etran.towerDefMc.commands.GiveEnemy
-import dev.etran.towerDefMc.commands.GiveStartPoint
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.commands.ToggleStandVisibility
+import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
@@ -17,9 +15,9 @@ import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.listeners.SpawnModeListener
-import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.GameManager
+import dev.etran.towerDefMc.managers.WaypointManager
 import dev.etran.towerDefMc.managers.WaveManager
 import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.registries.GameRegistry
@@ -110,7 +108,7 @@ class TowerDefMC : JavaPlugin() {
 
         // Register utils
         TaskUtility.initialize(this)
-        CheckpointManager.initialize(this)
+        WaypointManager.initialize(this)
         MenuListener.initialize(this)
         GameFactory.initialize(this)
         GameRegistry.initialize(this)
@@ -142,15 +140,12 @@ class TowerDefMC : JavaPlugin() {
 
         // Set commands and behaviors
         getCommand("giveTDtower")?.setExecutor(GiveTower)
-        getCommand("giveTDcheckpoint")?.setExecutor(GiveCheckpoint)
         getCommand("giveTDenemy")?.setExecutor(GiveEnemy)
-        getCommand("giveTDstartpoint")?.setExecutor(GiveStartPoint)
-        getCommand("giveTDendpoint")?.setExecutor(GiveEndPoint)
         getCommand("clearTDallwaypoints")?.setExecutor(ClearCheckpoints)
         getCommand("clearTDalltowers")?.setExecutor(ClearTowers)
         getCommand("clearTDallenemies")?.setExecutor(ClearEnemies)
         getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility)
-        getCommand("tdmenu")?.setExecutor(dev.etran.towerDefMc.commands.menus.MenuCommands)
+        getCommand("tdmenu")?.setExecutor(MenuCommands)
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"
@@ -175,8 +170,6 @@ class TowerDefMC : JavaPlugin() {
         logger.info {
             "Tower Defense Plugin - File configuration saved"
         }
-
-        CheckpointManager().saveCheckpoints()
 
         logger.info {
             "Tower Defense Plugin - Shut down all tasks"

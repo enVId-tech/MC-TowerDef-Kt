@@ -11,10 +11,10 @@ object ClearCheckpoints : CommandExecutor {
         try {
             // Clear checkpoints for all active games
             GameRegistry.activeGames.values.forEach { game ->
-                game.checkpointManager.clearAllCheckpoints(Bukkit.getWorlds(), game.startpointManager)
+                game.waypointManager.clearAllWaypoints(Bukkit.getWorlds())
             }
 
-            sender.sendMessage("§aCheckpoints cleared for all active games")
+            sender.sendMessage("§aWaypoints cleared for all active games")
             return true
         } catch (ex: Exception) {
             sender.sendMessage("§cClear failed: ${ex.message}")

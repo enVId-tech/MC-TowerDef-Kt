@@ -1,8 +1,8 @@
 package dev.etran.towerDefMc.utils
 
-import dev.etran.towerDefMc.managers.CheckpointManager.Companion.AMPLIFIER
-import dev.etran.towerDefMc.managers.CheckpointManager.Companion.DURATION
-import dev.etran.towerDefMc.managers.CheckpointManager.Companion.effectType
+import dev.etran.towerDefMc.managers.WaypointManager.Companion.AMPLIFIER
+import dev.etran.towerDefMc.managers.WaypointManager.Companion.DURATION
+import dev.etran.towerDefMc.managers.WaypointManager.Companion.effectType
 import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
@@ -39,10 +39,9 @@ fun placeElement(event: PlayerInteractEvent, loggerName: String): Entity? {
         return entity
     }
 
-    val checkpointStandsVisibility = game.checkpointManager.standsAreVisible
-    val startpointStandsVisibility = game.startpointManager.standsAreVisible
+    val waypointStandsVisibility = game.waypointManager.standsAreVisible
     // Add NBT data to armor stands
-    if (startpointStandsVisibility || checkpointStandsVisibility) {
+    if (waypointStandsVisibility) {
         entity.isInvisible = false
         entity.addPotionEffect(PotionEffect(effectType, DURATION, AMPLIFIER))
     } else {
