@@ -7,7 +7,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 
-class DeleteGame(player: Player) : CustomMenu(player, 0, "Tower Defense - Delete Game") {
+class DeleteGame(player: Player) : CustomMenu(player, 54, "Tower Defense - Delete Game") {
     var currentMenuOpen = 0
     lateinit var gamesList: Map<Int, GameManager>
 

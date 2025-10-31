@@ -1,10 +1,9 @@
 package dev.etran.towerDefMc.registries
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.data.*
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.managers.GameManager
-import dev.etran.towerDefMc.data.GameSaveConfig
-import dev.etran.towerDefMc.data.WaveData
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 
@@ -52,22 +51,81 @@ object GameRegistry {
                 return@forEach
             }
 
-            val config = YamlConfiguration.loadConfiguration(file)
+            try {
+                val config = YamlConfiguration.loadConfiguration(file)
 
-            val gameConfigurationData = GameSaveConfig(
-                maxHealth = config.getInt("game-data.maxHealth"),
-                defaultCash = config.getInt("game-data.defaultCash"),
-                name = config.getString("game-data.name") ?: "",
-                waves = (config.getList("game-data.waves") ?: emptyList()) as List<WaveData>,
-                allowedTowers = (config.getList("game-data.allowedTowers") ?: emptyList()) as List<String>
-            )
+                // Deserialize waves from maps
+                val wavesData = config.getMapList("game-data.waves").map { waveMap ->
+                    deserializeWave(waveMap)
+                }
 
-            val newGameManager = GameManager(
-                gameId = gameId, config = gameConfigurationData
-            )
+                val gameConfigurationData = GameSaveConfig(
+                    maxHealth = config.getInt("game-data.maxHealth"),
+                    defaultCash = config.getInt("game-data.defaultCash"),
+                    name = config.getString("game-data.name") ?: "",
+                    waves = wavesData,
+                    allowedTowers = config.getStringList("game-data.allowedTowers")
+                )
 
-            allGames[gameId] = newGameManager
-            plugin.logger.info("Loaded Game $gameId (${newGameManager.config.name})")
+                val newGameManager = GameManager(
+                    gameId = gameId,
+                    config = gameConfigurationData
+                )
+
+                allGames[gameId] = newGameManager
+                plugin.logger.info("Loaded Game $gameId (${newGameManager.config.name})")
+            } catch (e: Exception) {
+                plugin.logger.severe("Failed to load game $gameId: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun deserializeWave(waveMap: Map<*, *>): WaveData {
+        val name = waveMap["name"] as? String ?: "Unknown Wave"
+        val minTime = (waveMap["minTime"] as? Number)?.toDouble() ?: 0.0
+        val maxTime = (waveMap["maxTime"] as? Number)?.toDouble() ?: 60.0
+        val waveHealth = (waveMap["waveHealth"] as? Number)?.toDouble()
+        val cashGiven = (waveMap["cashGiven"] as? Number)?.toInt() ?: 0
+
+        val sequenceList = waveMap["sequence"] as? List<*> ?: emptyList<Any>()
+        val sequence = sequenceList.mapNotNull { commandMap ->
+            if (commandMap is Map<*, *>) {
+                deserializeWaveCommand(commandMap)
+            } else null
+        }
+
+        return WaveData(
+            name = name,
+            sequence = sequence,
+            minTime = minTime,
+            maxTime = maxTime,
+            waveHealth = waveHealth,
+            cashGiven = cashGiven
+        )
+    }
+
+    private fun deserializeWaveCommand(commandMap: Map<*, *>): WaveCommand? {
+        val type = commandMap["type"] as? String ?: return null
+
+        return when (type) {
+            "WAIT" -> {
+                val waitSeconds = (commandMap["waitSeconds"] as? Number)?.toDouble() ?: 0.0
+                WaitCommand(waitSeconds)
+            }
+            "ENEMY_SPAWN" -> {
+                val intervalSeconds = (commandMap["intervalSeconds"] as? Number)?.toDouble() ?: 1.0
+                val enemiesMap = commandMap["enemies"] as? Map<*, *> ?: emptyMap<Any, Any>()
+                val enemies = enemiesMap.mapNotNull { (key, value) ->
+                    val enemyId = key as? String
+                    val count = (value as? Number)?.toInt()
+                    if (enemyId != null && count != null) {
+                        enemyId to count
+                    } else null
+                }.toMap()
+                EnemySpawnCommand(enemies, intervalSeconds)
+            }
+            else -> null
         }
     }
 
@@ -91,11 +149,45 @@ object GameRegistry {
         yamlConfig.set("game-data.maxHealth", config.maxHealth)
         yamlConfig.set("game-data.defaultCash", config.defaultCash)
         yamlConfig.set("game-data.name", config.name)
-        yamlConfig.set("game-data.waves", config.waves)
+
+        // Serialize waves to maps
+        val wavesData = config.waves.map { wave ->
+            serializeWave(wave)
+        }
+        yamlConfig.set("game-data.waves", wavesData)
+
         yamlConfig.set("game-data.allowedTowers", config.allowedTowers)
 
         yamlConfig.save(configFile)
         plugin.logger.info("Saved Game $gameId (${config.name})")
+    }
+
+    private fun serializeWave(wave: WaveData): Map<String, Any?> {
+        return mapOf(
+            "name" to wave.name,
+            "minTime" to wave.minTime,
+            "maxTime" to wave.maxTime,
+            "waveHealth" to wave.waveHealth,
+            "cashGiven" to wave.cashGiven,
+            "sequence" to wave.sequence.map { command ->
+                serializeWaveCommand(command)
+            }
+        )
+    }
+
+    private fun serializeWaveCommand(command: WaveCommand): Map<String, Any> {
+        return when (command) {
+            is WaitCommand -> mapOf(
+                "type" to "WAIT",
+                "waitSeconds" to command.waitSeconds
+            )
+            is EnemySpawnCommand -> mapOf(
+                "type" to "ENEMY_SPAWN",
+                "intervalSeconds" to command.intervalSeconds,
+                "enemies" to command.enemies
+            )
+            else -> mapOf("type" to "UNKNOWN")
+        }
     }
 
     fun addGame(game: GameManager) {

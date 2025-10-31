@@ -47,7 +47,7 @@ class ModifyWave(
 
         // Middle row separator
         for (i in 27..35) {
-            inventory.setItem(i, createMenuItem(Material.GRAY_STAINED_GLASS_PANE, " ", listOf()))
+            inventory.setItem(i, createMenuItem(Material.GRAY_STAINED_GLASS_PANE, " "))
         }
 
         // Bottom 2 rows - action items
@@ -144,16 +144,18 @@ class ModifyWave(
             if (index >= 27) break
 
             val item = when (command) {
-                is WaitCommand -> createMenuItem(
-                    Material.CLOCK, "Wait: ${command.waitSeconds}s", listOf("Wait for ${command.waitSeconds} seconds")
+                is WaitCommand -> createRenamableItem(
+                    Material.CLOCK, "Wait: {VALUE}s", listOf("Wait for {VALUE} seconds"), "5"
+
                 )
 
                 is EnemySpawnCommand -> {
                     val enemyList = command.enemies.entries.joinToString(", ") { "${it.key}: ${it.value}x" }
-                    createMenuItem(
+                    createRenamableItem(
                         Material.ZOMBIE_SPAWN_EGG,
                         "Spawn Enemies",
-                        listOf("Interval: ${command.intervalSeconds}s", "Enemies: $enemyList")
+                        listOf("Interval: {VALUE}s", "Enemies: $enemyList"),
+                        "0.5"
                     )
                 }
 

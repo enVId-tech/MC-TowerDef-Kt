@@ -268,12 +268,12 @@ class EnemiesSelection(
                         val customValue = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
                         val amount = customValue?.toIntOrNull() ?: 1
                         onSelect(amount)
-                        player.closeInventory()
+                        menu.open()
                     }
                 }
 
                 22 -> {
-                    onSelect(0); player.closeInventory()
+                    onSelect(0); menu.open()
                 }
             }
         }
