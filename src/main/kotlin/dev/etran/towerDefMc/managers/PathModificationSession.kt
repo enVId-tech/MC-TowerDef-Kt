@@ -56,6 +56,9 @@ object PathModificationSession {
             return
         }
 
+        // Show the path for modification
+        gameManager.pathManager.showPath(pathId)
+
         // Save current inventory
         val savedInventory = player.inventory.contents.clone()
         val savedArmor = player.inventory.armorContents.clone()
@@ -279,6 +282,12 @@ object PathModificationSession {
     fun cancelSession(player: Player) {
         val session = activeSessions.remove(player.uniqueId) ?: return
 
+        // Hide the path if it was being modified
+        val gameManager = GameRegistry.allGames[session.gameId]
+        if (gameManager != null) {
+            gameManager.pathManager.hidePath(session.pathId)
+        }
+
         // Restore inventory
         player.inventory.clear()
         player.inventory.contents = session.savedInventory
@@ -343,4 +352,3 @@ object PathModificationSession {
         }
     }
 }
-

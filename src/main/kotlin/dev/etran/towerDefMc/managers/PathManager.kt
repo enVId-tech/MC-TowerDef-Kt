@@ -24,7 +24,7 @@ class PathManager {
      */
     fun createPath(name: String, startPoint: Location, endPoint: Location): Int {
         val pathId = nextPathId++
-        val path = PathData(pathId, name, startPoint, mutableListOf(), endPoint, true)
+        val path = PathData(pathId, name, startPoint, mutableListOf(), endPoint, false) // Hidden by default
         paths[pathId] = path
 
         // Create armor stands for visualization
@@ -325,5 +325,31 @@ class PathManager {
         }
 
         return standsAreVisible
+    }
+
+    /**
+     * Show a specific path (make armor stands visible)
+     */
+    fun showPath(pathId: Int) {
+        val path = paths[pathId] ?: return
+        path.isVisible = true
+
+        // Update armor stand visibility
+        pathArmorStands[pathId]?.forEach { stand ->
+            stand.isInvisible = false
+        }
+    }
+
+    /**
+     * Hide a specific path (make armor stands invisible)
+     */
+    fun hidePath(pathId: Int) {
+        val path = paths[pathId] ?: return
+        path.isVisible = false
+
+        // Update armor stand visibility
+        pathArmorStands[pathId]?.forEach { stand ->
+            stand.isInvisible = true
+        }
     }
 }
