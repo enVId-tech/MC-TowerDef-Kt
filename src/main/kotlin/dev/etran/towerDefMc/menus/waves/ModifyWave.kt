@@ -248,20 +248,22 @@ class ModifyWave(
             }
         }
 
-        val updatedConfig = gameConfig.copy(waves = mutableWaves)
+        // Update the gameConfig's waves directly (since it's a var property)
+        gameConfig.waves = mutableWaves
 
-        // Save updated config to GameRegistry
-        dev.etran.towerDefMc.registries.GameRegistry.allGames.entries.find {
-            it.value.config == gameConfig
-        }?.let { entry ->
-            dev.etran.towerDefMc.registries.GameRegistry.saveGameConfig(entry.key, updatedConfig)
+        // Find the game manager and update its config, then save
+        val gameManager = dev.etran.towerDefMc.registries.GameRegistry.allGames[gameId]
+        if (gameManager != null) {
+            gameManager.updateWaves(mutableWaves)
+            player.sendMessage("§aWave $waveNum saved successfully!")
+        } else {
+            player.sendMessage("§cError: Could not find game to save!")
         }
 
         player.closeInventory()
-        player.sendMessage("§aWave $waveNum saved successfully!")
 
-        // Return to Waves menu
-        Waves(player, updatedConfig, gameId).open()
+        // Return to Waves menu with the updated config
+        Waves(player, gameConfig, gameId).open()
     }
 
     private fun updateValuesFromInventory() {

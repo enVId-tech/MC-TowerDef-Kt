@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.menus.waves.Waves
+import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
@@ -112,8 +113,9 @@ class ModifyGame(
     }
 
     private fun handleTowersClick() {
-        player.sendMessage("§eTowers management coming soon!")
-        // TODO: Implement towers management menu
+        player.closeInventory()
+        val towerSelectionMenu = TowerSelection(player, gameManager!!.config, gameId)
+        towerSelectionMenu.open()
     }
 
     private fun handleBack() {

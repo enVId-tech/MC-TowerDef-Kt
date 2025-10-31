@@ -23,6 +23,7 @@ import dev.etran.towerDefMc.managers.GameManager
 import dev.etran.towerDefMc.managers.WaveManager
 import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.registries.GameRegistry
+import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
 import dev.etran.towerDefMc.utils.TaskUtility
@@ -107,7 +108,11 @@ class TowerDefMC : JavaPlugin() {
         GameManager.initialize(this)
         WaveManager.initialize(this)
         EnemyRegistry.initialize(this)
+        TowerRegistry.initialize(this)
         GameInstanceTracker.initialize(this)
+
+        // Load saved games from files
+        GameRegistry.loadAllSavedGames()
 
         logger.info {
             "Tower Defense Plugin - Primary Functions Initialized"
