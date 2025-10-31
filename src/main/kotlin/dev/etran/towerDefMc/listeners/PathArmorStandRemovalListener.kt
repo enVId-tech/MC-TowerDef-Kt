@@ -49,7 +49,7 @@ class PathArmorStandRemovalListener : Listener {
         if (elementType !in listOf("PathStart", "PathEnd", "PathCheckpoint")) return
 
         // Find which game this path belongs to
-        for ((gameId, gameManager) in GameRegistry.allGames) {
+        for ((_, gameManager) in GameRegistry.allGames) {
             val handled = gameManager.pathManager.handleArmorStandRemoval(stand)
 
             if (handled) {
@@ -76,4 +76,3 @@ class PathArmorStandRemovalListener : Listener {
         }
     }
 }
-

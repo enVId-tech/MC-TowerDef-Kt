@@ -12,6 +12,7 @@ import dev.etran.towerDefMc.listeners.EnemyHealthListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.MenuListener
+import dev.etran.towerDefMc.listeners.PathArmorStandRemovalListener
 import dev.etran.towerDefMc.listeners.PathCreationListener
 import dev.etran.towerDefMc.listeners.PathLocationListener
 import dev.etran.towerDefMc.listeners.PathModificationListener
@@ -139,6 +140,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PathLocationListener(), this)
         server.pluginManager.registerEvents(PathCreationListener(), this)
         server.pluginManager.registerEvents(PathModificationListener(), this)
+        server.pluginManager.registerEvents(PathArmorStandRemovalListener(), this)
 
         logger.info {
             "Tower Defense Plugin - Continuous Listeners Registered"
