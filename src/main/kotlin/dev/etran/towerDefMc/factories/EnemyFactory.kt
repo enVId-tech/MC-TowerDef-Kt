@@ -7,7 +7,6 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
-import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent

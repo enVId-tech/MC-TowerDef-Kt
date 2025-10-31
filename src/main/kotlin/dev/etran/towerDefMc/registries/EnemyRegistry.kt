@@ -117,9 +117,9 @@ object EnemyRegistry {
         return enemies[id]
     }
 
+    @Suppress("unused")
     fun reloadEnemies() {
         enemies.clear()
         loadEnemies()
     }
 }
-

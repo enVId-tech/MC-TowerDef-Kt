@@ -204,7 +204,7 @@ class ModifyWave(
         Waves(player, gameConfig).open()
     }
 
-    private fun handleSave(event: InventoryClickEvent) {
+    private fun handleSave(@Suppress("UNUSED_PARAMETER") event: InventoryClickEvent) {
         // Get updated values from renamable items
         updateValuesFromInventory()
 

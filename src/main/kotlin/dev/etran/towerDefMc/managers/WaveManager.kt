@@ -29,6 +29,7 @@ class WaveManager(
         }
     }
 
+    @Suppress("unused")
     fun checkWaveCompletion(): Boolean {
         return enemiesRemaining <= 0 || timeRemaining <= 0
     }
@@ -73,7 +74,7 @@ class WaveManager(
 
     private fun handleWaitCommand(command: WaitCommand) {
         plugin.server.scheduler.runTaskLater(plugin, Runnable {
-            commandIndex++;
+            commandIndex++
             processNextCommand()
         }, (command.waitSeconds * 20).toLong())
     }

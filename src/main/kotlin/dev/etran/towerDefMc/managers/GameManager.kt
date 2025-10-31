@@ -4,8 +4,6 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.factories.CheckpointFactory
 import dev.etran.towerDefMc.registries.GameRegistry
-import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
@@ -20,6 +18,7 @@ class GameManager(
 
     // -- Game State Properties --
     private var health: Int = config.maxHealth
+    @Suppress("unused")
     private var cash: Int = config.defaultCash
     private var isRunning: Boolean = false
     private var players: MutableSet<UUID> = mutableSetOf()
@@ -38,10 +37,12 @@ class GameManager(
     fun getWaveManager(): WaveManager = waveManager
 
     // -- Wave Management --
+    @Suppress("unused")
     val currentWave: Int
         get() = waveManager.currentWave
 
-    fun startGame(world: World, initialPlayers: List<UUID>) {
+    @Suppress("unused")
+    fun startGame(initialPlayers: List<UUID>) {
         if (isRunning) return
         isRunning = true
 
@@ -76,15 +77,18 @@ class GameManager(
     }
 
     // -- Player Management --
+    @Suppress("unused")
     fun addPlayer(player: UUID) {
         players.add(player)
     }
 
+    @Suppress("unused")
     fun removePlayer(player: UUID) {
         players.remove(player)
     }
 
     // -- General Game Management --
+    @Suppress("unused")
     fun addCheckpoint(event: PlayerInteractEvent) {
         CheckpointFactory.checkPointPlace(event, checkpointManager)
     }

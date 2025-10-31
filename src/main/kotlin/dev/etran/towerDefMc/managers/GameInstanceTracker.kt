@@ -1,7 +1,6 @@
 package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
-import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import java.util.UUID
@@ -60,6 +59,7 @@ object GameInstanceTracker {
     /**
      * Get all entities in a specific game
      */
+    @Suppress("unused")
     fun getEntitiesInGame(gameId: Int): Set<UUID> {
         return gameToEntities[gameId]?.toSet() ?: emptySet()
     }
@@ -67,6 +67,7 @@ object GameInstanceTracker {
     /**
      * Get all living entities in a specific game
      */
+    @Suppress("unused")
     fun getLivingEntitiesInGame(gameId: Int): List<LivingEntity> {
         val entityUUIDs = gameToEntities[gameId] ?: return emptyList()
         return entityUUIDs.mapNotNull { uuid ->
@@ -89,9 +90,9 @@ object GameInstanceTracker {
     /**
      * Clear all tracked entities
      */
+    @Suppress("unused")
     fun clearAll() {
         entityToGame.clear()
         gameToEntities.clear()
     }
 }
-

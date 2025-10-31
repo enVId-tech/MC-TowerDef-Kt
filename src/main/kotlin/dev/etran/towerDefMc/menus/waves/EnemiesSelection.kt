@@ -154,7 +154,7 @@ class EnemiesSelection(
         player.sendMessage("§cEnemy selection cancelled")
     }
 
-    private fun handleConfirm(event: InventoryClickEvent) {
+    private fun handleConfirm(@Suppress("UNUSED_PARAMETER") event: InventoryClickEvent) {
         if (selectedEnemies.isEmpty()) {
             player.sendMessage("§cYou must select at least one enemy!")
             return
@@ -202,7 +202,7 @@ class EnemiesSelection(
     // Simple number selector menu
     private class NumberSelector(
         player: Player,
-        private val itemName: String,
+        @Suppress("unused") private val itemName: String,
         private val onSelect: (Int) -> Unit
     ) : CustomMenu(player, 27, "Select Amount - $itemName") {
 

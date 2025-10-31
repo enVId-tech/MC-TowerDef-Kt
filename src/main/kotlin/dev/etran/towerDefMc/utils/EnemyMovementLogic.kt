@@ -2,7 +2,6 @@ package dev.etran.towerDefMc.utils
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.CheckpointManager
-import dev.etran.towerDefMc.managers.GameManager
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mob
 import org.bukkit.persistence.PersistentDataType
