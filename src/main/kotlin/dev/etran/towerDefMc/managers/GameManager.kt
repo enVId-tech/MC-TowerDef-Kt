@@ -12,9 +12,9 @@ class GameManager(
     val config: GameSaveConfig,
 ) {
     // -- External Managers (now game-specific, not global) --
-    private val startpointManager = StartpointManager()
-    private val waveManager = WaveManager(config, startpointManager, gameId)
-    private val checkpointManager = CheckpointManager()
+    val startpointManager = StartpointManager()
+    val waveManager = WaveManager(config, startpointManager, gameId)
+    val checkpointManager = CheckpointManager()
 
     // -- Game State Properties --
     private var health: Int = config.maxHealth
@@ -30,11 +30,6 @@ class GameManager(
             this.plugin = plugin
         }
     }
-
-    // Expose managers for game-specific operations
-    fun getCheckpointManager(): CheckpointManager = checkpointManager
-    fun getStartpointManager(): StartpointManager = startpointManager
-    fun getWaveManager(): WaveManager = waveManager
 
     // -- Wave Management --
     @Suppress("unused")
@@ -85,6 +80,10 @@ class GameManager(
     @Suppress("unused")
     fun removePlayer(player: UUID) {
         players.remove(player)
+    }
+
+    fun hasPlayer(player: UUID): Boolean {
+        return players.contains(player)
     }
 
     // -- General Game Management --

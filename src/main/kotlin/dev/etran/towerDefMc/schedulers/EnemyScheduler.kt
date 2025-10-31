@@ -26,7 +26,7 @@ object EnemyScheduler {
                 val game = activeGames[gameId]
                 if (game != null) {
                     // Use the game-specific checkpoint manager
-                    applyEnemyMovementLogic(entity, game.getCheckpointManager(), gameId)
+                    applyEnemyMovementLogic(entity, game.checkpointManager, gameId)
                 } else {
                     // Game not found, remove this orphaned enemy
                     entity.remove()

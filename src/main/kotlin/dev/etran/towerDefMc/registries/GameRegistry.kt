@@ -119,4 +119,15 @@ object GameRegistry {
             plugin.logger.info("Deleted Game $gameId (${game.config.name})")
         }
     }
+
+    /**
+     * Find the active game that a player is currently in
+     * @param playerUUID The UUID of the player
+     * @return The GameManager instance if the player is in a game, null otherwise
+     */
+    fun getGameByPlayer(playerUUID: java.util.UUID): GameManager? {
+        return activeGames.values.firstOrNull { game ->
+            game.hasPlayer(playerUUID)
+        }
+    }
 }

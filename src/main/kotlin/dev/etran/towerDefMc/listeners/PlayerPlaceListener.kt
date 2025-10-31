@@ -6,6 +6,7 @@ import dev.etran.towerDefMc.factories.EndpointFactory
 import dev.etran.towerDefMc.factories.EnemyFactory
 import dev.etran.towerDefMc.factories.StartPointFactory
 import dev.etran.towerDefMc.factories.TowerFactory
+import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -25,11 +26,22 @@ object PlayerPlaceListener : Listener {
 
             if (name == null) return@let // Exit the 'let' block if tag is missing
 
+            // Get the game the player is currently in
+            val game = GameRegistry.getGameByPlayer(event.player.uniqueId)
+
+            if (game == null) {
+                event.player.sendMessage("You must be in a game to place game elements.")
+                return
+            }
+
+            // Get the checkpoint manager from the game instance
+            val checkpointManager = game.checkpointManager
+
             // Run functions specific to their unique identifiers
             when (name) {
                 "Tower 1" -> TowerFactory.towerPlace(event)
-                "Checkpoint" -> CheckpointFactory.checkPointPlace(event)
-                "EndPoint" -> EndpointFactory.endPointPlace(event)
+                "Checkpoint" -> CheckpointFactory.checkPointPlace(event, checkpointManager)
+                "EndPoint" -> EndpointFactory.endPointPlace(event, checkpointManager)
                 "StartPoint" -> StartPointFactory.startPointPlace(event)
                 "Enemy 1" -> EnemyFactory.enemyPlace(event)
                 else -> event.player.sendMessage("This game element doesn't exist.")

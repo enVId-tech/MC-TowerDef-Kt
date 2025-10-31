@@ -11,7 +11,7 @@ object ClearCheckpoints : CommandExecutor {
         try {
             // Clear checkpoints for all active games
             GameRegistry.activeGames.values.forEach { game ->
-                game.getCheckpointManager().clearAllCheckpoints(Bukkit.getWorlds())
+                game.checkpointManager.clearAllCheckpoints(Bukkit.getWorlds(), game.startpointManager)
             }
 
             sender.sendMessage("§aCheckpoints cleared for all active games")

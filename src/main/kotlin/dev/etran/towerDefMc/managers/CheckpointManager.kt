@@ -18,9 +18,8 @@ import kotlin.collections.mapOf
 class CheckpointManager() {
     var checkpoints: SortedMap<Int, ArmorStand> = TreeMap<Int, ArmorStand>()
     var standsAreVisible: Boolean = true
-    val effectType = PotionEffectType.GLOWING
-
     companion object {
+        val effectType = PotionEffectType.GLOWING
         const val DURATION = Int.MAX_VALUE
         const val AMPLIFIER = 255
         lateinit var plugin: TowerDefMC
@@ -108,10 +107,10 @@ class CheckpointManager() {
     /**
      * Clears existing checkpoints
      */
-    fun clearAllCheckpoints(worlds: MutableList<World>): Boolean {
+    fun clearAllCheckpoints(worlds: MutableList<World>, startpointManager: StartpointManager): Boolean {
         try {
             checkpoints.clear()
-            StartpointManager().startpoints.clear()
+            startpointManager.startpoints.clear()
             saveCheckpoints()
 
             worlds.flatMap { world -> world.entities }.filterIsInstance<ArmorStand>().filter {

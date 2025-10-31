@@ -10,7 +10,8 @@ object ToggleStandVisibility : CommandExecutor {
         try {
             // Toggle stand visibility for all active games
             GameRegistry.activeGames.values.forEach { game ->
-                game.getCheckpointManager().toggleStandVisibility()
+                game.checkpointManager.toggleStandVisibility()
+                game.startpointManager.toggleStandVisibility()
             }
             sender.sendMessage("§aStand visibility toggled for all active games")
             return true

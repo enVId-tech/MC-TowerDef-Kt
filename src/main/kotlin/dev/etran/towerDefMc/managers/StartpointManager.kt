@@ -1,14 +1,20 @@
 package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.CheckpointManager.Companion.AMPLIFIER
+import dev.etran.towerDefMc.managers.CheckpointManager.Companion.DURATION
+import dev.etran.towerDefMc.managers.CheckpointManager.Companion.effectType
+import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
 import java.util.SortedMap
 import java.util.TreeMap
 
 class StartpointManager {
     var startpoints: SortedMap<Int, Entity> = TreeMap()
+    var standsAreVisible: Boolean = true
 
     /**
      * @param entity The armor stand entity to insert
@@ -81,5 +87,32 @@ class StartpointManager {
         startpoints = reIndexedCheckpoints
 
         return entitiesInOrder
+    }
+
+    /**
+     * Toggle stand visibility
+     */
+    fun toggleStandVisibility(): Boolean {
+        try {
+            standsAreVisible = !standsAreVisible
+            Bukkit.getWorlds().forEach { world ->
+                world.entities.filterIsInstance<ArmorStand>().filter { entity ->
+                    entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) != null
+                }.forEach { entity ->
+                    if (standsAreVisible) {
+                        entity.isInvisible = false
+                        entity.addPotionEffect(PotionEffect(effectType, DURATION, AMPLIFIER))
+                    } else {
+                        entity.isInvisible = true
+                        entity.removePotionEffect(effectType)
+                    }
+                }
+            }
+
+            return true
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return false
+        }
     }
 }

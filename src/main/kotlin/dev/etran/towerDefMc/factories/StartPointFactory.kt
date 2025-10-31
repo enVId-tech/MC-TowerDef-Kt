@@ -2,9 +2,11 @@ package dev.etran.towerDefMc.factories
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.StartpointManager
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.placeElement
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -32,7 +34,18 @@ object StartPointFactory {
 
         val player = event.player
 
-        val correctNewId = StartpointManager.add(entity)
+        val game = GameRegistry.getGameByPlayer(event.player.uniqueId)
+
+        if (game == null) {
+            event.player.sendMessage("You must be in a game to place game elements.")
+            return
+        }
+
+        // Get the checkpoint manager from the game instance
+        val checkpointManager = game.checkpointManager
+
+
+        val correctNewId = checkpointManager.add(entity as ArmorStand)
 
         // Global accessor for checkpoint
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "StartPoint")
