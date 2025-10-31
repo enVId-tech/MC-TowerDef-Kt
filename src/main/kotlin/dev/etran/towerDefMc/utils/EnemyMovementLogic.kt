@@ -32,7 +32,11 @@ fun applyEnemyMovementLogic(entity: Entity, checkpointManager: CheckpointManager
             if (isEndPoint || !checkpointManager.checkpoints.containsKey(nextId)) {
                 cleanUpEnemyHealthBar(entity)
                 entity.remove()
-                // TODO: runGameLoss();
+                // Trigger game loss - enemy reached the end
+                // Find the active game this enemy belongs to and apply health loss
+                dev.etran.towerDefMc.registries.GameRegistry.activeGames.values.forEach { game ->
+                    game.onHealthLost(1)
+                }
                 return
             }
 

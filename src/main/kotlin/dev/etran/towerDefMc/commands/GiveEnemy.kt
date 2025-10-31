@@ -23,23 +23,18 @@ object GiveEnemy : CommandExecutor {
             return false
         }
 
-        // Checks if the first argument (if present) is a valid integer.
-        // TODO: Fix when the user doesn't input proper arguments
-        if (args.size == 1 && args[0].toIntOrNull() == null) {
-            sender.sendMessage("The first argument must be a valid positive integer.")
-            return false
+        // Parse the amount argument with proper validation
+        val amount = if (args.isNotEmpty()) {
+            args[0].toIntOrNull()?.takeIf { it > 0 } ?: run {
+                sender.sendMessage("§cThe amount must be a valid positive integer.")
+                return false
+            }
+        } else {
+            1 // Default to 1 if no argument provided
         }
 
-        // Parses the argument to get the amount, defaulting to 0 for simplicity if no argument is provided.
-        // Note: The preceding checks ensure args[0] exists and is a number if args.size == 1.
-        val amount = args.getOrElse(0) { "1" }.toInt()
         val player = sender.player ?: return false
 
-        // Ensures the requested amount is a positive number.
-        if (amount <= 0) {
-            sender.sendMessage("Amount must be greater than zero")
-            return false
-        }
 
         // Generate enemy stack
         val enemy: ItemStack = EnemyFactory.newBasicEnemy(amount)

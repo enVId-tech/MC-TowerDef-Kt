@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
 class GameManager(
-    private val gameId: Int,
+    val gameId: Int,
     val config: GameSaveConfig,
 ) {
     // -- External Managers --

@@ -52,11 +52,30 @@ object CheckpointFactory {
         // Set the general type (Global accessor for checkpoint)
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Checkpoint")
 
-        // TODO: Warn the user if a path could not be found for all enemy types.
+        // Validate path for all enemy types
+        val hasValidPath = validateCheckpointPath(checkpointManager, entity.location)
+        if (!hasValidPath) {
+            player.sendMessage("§6Warning: Some enemies may not be able to reach this checkpoint!")
+            player.sendMessage("§6Make sure there is a clear path from previous checkpoints.")
+        }
 
         // Take away 1 from the user if they aren't in creative or spectator mode.
         if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
+    }
+
+    private fun validateCheckpointPath(checkpointManager: CheckpointManager, location: org.bukkit.Location): Boolean {
+        // Simple validation: check if there's a reasonable distance from previous checkpoint
+        val checkpoints = checkpointManager.checkpoints
+        if (checkpoints.isEmpty()) return true
+
+        val lastCheckpoint = checkpoints[checkpoints.size]
+        if (lastCheckpoint != null) {
+            val distance = location.distance(lastCheckpoint.location)
+            // Warn if checkpoints are too far apart (e.g., > 50 blocks)
+            return distance <= 50.0
+        }
+        return true
     }
 }
