@@ -1,0 +1,98 @@
+package dev.etran.towerDefMc.managers
+
+import dev.etran.towerDefMc.data.PlayerStats
+import java.util.UUID
+
+/**
+ * Manages player statistics for all active games
+ */
+object PlayerStatsManager {
+    // Map of gameId -> Map of playerUUID -> PlayerStats
+    private val gamePlayerStats: MutableMap<Int, MutableMap<UUID, PlayerStats>> = mutableMapOf()
+
+    /**
+     * Initialize a player's stats for a game
+     */
+    fun initializePlayer(gameId: Int, playerUUID: UUID, startingCash: Int = 500) {
+        val gameStats = gamePlayerStats.getOrPut(gameId) { mutableMapOf() }
+        gameStats[playerUUID] = PlayerStats(playerUUID, cash = startingCash)
+    }
+
+    /**
+     * Get player stats for a specific game
+     */
+    fun getPlayerStats(gameId: Int, playerUUID: UUID): PlayerStats? {
+        return gamePlayerStats[gameId]?.get(playerUUID)
+    }
+
+    /**
+     * Get all player stats for a game
+     */
+    fun getAllPlayerStats(gameId: Int): Map<UUID, PlayerStats> {
+        return gamePlayerStats[gameId] ?: emptyMap()
+    }
+
+    /**
+     * Clear all stats for a game (when game ends)
+     */
+    fun clearGameStats(gameId: Int) {
+        gamePlayerStats.remove(gameId)
+    }
+
+    /**
+     * Remove a specific player from a game
+     */
+    fun removePlayer(gameId: Int, playerUUID: UUID) {
+        gamePlayerStats[gameId]?.remove(playerUUID)
+    }
+
+    /**
+     * Award cash to a player
+     */
+    fun awardCash(gameId: Int, playerUUID: UUID, amount: Int) {
+        getPlayerStats(gameId, playerUUID)?.addCash(amount)
+    }
+
+    /**
+     * Try to spend cash, returns true if successful
+     */
+    fun spendCash(gameId: Int, playerUUID: UUID, amount: Int): Boolean {
+        return getPlayerStats(gameId, playerUUID)?.spendCash(amount) ?: false
+    }
+
+    /**
+     * Record a kill for a player
+     */
+    fun recordKill(gameId: Int, playerUUID: UUID) {
+        getPlayerStats(gameId, playerUUID)?.addKill()
+    }
+
+    /**
+     * Record damage dealt by a player
+     */
+    fun recordDamage(gameId: Int, playerUUID: UUID, damage: Double) {
+        getPlayerStats(gameId, playerUUID)?.addDamage(damage)
+    }
+
+    /**
+     * Record tower placement
+     */
+    fun recordTowerPlaced(gameId: Int, playerUUID: UUID) {
+        getPlayerStats(gameId, playerUUID)?.addTowerPlaced()
+    }
+
+    /**
+     * Record tower upgrade
+     */
+    fun recordTowerUpgraded(gameId: Int, playerUUID: UUID) {
+        getPlayerStats(gameId, playerUUID)?.addTowerUpgraded()
+    }
+
+    /**
+     * Record wave completion for all players in game
+     */
+    fun recordWaveCompletion(gameId: Int) {
+        gamePlayerStats[gameId]?.values?.forEach { it.completeWave() }
+    }
+}
+
