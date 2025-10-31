@@ -132,6 +132,60 @@ class PathManager {
     }
 
     /**
+     * Handle when a path armor stand is removed (outside modification menu)
+     * Returns true if the stand belonged to a path and was handled
+     */
+    fun handleArmorStandRemoval(stand: ArmorStand): Boolean {
+        val elementType = stand.persistentDataContainer.get(
+            TowerDefMC.ELEMENT_TYPES,
+            PersistentDataType.STRING
+        ) ?: return false
+
+        // Find which path this stand belongs to
+        val pathId = findPathIdByArmorStand(stand) ?: return false
+
+        when (elementType) {
+            "PathStart", "PathEnd" -> {
+                // If start or end point is removed, destroy the entire path
+                deletePath(pathId)
+                return true
+            }
+            "PathCheckpoint" -> {
+                // Find the checkpoint index and remove it from the path
+                val path = paths[pathId] ?: return false
+                val standLocation = stand.location
+                val checkpointIndex = path.checkpoints.indexOfFirst { loc ->
+                    loc.world == standLocation.world &&
+                    loc.blockX == standLocation.blockX &&
+                    loc.blockY == standLocation.blockY &&
+                    loc.blockZ == standLocation.blockZ
+                }
+
+                if (checkpointIndex >= 0) {
+                    path.checkpoints.removeAt(checkpointIndex)
+                    // Update visualization
+                    updatePathVisualization(pathId)
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * Find which path ID an armor stand belongs to
+     */
+    private fun findPathIdByArmorStand(stand: ArmorStand): Int? {
+        for ((pathId, stands) in pathArmorStands) {
+            if (stands.contains(stand)) {
+                return pathId
+            }
+        }
+        return null
+    }
+
+    /**
      * Create armor stand visualization for a path
      */
     private fun createPathVisualization(pathId: Int) {
