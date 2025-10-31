@@ -5,8 +5,11 @@ import dev.etran.towerDefMc.menus.games.ModifyGame
 import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
 
 class TowerSelection(
     player: Player,
@@ -31,7 +34,7 @@ class TowerSelection(
             val slotIndex = i - startIndex
             val tower = towersList[i]
 
-            // Get the current limit for this tower from gameConfig
+            // Get the current limit and enabled status for this tower from gameConfig
             val towerLimits = gameConfig.allowedTowers.associate { entry: String ->
                 val parts = entry.split(":")
                 if (parts.size == 2) {
@@ -40,8 +43,16 @@ class TowerSelection(
                     entry to -1
                 }
             }
-            val currentLimit = towerLimits[tower.id] ?: -1
-            val limitDisplay = if (currentLimit == -1) "No Limit" else currentLimit.toString()
+
+            // Check if tower is enabled (present in the list with any value, or not present at all means enabled)
+            val currentLimit = towerLimits[tower.id]
+            val isEnabled = currentLimit != null && currentLimit != 0 || !towerLimits.containsKey(tower.id)
+            val limitDisplay = when {
+                currentLimit == null -> "No Limit"
+                currentLimit == 0 -> "Disabled"
+                currentLimit == -1 -> "No Limit"
+                else -> currentLimit.toString()
+            }
 
             val lore = mutableListOf<String>()
             lore.add("§7${tower.displayName}")
@@ -51,20 +62,29 @@ class TowerSelection(
             lore.add("§7Damage: §e${tower.damage}")
             lore.add("§7Attack Speed: §e${tower.attackSpeed}")
             lore.add("")
+            lore.add("§7Status: ${if (isEnabled) "§aEnabled" else "§cDisabled"}")
             lore.add("§7Current Limit: §a$limitDisplay")
             lore.add("")
-            lore.add("§eClick to set tower limit")
+            lore.add("§eLeft-click to set tower limit")
+            lore.add("§eRight-click to enable/disable")
             lore.add("§7Set to -1 for no limit")
 
-            inventory.setItem(
-                slotIndex,
-                createRenamableItem(
-                    tower.icon,
-                    "§a${tower.displayName}: {VALUE}",
-                    lore,
-                    limitDisplay
-                )
+            val item = createRenamableItem(
+                tower.icon,
+                "${if (isEnabled) "§a" else "§c"}${tower.displayName}: {VALUE}",
+                lore,
+                limitDisplay
             )
+
+            // Add enchantment glint if enabled
+            if (isEnabled) {
+                val meta = item.itemMeta
+                meta.addEnchant(Enchantment.MENDING, 1, true)
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+                item.itemMeta = meta
+            }
+
+            inventory.setItem(slotIndex, item)
         }
 
         // Separator row (slots 36-44, 2nd to last line)
@@ -154,6 +174,14 @@ class TowerSelection(
         if (towerIndex >= towersList.size) return
 
         val tower = towersList[towerIndex]
+
+        // Check if this is a right-click (toggle enable/disable)
+        if (event.isRightClick) {
+            handleTowerToggle(tower.id, tower.displayName)
+            return
+        }
+
+        // Left-click: Set tower limit
         val item = event.currentItem ?: return
         val meta = item.itemMeta ?: return
         val pdc = meta.persistentDataContainer
@@ -163,7 +191,11 @@ class TowerSelection(
             org.bukkit.persistence.PersistentDataType.STRING
         ) ?: "-1"
 
-        val limit = if (limitStr == "No Limit") -1 else limitStr.toIntOrNull() ?: -1
+        val limit = when (limitStr) {
+            "No Limit" -> -1
+            "Disabled" -> 0
+            else -> limitStr.toIntOrNull() ?: -1
+        }
 
         // Update the allowedTowers list
         val updatedTowers = gameConfig.allowedTowers.toMutableList()
@@ -171,12 +203,48 @@ class TowerSelection(
         // Remove existing entry for this tower if it exists
         updatedTowers.removeIf { it.startsWith("${tower.id}:") || it == tower.id }
 
-        // Add the new limit
-        updatedTowers.add("${tower.id}:$limit")
+        // Add the new limit (don't add if disabled via toggle)
+        if (limit != 0) {
+            updatedTowers.add("${tower.id}:$limit")
+        }
 
         gameConfig.allowedTowers = updatedTowers
 
         player.sendMessage("§aSet ${tower.displayName} limit to ${if (limit == -1) "No Limit" else limit}")
+
+        // Refresh the menu to show updated values
+        setMenuItems()
+    }
+
+    private fun handleTowerToggle(towerId: String, towerName: String) {
+        val towerLimits = gameConfig.allowedTowers.associate { entry: String ->
+            val parts = entry.split(":")
+            if (parts.size == 2) {
+                parts[0] to (parts[1].toIntOrNull() ?: -1)
+            } else {
+                entry to -1
+            }
+        }
+
+        val currentLimit = towerLimits[towerId]
+        val isCurrentlyEnabled = currentLimit != null && currentLimit != 0 || !towerLimits.containsKey(towerId)
+
+        val updatedTowers = gameConfig.allowedTowers.toMutableList()
+
+        // Remove existing entry
+        updatedTowers.removeIf { it.startsWith("$towerId:") || it == towerId }
+
+        if (isCurrentlyEnabled) {
+            // Disable the tower by setting limit to 0
+            updatedTowers.add("$towerId:0")
+            player.sendMessage("§c$towerName disabled")
+        } else {
+            // Enable the tower with no limit
+            updatedTowers.add("$towerId:-1")
+            player.sendMessage("§a$towerName enabled with no limit")
+        }
+
+        gameConfig.allowedTowers = updatedTowers
 
         // Refresh the menu to show updated values
         setMenuItems()

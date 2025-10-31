@@ -133,7 +133,7 @@ abstract class CustomMenu(val player: Player, val size: Int, val title: String) 
         val clickedItem = event.currentItem ?: return
         val slot = event.slot
 
-        if (isItemRenamable(clickedItem)) {
+        if (isItemRenamable(clickedItem) && event.isLeftClick) {
             event.isCancelled = true
             initiateRename(clickedItem, slot) // Call without mode
             return
