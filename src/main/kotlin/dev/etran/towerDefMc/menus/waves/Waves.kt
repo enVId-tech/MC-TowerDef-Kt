@@ -63,6 +63,26 @@ class Waves(
             )
         }
 
+        // Refresh button (slot 46)
+        inventory.setItem(
+            46,
+            createMenuItem(
+                Material.LIME_DYE,
+                "§aRefresh",
+                listOf("§7Reload the waves list", "§7Useful after making changes")
+            )
+        )
+
+        // Close/Done button
+        inventory.setItem(
+            47,
+            createMenuItem(
+                Material.BARRIER,
+                "§cDone",
+                listOf("Close waves menu")
+            )
+        )
+
         // Center - Insert new wave button
         inventory.setItem(
             49,
@@ -89,16 +109,6 @@ class Waves(
                 )
             )
         }
-
-        // Close/Done button
-        inventory.setItem(
-            47,
-            createMenuItem(
-                Material.BARRIER,
-                "§cDone",
-                listOf("Close waves menu")
-            )
-        )
     }
 
     override fun handleClick(event: InventoryClickEvent) {
@@ -109,6 +119,7 @@ class Waves(
         when {
             slot in 0..35 -> handleWaveClick(slot)
             slot == 45 -> handleBackPage()
+            slot == 46 -> handleRefresh()
             slot == 47 -> handleDone()
             slot == 49 -> handleInsertWave(event)
             slot == 53 -> handleNextPage()
@@ -175,5 +186,11 @@ class Waves(
 
         player.closeInventory()
         player.sendMessage("§aWaves menu closed - changes saved")
+    }
+
+    private fun handleRefresh() {
+        // Simply reset the menu items to refresh the display
+        setMenuItems()
+        player.sendMessage("§aWaves list refreshed")
     }
 }

@@ -78,13 +78,56 @@ object GameFactory {
 
         try {
             config.save(gameFile)
-            println("Successfully created and saved new game file: ${gameFile.name}")
+            plugin.logger.info("Successfully created and saved new game file: ${gameFile.name}")
         } catch (e: Exception) {
             plugin.logger.severe("Failed to save new game configuration for ID $gameId: ${e.message}")
         }
 
         val newGame = GameManager(gameId, gameConfigurationData)
         GameRegistry.addGame(newGame)
+        return newGame
+    }
+
+    /**
+     * Modify an existing game's configuration and save it
+     * @param gameId The ID of the game to modify
+     * @param maxHealth New max health value (null to keep current)
+     * @param defaultCash New default cash value (null to keep current)
+     * @param name New game name (null to keep current)
+     * @param waves New waves list (null to keep current)
+     * @param allowedTowers New allowed towers list (null to keep current)
+     * @return true if successful, false if game not found
+     */
+    fun modifyGame(
+        gameId: Int,
+        maxHealth: Int? = null,
+        defaultCash: Int? = null,
+        name: String? = null,
+        waves: List<dev.etran.towerDefMc.data.WaveData>? = null,
+        allowedTowers: List<String>? = null
+    ): Boolean {
+        val game = GameRegistry.allGames[gameId] ?: return false
+
+        maxHealth?.let { game.updateMaxHealth(it) }
+        defaultCash?.let { game.updateDefaultCash(it) }
+        name?.let { game.updateGameName(it) }
+        waves?.let { game.updateWaves(it) }
+        allowedTowers?.let { game.updateAllowedTowers(it) }
+
+        plugin.logger.info("Modified and saved game $gameId (${game.config.name})")
+        return true
+    }
+
+    /**
+     * Create a game directly from configuration data
+     * Useful for programmatic game creation
+     */
+    fun createGameFromConfig(config: GameSaveConfig): GameManager {
+        val gameId = getNextAvailableGameId()
+        val newGame = GameManager(gameId, config)
+        GameRegistry.addGame(newGame)
+        newGame.saveToFile()
+        plugin.logger.info("Created game $gameId (${config.name}) from configuration")
         return newGame
     }
 }

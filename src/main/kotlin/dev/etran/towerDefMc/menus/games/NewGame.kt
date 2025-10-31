@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.factories.GameFactory
+import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -13,7 +14,7 @@ class NewGame(player: Player) : CustomMenu(player, 36, "Tower Defense - New Game
             10,
             createRenamableItem(
                 Material.REDSTONE_BLOCK,
-                "Max Health",
+                "Max Health: {VALUE}",
                 listOf("The default maximum game health."),
                 "100"
             )
@@ -72,7 +73,12 @@ class NewGame(player: Player) : CustomMenu(player, 36, "Tower Defense - New Game
         event.isCancelled = true
 
         when (event.slot) {
-            35 -> GameFactory.createGame(this)
+            35 -> {
+                GameFactory.createGame(this)
+                val menu = NewGame(player)
+                MenuListener.registerMenu(player, menu)
+                menu.open()
+            }
         }
     }
 }

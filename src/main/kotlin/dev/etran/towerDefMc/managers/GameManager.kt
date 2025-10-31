@@ -86,6 +86,54 @@ class GameManager(
         return players.contains(player)
     }
 
+    // -- Configuration Management & Saving --
+    /**
+     * Update the max health configuration and save to file
+     */
+    fun updateMaxHealth(newMaxHealth: Int) {
+        config.maxHealth = newMaxHealth
+        saveToFile()
+    }
+
+    /**
+     * Update the default cash configuration and save to file
+     */
+    fun updateDefaultCash(newDefaultCash: Int) {
+        config.defaultCash = newDefaultCash
+        saveToFile()
+    }
+
+    /**
+     * Update the game name and save to file
+     */
+    fun updateGameName(newName: String) {
+        config.name = newName
+        saveToFile()
+    }
+
+    /**
+     * Update the waves list and save to file
+     */
+    fun updateWaves(newWaves: List<dev.etran.towerDefMc.data.WaveData>) {
+        config.waves = newWaves
+        saveToFile()
+    }
+
+    /**
+     * Update the allowed towers list and save to file
+     */
+    fun updateAllowedTowers(newTowers: List<String>) {
+        config.allowedTowers = newTowers
+        saveToFile()
+    }
+
+    /**
+     * Save this game's configuration to file
+     */
+    fun saveToFile() {
+        GameRegistry.saveGame(this)
+    }
+
     // -- General Game Management --
     @Suppress("unused")
     fun addCheckpoint(event: PlayerInteractEvent) {

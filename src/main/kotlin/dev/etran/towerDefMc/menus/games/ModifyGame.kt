@@ -133,23 +133,29 @@ class ModifyGame(
             org.bukkit.persistence.PersistentDataType.STRING
         ) ?: return
 
-        val updatedConfig = when (event.slot) {
+        when (event.slot) {
             10 -> {
-                val maxHealth = value.toIntOrNull() ?: gameManager!!.config.maxHealth
-                gameManager!!.config.copy(maxHealth = maxHealth)
+                val maxHealth = value.toIntOrNull()
+                if (maxHealth != null) {
+                    gameManager!!.updateMaxHealth(maxHealth)
+                    player.sendMessage("§aMax Health updated to $maxHealth and saved!")
+                } else {
+                    player.sendMessage("§cInvalid number for Max Health!")
+                }
             }
             13 -> {
-                val defaultCash = value.toIntOrNull() ?: gameManager!!.config.defaultCash
-                gameManager!!.config.copy(defaultCash = defaultCash)
+                val defaultCash = value.toIntOrNull()
+                if (defaultCash != null) {
+                    gameManager!!.updateDefaultCash(defaultCash)
+                    player.sendMessage("§aDefault Cash updated to $defaultCash and saved!")
+                } else {
+                    player.sendMessage("§cInvalid number for Default Cash!")
+                }
             }
             16 -> {
-                gameManager!!.config.copy(name = value)
+                gameManager!!.updateGameName(value)
+                player.sendMessage("§aGame name updated to '$value' and saved!")
             }
-            else -> return
         }
-
-        // Save the updated config
-        GameRegistry.saveGameConfig(gameId, updatedConfig)
-        player.sendMessage("§aGame configuration saved!")
     }
 }
