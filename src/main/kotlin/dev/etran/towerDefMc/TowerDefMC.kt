@@ -16,6 +16,7 @@ import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
+import dev.etran.towerDefMc.listeners.SpawnModeListener
 import dev.etran.towerDefMc.managers.CheckpointManager
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.GameManager
@@ -88,6 +89,15 @@ class TowerDefMC : JavaPlugin() {
 
         const val RENAMABLE_MARKER_VALUE = "ITEM_IS_RENAMABLE"
         const val CHECK_INTERVAL_TICKS: Long = 4L
+
+        // Helper to create custom NamespacedKeys
+        fun createKey(key: String): NamespacedKey {
+            return NamespacedKey(instance, key)
+        }
+
+        // Game ID key for tracking which game entities belong to
+        val GAME_ID_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "gameId")
     }
 
     override fun onEnable() {
@@ -124,6 +134,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerHoldListener, this)
         server.pluginManager.registerEvents(EnemyHealthListener, this)
         server.pluginManager.registerEvents(MenuListener, this)
+        server.pluginManager.registerEvents(SpawnModeListener(), this)
 
         logger.info {
             "Tower Defense Plugin - Continuous Listeners Registered"

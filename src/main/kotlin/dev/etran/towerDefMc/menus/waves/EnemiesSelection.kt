@@ -134,7 +134,8 @@ class EnemiesSelection(
                 } else {
                     selectedEnemies.remove(enemy.id)
                 }
-                // Reopen this menu
+                // Refresh the menu items to show updated counts, then reopen
+                setMenuItems()
                 this.open()
             },
             waveNum,
@@ -236,32 +237,26 @@ class EnemiesSelection(
             when (event.slot) {
                 10 -> {
                     onSelect(1)
-                    player.closeInventory()
                 }
 
                 11 -> {
                     onSelect(5)
-                    player.closeInventory()
                 }
 
                 12 -> {
                     onSelect(10)
-                    player.closeInventory()
                 }
 
                 13 -> {
                     onSelect(25)
-                    player.closeInventory()
                 }
 
                 14 -> {
                     onSelect(50)
-                    player.closeInventory()
                 }
 
                 15 -> {
                     onSelect(100)
-                    player.closeInventory()
                 }
 
                 18 -> {
@@ -273,13 +268,11 @@ class EnemiesSelection(
                         val customValue = pdc.get(TowerDefMC.TITLE_KEY, PersistentDataType.STRING)
                         val amount = customValue?.toIntOrNull() ?: 1
                         onSelect(amount)
-                        player.closeInventory()
                     }
                 }
 
                 22 -> {
                     onSelect(0)
-                    player.closeInventory()
                 }
             }
         }

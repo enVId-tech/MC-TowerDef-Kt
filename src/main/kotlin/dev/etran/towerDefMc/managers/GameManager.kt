@@ -5,6 +5,7 @@ import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaveData
 import dev.etran.towerDefMc.factories.CheckpointFactory
 import dev.etran.towerDefMc.registries.GameRegistry
+import org.bukkit.Location
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
@@ -58,7 +59,7 @@ class GameManager(
         plugin.logger.info("Game $gameId ended. Result: ${if (win) "Win" else "Loss"}")
 
         // Clean up all entities for this game
-        dev.etran.towerDefMc.managers.GameInstanceTracker.clearGame(gameId)
+        GameInstanceTracker.clearGame(gameId)
 
         GameRegistry.removeGame(this)
     }
@@ -136,9 +137,97 @@ class GameManager(
         GameRegistry.saveGame(this)
     }
 
+    // -- Spawn Point Management --
+    /**
+     * Set the start point location
+     */
+    fun setStartPoint(location: Location) {
+        // Remove old start point if exists
+        startpointManager.startpoints.values.firstOrNull()?.remove()
+        startpointManager.startpoints.clear()
+
+        // Create new armor stand at location
+        val world = location.world ?: return
+        val armorStand = world.spawn(location, org.bukkit.entity.ArmorStand::class.java) { stand ->
+            stand.isVisible = true
+            stand.setGravity(false)
+            stand.isInvulnerable = true
+            stand.customName(net.kyori.adventure.text.Component.text("§a§lSTART POINT"))
+            stand.isCustomNameVisible = true
+            stand.persistentDataContainer.set(
+                TowerDefMC.GAME_ID_KEY,
+                org.bukkit.persistence.PersistentDataType.INTEGER,
+                gameId
+            )
+        }
+
+        startpointManager.add(armorStand)
+        saveToFile()
+    }
+
+    /**
+     * Set the end point location
+     */
+    fun setEndPoint(location: Location) {
+        // Store as special checkpoint with ID 999999 (end point marker)
+        checkpointManager.checkpoints[999999]?.remove()
+
+        val world = location.world ?: return
+        val armorStand = world.spawn(location, org.bukkit.entity.ArmorStand::class.java) { stand ->
+            stand.isVisible = true
+            stand.setGravity(false)
+            stand.isInvulnerable = true
+            stand.customName(net.kyori.adventure.text.Component.text("§c§lEND POINT"))
+            stand.isCustomNameVisible = true
+            stand.persistentDataContainer.set(
+                TowerDefMC.GAME_ID_KEY,
+                org.bukkit.persistence.PersistentDataType.INTEGER,
+                gameId
+            )
+            stand.persistentDataContainer.set(
+                TowerDefMC.CHECKPOINT_ID,
+                org.bukkit.persistence.PersistentDataType.INTEGER,
+                999999
+            )
+        }
+
+        checkpointManager.checkpoints[999999] = armorStand
+        saveToFile()
+    }
+
+    /**
+     * Add a checkpoint location
+     */
+    fun addCheckpoint(location: Location) {
+        val world = location.world ?: return
+        val nextId = (checkpointManager.checkpoints.keys.filter { it < 999999 }.maxOrNull() ?: 0) + 1
+
+        val armorStand = world.spawn(location, org.bukkit.entity.ArmorStand::class.java) { stand ->
+            stand.isVisible = true
+            stand.setGravity(false)
+            stand.isInvulnerable = true
+            stand.customName(net.kyori.adventure.text.Component.text("§e§lCHECKPOINT #$nextId"))
+            stand.isCustomNameVisible = true
+            stand.persistentDataContainer.set(
+                TowerDefMC.GAME_ID_KEY,
+                org.bukkit.persistence.PersistentDataType.INTEGER,
+                gameId
+            )
+            stand.persistentDataContainer.set(
+                TowerDefMC.CHECKPOINT_ID,
+                org.bukkit.persistence.PersistentDataType.INTEGER,
+                nextId
+            )
+        }
+
+        checkpointManager.checkpoints[nextId] = armorStand
+        saveToFile()
+    }
+
     // -- General Game Management --
     @Suppress("unused")
     fun addCheckpoint(event: PlayerInteractEvent) {
         CheckpointFactory.checkPointPlace(event, checkpointManager)
     }
 }
+

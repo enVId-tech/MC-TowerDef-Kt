@@ -179,6 +179,7 @@ class ModifyWave(
                     { enemies, interval ->
                         waveSequence[slot] = EnemySpawnCommand(enemies, interval)
                         player.sendMessage("§aUpdated enemy spawn command")
+                        setMenuItems() // Refresh display
                         this.open()
                     },
                     waveNum,
@@ -231,6 +232,7 @@ class ModifyWave(
                 // Callback from EnemiesSelection
                 waveSequence.add(EnemySpawnCommand(enemies, interval))
                 player.sendMessage("§aAdded enemy spawn command with ${enemies.values.sum()} enemies")
+                setMenuItems() // Refresh the display before reopening
                 this.open()
             },
             waveNum,

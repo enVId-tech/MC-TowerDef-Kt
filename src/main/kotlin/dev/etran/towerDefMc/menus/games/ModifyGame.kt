@@ -1,9 +1,11 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.SpawnModeManager
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.registries.GameRegistry
+import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -25,6 +27,24 @@ class ModifyGame(
 
         val config = gameManager.config
 
+        // Calculate enabled tower count
+        val enabledTowerCount = if (config.allowedTowers.isEmpty()) {
+            // If allowedTowers is empty, all towers are enabled by default
+            TowerRegistry.getAllTowers().size
+        } else {
+            // Count towers that are not disabled (limit != 0)
+            val towerLimits = config.allowedTowers.associate { entry: String ->
+                val parts = entry.split(":")
+                if (parts.size == 2) {
+                    parts[0] to (parts[1].toIntOrNull() ?: -1)
+                } else {
+                    entry to -1
+                }
+            }
+            towerLimits.count { it.value != 0 }
+        }
+
+        // Top row - Basic settings
         inventory.setItem(
             10, createRenamableItem(
                 Material.REDSTONE_BLOCK,
@@ -48,6 +68,7 @@ class ModifyGame(
             )
         )
 
+        // Second row - Waves and Towers
         inventory.setItem(
             19, createMenuItem(
                 Material.ZOMBIE_HEAD, "Waves", listOf(
@@ -59,11 +80,43 @@ class ModifyGame(
         inventory.setItem(
             22, createMenuItem(
                 Material.BOW, "Towers", listOf(
-                    "List of allowed towers", "§7Allowed: ${config.allowedTowers.size}", "§eClick to manage towers"
+                    "List of allowed towers", "§7Allowed: $enabledTowerCount", "§eClick to manage towers"
                 )
             )
         )
 
+        // Third row - Spawn points
+        inventory.setItem(
+            28, createMenuItem(
+                Material.GREEN_WOOL, "§aSet Start Point", listOf(
+                    "§7Set where enemies spawn",
+                    "§7Right-click to place",
+                    "§7Type anything in chat to exit"
+                )
+            )
+        )
+
+        inventory.setItem(
+            30, createMenuItem(
+                Material.YELLOW_WOOL, "§eAdd Checkpoints", listOf(
+                    "§7Set path checkpoints for enemies",
+                    "§7Right-click to place",
+                    "§7Type anything in chat to exit"
+                )
+            )
+        )
+
+        inventory.setItem(
+            32, createMenuItem(
+                Material.RED_WOOL, "§cSet End Point", listOf(
+                    "§7Set where enemies reach goal",
+                    "§7Right-click to place",
+                    "§7Type anything in chat to exit"
+                )
+            )
+        )
+
+        // Bottom row - Actions
         inventory.setItem(
             49, createMenuItem(
                 Material.BARRIER, "§cBack", listOf("Return to game selection")
@@ -79,6 +132,9 @@ class ModifyGame(
         when (event.slot) {
             19 -> handleWavesClick()
             22 -> handleTowersClick()
+            28 -> handleStartPointClick()
+            30 -> handleCheckpointClick()
+            32 -> handleEndPointClick()
             49 -> handleBack()
             10, 13, 16 -> handleValueUpdate(event)
         }
@@ -94,6 +150,21 @@ class ModifyGame(
         player.closeInventory()
         val towerSelectionMenu = TowerSelection(player, gameManager!!.config, gameId)
         towerSelectionMenu.open()
+    }
+
+    private fun handleStartPointClick() {
+        player.closeInventory()
+        SpawnModeManager.startSpawnMode(player, gameId, SpawnModeManager.SpawnType.START_POINT)
+    }
+
+    private fun handleCheckpointClick() {
+        player.closeInventory()
+        SpawnModeManager.startSpawnMode(player, gameId, SpawnModeManager.SpawnType.CHECKPOINT)
+    }
+
+    private fun handleEndPointClick() {
+        player.closeInventory()
+        SpawnModeManager.startSpawnMode(player, gameId, SpawnModeManager.SpawnType.END_POINT)
     }
 
     private fun handleBack() {
@@ -172,3 +243,4 @@ class ModifyGame(
         }
     }
 }
+
