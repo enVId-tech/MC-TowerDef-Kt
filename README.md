@@ -404,26 +404,11 @@ Enemies are defined with:
 
 ## Contributing
 
-Contributions are welcome! Here's how you can help:
-
-1. **Report Bugs**: Open an issue with detailed reproduction steps
-2. **Suggest Features**: Describe new features or improvements
-3. **Submit Pull Requests**: Fork, create a branch, and submit PR
-4. **Improve Documentation**: Help clarify or expand documentation
-5. **Test**: Test new features and report issues
-
-### Development Setup
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Test thoroughly
-5. Commit with clear messages (`git commit -m 'Add amazing feature'`)
-6. Push to branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+See [CONTRIBUTING](./CONTRIBUTING.md) for guidelines on how to contribute to this project.
 
 ## License
 
-This project is licensed under the terms specified in the LICENSE file.
+This project is licensed under the terms specified in the [LICENSE](./LICENSE) file.
 
 ## Roadmap
 
