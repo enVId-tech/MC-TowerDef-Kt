@@ -64,8 +64,15 @@ object PlayerStatsManager {
 
     /**
      * Try to spend cash, returns true if successful
+     * Players in creative mode always have infinite cash
      */
     fun spendCash(gameId: Int, playerUUID: UUID, amount: Int): Boolean {
+        // Check if player is in creative mode - if so, they have infinite cash
+        val player = org.bukkit.Bukkit.getPlayer(playerUUID)
+        if (player != null && player.gameMode == org.bukkit.GameMode.CREATIVE) {
+            return true
+        }
+
         return getPlayerStats(gameId, playerUUID)?.spendCash(amount) ?: false
     }
 

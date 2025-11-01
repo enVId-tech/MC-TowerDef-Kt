@@ -41,11 +41,29 @@ object GiveCash : CommandExecutor, TabCompleter {
             return true
         }
 
+        // Check if player is in the game
+        if (!gameManager.hasPlayer(targetPlayer.uniqueId)) {
+            sender.sendMessage("§cPlayer ${targetPlayer.name} is not in game $gameId!")
+            sender.sendMessage("§7Use /addplayer $gameId ${targetPlayer.name} first to add them to the game.")
+            return true
+        }
+
+        // Check if player has stats initialized
+        val stats = PlayerStatsManager.getPlayerStats(gameId, targetPlayer.uniqueId)
+        if (stats == null) {
+            sender.sendMessage("§cPlayer ${targetPlayer.name} has no stats in game $gameId!")
+            sender.sendMessage("§7This shouldn't happen. Try removing and re-adding the player to the game.")
+            return true
+        }
+
         // Add cash to player
         PlayerStatsManager.awardCash(gameId, targetPlayer.uniqueId, amount)
 
         sender.sendMessage("§aGave §e$amount cash §ato ${targetPlayer.name} in game $gameId")
+        sender.sendMessage("§7New balance: §e${stats.cash + amount} cash")
+        targetPlayer.sendMessage("§a§lCash Received!")
         targetPlayer.sendMessage("§aYou received §e$amount cash §afrom an admin!")
+        targetPlayer.sendMessage("§7New balance: §e${stats.cash + amount} cash")
 
         return true
     }
@@ -64,4 +82,3 @@ object GiveCash : CommandExecutor, TabCompleter {
         }
     }
 }
-

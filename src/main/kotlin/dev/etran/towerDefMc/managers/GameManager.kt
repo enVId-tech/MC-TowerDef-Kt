@@ -207,12 +207,10 @@ class GameManager(
     fun addPlayer(player: UUID) {
         players.add(player)
 
-        // Initialize stats for new player
-        if (isRunning) {
-            PlayerStatsManager.initializePlayer(
-                gameId, player, config.defaultCash
-            )
-        }
+        // Initialize stats for new player (always initialize, not just when running)
+        PlayerStatsManager.initializePlayer(
+            gameId, player, config.defaultCash
+        )
     }
 
     @Suppress("unused")

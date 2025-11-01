@@ -48,9 +48,16 @@ object PlayerHUDManager {
         val game = GameRegistry.getGameByPlayer(player.uniqueId) ?: return
         val stats = PlayerStatsManager.getPlayerStats(game.gameId, player.uniqueId) ?: return
 
+        // Display infinity symbol for creative mode players, otherwise show actual cash
+        val cashDisplay = if (player.gameMode == org.bukkit.GameMode.CREATIVE) {
+            "∞"
+        } else {
+            "${stats.cash}"
+        }
+
         // Create action bar message with cash and key stats
         val message = Component.text().append(Component.text("💰 ", NamedTextColor.GOLD, TextDecoration.BOLD))
-            .append(Component.text("${stats.cash}", NamedTextColor.YELLOW))
+            .append(Component.text(cashDisplay, NamedTextColor.YELLOW))
             .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("⚔ ", NamedTextColor.RED))
             .append(Component.text("${stats.kills}", NamedTextColor.WHITE))
             .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("🗼 ", NamedTextColor.AQUA))

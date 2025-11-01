@@ -202,9 +202,13 @@ class TowerDefMC : JavaPlugin() {
 
         // New admin game control commands
         getCommand("stopgame")?.setExecutor(StopGame)
+        getCommand("stopgame")?.tabCompleter = StopGame
         getCommand("givecash")?.setExecutor(GiveCash)
+        getCommand("givecash")?.tabCompleter = GiveCash
         getCommand("spawnenemy")?.setExecutor(SpawnEnemy)
+        getCommand("spawnenemy")?.tabCompleter = SpawnEnemy
         getCommand("nextwave")?.setExecutor(NextWave)
+        getCommand("nextwave")?.tabCompleter = NextWave
         getCommand("addplayer")?.setExecutor(AddPlayerToGame)
         getCommand("addplayer")?.tabCompleter = AddPlayerToGame
         getCommand("tddebug")?.setExecutor(DebugCommand)
