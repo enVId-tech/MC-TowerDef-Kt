@@ -4,7 +4,6 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaveData
 import dev.etran.towerDefMc.registries.GameRegistry
-import org.bukkit.event.player.PlayerInteractEvent
 import java.util.UUID
 
 class GameManager(
@@ -79,7 +78,7 @@ class GameManager(
 
         // Initialize stats for new player
         if (isRunning) {
-            dev.etran.towerDefMc.managers.PlayerStatsManager.initializePlayer(
+            PlayerStatsManager.initializePlayer(
                 gameId,
                 player,
                 config.defaultCash
@@ -92,7 +91,7 @@ class GameManager(
         players.remove(player)
 
         // Remove player stats
-        dev.etran.towerDefMc.managers.PlayerStatsManager.removePlayer(gameId, player)
+        PlayerStatsManager.removePlayer(gameId, player)
     }
 
     fun hasPlayer(player: UUID): Boolean {

@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.menus.towers
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.menus.games.ModifyGame
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
@@ -247,7 +248,7 @@ class TowerSelection(
 
     private fun handleDone() {
         // Save the game configuration
-        dev.etran.towerDefMc.registries.GameRegistry.saveGameConfig(gameId, gameConfig)
+        GameRegistry.saveGameConfig(gameId, gameConfig)
 
         val prevMenu = ModifyGame(player, gameId)
         prevMenu.open()

@@ -2,10 +2,10 @@ package dev.etran.towerDefMc.registries
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.*
-import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.managers.GameManager
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
+import java.util.UUID
 
 object GameRegistry {
     val activeGames: MutableMap<Int, GameManager> = mutableMapOf()
@@ -216,7 +216,7 @@ object GameRegistry {
      * @param playerUUID The UUID of the player
      * @return The GameManager instance if the player is in a game, null otherwise
      */
-    fun getGameByPlayer(playerUUID: java.util.UUID): GameManager? {
+    fun getGameByPlayer(playerUUID: UUID): GameManager? {
         return activeGames.values.firstOrNull { game ->
             game.hasPlayer(playerUUID)
         }

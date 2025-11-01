@@ -1,7 +1,8 @@
 package dev.etran.towerDefMc.factories
 
-
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.PlayerStatsManager
+import dev.etran.towerDefMc.registries.GameRegistry
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -93,9 +94,9 @@ object TowerFactory {
         )
 
         // Record tower placement in player stats
-        val game = dev.etran.towerDefMc.registries.GameRegistry.getGameByPlayer(player.uniqueId)
+        val game = GameRegistry.getGameByPlayer(player.uniqueId)
         if (game != null) {
-            dev.etran.towerDefMc.managers.PlayerStatsManager.recordTowerPlaced(game.gameId, player.uniqueId)
+            PlayerStatsManager.recordTowerPlaced(game.gameId, player.uniqueId)
         }
 
         // Take away 1 from the user if they aren't in creative or spectator mode.

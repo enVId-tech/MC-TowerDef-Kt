@@ -1,7 +1,6 @@
 package dev.etran.towerDefMc.utils
 
 import dev.etran.towerDefMc.TowerDefMC
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
 fun getRenamableItemValue(menu: CustomMenu, slot: Int): String? {

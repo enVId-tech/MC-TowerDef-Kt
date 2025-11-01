@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.factories.EnemyFactory
+import dev.etran.towerDefMc.factories.StatsTrackerFactory
 import dev.etran.towerDefMc.factories.TowerFactory
 import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.event.EventHandler
@@ -35,7 +36,7 @@ object PlayerPlaceListener : Listener {
             when (name) {
                 "Tower 1" -> TowerFactory.towerPlace(event)
                 "Enemy 1" -> EnemyFactory.enemyPlace(event)
-                "Stats_Tracker" -> dev.etran.towerDefMc.factories.StatsTrackerFactory.placeStatsTracker(event)
+                "Stats_Tracker" -> StatsTrackerFactory.placeStatsTracker(event)
                 else -> event.player.sendMessage("This game element doesn't exist.")
             }
 

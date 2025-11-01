@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.GameInstanceTracker
+import dev.etran.towerDefMc.managers.PlayerStatsManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.cleanUpEnemyHealthBar
 import org.bukkit.entity.ArmorStand
@@ -35,13 +36,13 @@ object EntityDeathListener : Listener {
                     // Track enemy kills for all players in the game
                     val gameId = GameInstanceTracker.getGameId(gameElement)
                     if (gameId != null) {
-                        dev.etran.towerDefMc.managers.PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
-                            dev.etran.towerDefMc.managers.PlayerStatsManager.recordKill(gameId, playerUUID)
+                        PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                            PlayerStatsManager.recordKill(gameId, playerUUID)
                         }
 
                         // Award cash for killing enemy (50 cash per kill)
-                        dev.etran.towerDefMc.managers.PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
-                            dev.etran.towerDefMc.managers.PlayerStatsManager.awardCash(gameId, playerUUID, 50)
+                        PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                            PlayerStatsManager.awardCash(gameId, playerUUID, 50)
                         }
                     }
                 }

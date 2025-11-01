@@ -1,7 +1,9 @@
 package dev.etran.towerDefMc.utils
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.WaypointManager
+import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mob
 import org.bukkit.persistence.PersistentDataType
@@ -32,13 +34,13 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
 
                 // Trigger game loss - enemy reached the end
                 // Find the specific game this enemy belongs to
-                val enemyGameId = dev.etran.towerDefMc.managers.GameInstanceTracker.getGameId(entity)
+                val enemyGameId = GameInstanceTracker.getGameId(entity)
                 if (enemyGameId != null) {
-                    dev.etran.towerDefMc.registries.GameRegistry.activeGames[enemyGameId]?.onHealthLost(1)
+                    GameRegistry.activeGames[enemyGameId]?.onHealthLost(1)
                 }
 
                 // Unregister the entity
-                dev.etran.towerDefMc.managers.GameInstanceTracker.unregisterEntity(entity)
+                GameInstanceTracker.unregisterEntity(entity)
                 return
             }
 
@@ -57,7 +59,7 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
             // No more valid checkpoints available after the current missing one, assume end of path.
             cleanUpEnemyHealthBar(entity)
             entity.remove()
-            dev.etran.towerDefMc.managers.GameInstanceTracker.unregisterEntity(entity)
+            GameInstanceTracker.unregisterEntity(entity)
         } else {
             container.set(
                 TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, currentTargetId + 1

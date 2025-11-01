@@ -1,4 +1,4 @@
-stats  player package dev.etran.towerDefMc.listeners
+package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.TowerUpgradeConfig
@@ -8,7 +8,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractEntityEvent
@@ -157,7 +156,7 @@ class TowerUpgradeListener : Listener {
 
             // Visual and sound effects
             entity.world.spawnParticle(
-                Particle.VILLAGER_HAPPY,
+                Particle.HAPPY_VILLAGER,
                 entity.location.add(0.0, 1.0, 0.0),
                 20,
                 0.5, 0.5, 0.5,
@@ -174,4 +173,3 @@ class TowerUpgradeListener : Listener {
         }
     }
 }
-

@@ -1,6 +1,9 @@
 package dev.etran.towerDefMc.utils
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.GameInstanceTracker
+import dev.etran.towerDefMc.managers.PlayerStatsManager
+import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.entity.LivingEntity
 import org.bukkit.persistence.PersistentDataType
 
@@ -33,15 +36,14 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
         enemy.damage(damage)
 
         // Track damage dealt - find the tower's owner/placer if possible
-        // For now, we'll track damage per game via the GameInstanceTracker
-        val gameId = dev.etran.towerDefMc.managers.GameInstanceTracker.getGameId(tower)
+        val gameId = GameInstanceTracker.getGameId(tower)
         if (gameId != null) {
             // Award damage to all players in the game for now
             // In future, could track tower ownership per player
-            val game = dev.etran.towerDefMc.registries.GameRegistry.allGames[gameId]
+            val game = GameRegistry.allGames[gameId]
             if (game != null) {
-                dev.etran.towerDefMc.managers.PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
-                    dev.etran.towerDefMc.managers.PlayerStatsManager.recordDamage(gameId, playerUUID, damage)
+                PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                    PlayerStatsManager.recordDamage(gameId, playerUUID, damage)
                 }
             }
         }

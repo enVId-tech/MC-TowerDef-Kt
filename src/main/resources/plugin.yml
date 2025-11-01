@@ -33,3 +33,7 @@ commands:
     usage: /<command> <home|new|modify|delete|waves|select> [gameId]
     permission: towerdef.menu
     aliases: [tdm, menu]
+
+  giveStatsTracker:
+    description: Give a stats tracker item to view in-game statistics
+    usage: /<command> [amount]

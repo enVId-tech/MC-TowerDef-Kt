@@ -5,6 +5,7 @@ import dev.etran.towerDefMc.commands.ClearEnemies
 import dev.etran.towerDefMc.commands.ClearTowers
 import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveTower
+import dev.etran.towerDefMc.commands.GiveStatsTracker
 import dev.etran.towerDefMc.commands.ToggleStandVisibility
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
@@ -19,8 +20,10 @@ import dev.etran.towerDefMc.listeners.PathModificationListener
 import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.listeners.SpawnModeListener
+import dev.etran.towerDefMc.listeners.TowerUpgradeListener
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.GameManager
+import dev.etran.towerDefMc.managers.PlayerHUDManager
 import dev.etran.towerDefMc.managers.WaypointManager
 import dev.etran.towerDefMc.managers.WaveManager
 import dev.etran.towerDefMc.registries.EnemyRegistry
@@ -141,6 +144,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PathCreationListener(), this)
         server.pluginManager.registerEvents(PathModificationListener(), this)
         server.pluginManager.registerEvents(PathArmorStandRemovalListener(), this)
+        server.pluginManager.registerEvents(TowerUpgradeListener(), this)
 
         logger.info {
             "Tower Defense Plugin - Continuous Listeners Registered"
@@ -154,6 +158,7 @@ class TowerDefMC : JavaPlugin() {
         getCommand("clearTDallenemies")?.setExecutor(ClearEnemies)
         getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility)
         getCommand("tdmenu")?.setExecutor(MenuCommands)
+        getCommand("giveStatsTracker")?.setExecutor(GiveStatsTracker)
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"
@@ -163,6 +168,8 @@ class TowerDefMC : JavaPlugin() {
         startTowerCheckTask()
         startEnemyCheckTask()
 
+        // Start player HUD updates
+        PlayerHUDManager.startHUDTask()
 
         logger.info {
             "Tower Defense Plugin - Scheduler Tasks Started"
@@ -175,6 +182,10 @@ class TowerDefMC : JavaPlugin() {
 
     override fun onDisable() {
         // Plugin shutdown logic
+
+        // Stop HUD updates
+        PlayerHUDManager.stopHUDTask()
+
         logger.info {
             "Tower Defense Plugin - File configuration saved"
         }

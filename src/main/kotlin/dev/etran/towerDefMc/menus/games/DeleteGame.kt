@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.managers.GameManager
+import dev.etran.towerDefMc.menus.Home
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material
@@ -86,7 +87,7 @@ class DeleteGame(player: Player) : CustomMenu(player, 54, "Tower Defense - Delet
             49 -> {
                 // Back button
                 player.closeInventory()
-                val homeMenu = dev.etran.towerDefMc.menus.Home(player)
+                val homeMenu = Home(player)
                 homeMenu.open()
             }
 

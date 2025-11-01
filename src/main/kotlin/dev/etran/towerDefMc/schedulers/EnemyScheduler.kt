@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.schedulers
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.applyEnemyMovementLogic
 import org.bukkit.World
@@ -21,7 +22,7 @@ object EnemyScheduler {
             entity.isCollidable = false
 
             // Get the game ID this enemy belongs to
-            val gameId = dev.etran.towerDefMc.managers.GameInstanceTracker.getGameId(entity)
+            val gameId = GameInstanceTracker.getGameId(entity)
 
             if (gameId != null) {
                 val game = activeGames[gameId]
@@ -31,7 +32,7 @@ object EnemyScheduler {
                 } else {
                     // Game not found, remove this orphaned enemy
                     entity.remove()
-                    dev.etran.towerDefMc.managers.GameInstanceTracker.unregisterEntity(entity)
+                    GameInstanceTracker.unregisterEntity(entity)
                 }
             }
         }
