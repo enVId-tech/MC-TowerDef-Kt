@@ -84,6 +84,28 @@ class PathManager {
     }
 
     /**
+     * Setup waypoint manager checkpoints from a specific path
+     * This populates the waypoint manager with the path's points so enemies can navigate
+     */
+    fun setupWaypointManagerForPath(path: PathData, waypointManager: WaypointManager) {
+        // Clear existing checkpoints
+        waypointManager.checkpoints.values.forEach { it.remove() }
+        waypointManager.checkpoints.clear()
+
+        var checkpointId = 1
+
+        // Get the visualization armor stands for this path
+        val stands = pathArmorStands[path.id] ?: return
+
+        // Add all armor stands to the waypoint manager in order
+        // The order is: start, checkpoints..., end
+        stands.forEach { stand ->
+            waypointManager.checkpoints[checkpointId] = stand
+            checkpointId++
+        }
+    }
+
+    /**
      * Get all paths
      */
     fun getAllPaths(): List<PathData> {

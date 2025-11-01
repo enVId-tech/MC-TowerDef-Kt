@@ -173,6 +173,7 @@ class TowerDefMC : JavaPlugin() {
         // Scheduler tasks
         startTowerCheckTask()
         startEnemyCheckTask()
+        startHealthBarCleanupTask()
 
         // Start player HUD updates
         PlayerHUDManager.startHUDTask()
@@ -224,6 +225,34 @@ class TowerDefMC : JavaPlugin() {
             },
             0L,
             CHECK_INTERVAL_TICKS
+        )
+    }
+
+    fun startHealthBarCleanupTask() {
+        // Cleanup orphaned health bars every 5 seconds (100 ticks)
+        Bukkit.getScheduler().runTaskTimer(
+            this, Runnable {
+                for (world in Bukkit.getWorlds()) {
+                    // Find all TextDisplay entities with health bar markers
+                    world.entities.filterIsInstance<org.bukkit.entity.TextDisplay>().forEach { textDisplay ->
+                        val ownerUUID = textDisplay.persistentDataContainer.get(
+                            HEALTH_OWNER_UUID, org.bukkit.persistence.PersistentDataType.STRING
+                        )
+
+                        if (ownerUUID != null) {
+                            // Check if the owner entity still exists
+                            val ownerExists = world.entities.any { it.uniqueId.toString() == ownerUUID }
+
+                            // If owner doesn't exist, remove this orphaned health bar
+                            if (!ownerExists) {
+                                textDisplay.remove()
+                            }
+                        }
+                    }
+                }
+            },
+            100L, // Start after 5 seconds
+            100L  // Run every 5 seconds
         )
     }
 }

@@ -103,6 +103,13 @@ class WaveManager(
 
         val spawnQueue = command.enemies.toMutableMap()
 
+        // Get a random path once for this spawn command and set up waypoint manager
+        val randomPath = pathManager.getRandomPath()
+        if (randomPath != null) {
+            // Setup waypoint manager with this path's checkpoints
+            pathManager.setupWaypointManagerForPath(randomPath, waypointManager)
+        }
+
         object : BukkitRunnable() {
             private var currentEnemyType: String? = null
             private var currentQuantity = 0
@@ -119,11 +126,11 @@ class WaveManager(
                 if (currentEnemyType == null) {
                     this.cancel()
                     println("Spawn sequence finished for command.")
+                    processNextCommand()
                     return
                 }
 
                 // Get a random path and use its start point
-                val randomPath = pathManager.getRandomPath()
                 if (randomPath == null) {
                     // Fallback to old waypoint system if no paths exist
                     if (waypointManager.startpoints.values.isEmpty()) {

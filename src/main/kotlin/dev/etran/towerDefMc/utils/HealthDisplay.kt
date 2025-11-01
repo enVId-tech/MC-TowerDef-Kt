@@ -92,20 +92,20 @@ fun createHealthBar(enemy: LivingEntity): TextDisplay {
 fun cleanUpEnemyHealthBar(enemy: Entity) {
     val deadMobUUID = enemy.uniqueId.toString()
 
-    // 1. Search near the enemy's location for the TextDisplay owner link
-    enemy.getNearbyEntities(2.0, 2.0, 2.0).filterIsInstance<TextDisplay>().forEach { textDisplay ->
-        if (textDisplay.persistentDataContainer.get(
-                TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING
-            ) == deadMobUUID
-        ) {
-            textDisplay.remove()
-            return@forEach
-        }
+    // First, try to remove passengers (most reliable method)
+    val passengersToRemove = enemy.passengers.filterIsInstance<TextDisplay>().toList()
+    passengersToRemove.forEach { passenger ->
+        enemy.removePassenger(passenger)
+        passenger.remove()
     }
 
-    enemy.passengers.forEach { passenger ->
-        if (passenger is TextDisplay) {
-            passenger.remove()
+    // Second, search nearby for health bars that might have gotten detached
+    enemy.getNearbyEntities(3.0, 3.0, 3.0).filterIsInstance<TextDisplay>().forEach { textDisplay ->
+        val ownerUUID = textDisplay.persistentDataContainer.get(
+            TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING
+        )
+        if (ownerUUID == deadMobUUID) {
+            textDisplay.remove()
         }
     }
 }
