@@ -4,12 +4,14 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.utils.createHealthBar
 import dev.etran.towerDefMc.utils.DebugLogger
+import dev.etran.towerDefMc.utils.EntityAIDisabler
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -52,15 +54,15 @@ object EnemyFactory {
 
         // Base value is a multiplier from the normal value, 2 is double size
         if (scale != null) scale.baseValue = 1.5
-        entity.setAI(false)
-        entity.setAdult()
+
+        // COMPREHENSIVE AI DISABLING - prevents all mob abilities
+        EntityAIDisabler.disableAllAI(entity)
+
         entity.isInvulnerable = false
         entity.fireTicks = 0
         entity.noDamageTicks = 0
         entity.visualFire = TriState.TRUE
         entity.isPersistent = true
-        entity.isSilent = true
-        entity.isCollidable = false
 
         // Remove regeneration effects
         entity.removePotionEffect(PotionEffectType.REGENERATION)
@@ -87,7 +89,7 @@ object EnemyFactory {
         }
     }
 
-    fun enemyPlace(enemyType: String, location: Location): Zombie? {
+    fun enemyPlace(enemyType: String, location: Location): LivingEntity? {
         // Get enemy configuration from registry
         val enemyConfig = EnemyRegistry.getEnemy(enemyType)
 
@@ -99,7 +101,9 @@ object EnemyFactory {
         }
 
         val world = location.world
-        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
+
+        // Spawn the entity as a zombie (entity type is controlled by the generator system, not registry)
+        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as? LivingEntity ?: return null
 
         val scale = entity.getAttribute(Attribute.SCALE)
         val maxHealth = entity.getAttribute(Attribute.MAX_HEALTH)
@@ -136,19 +140,20 @@ object EnemyFactory {
             )
         }
 
-        entity.setAI(false)
-        entity.setAdult()
+        // COMPREHENSIVE AI DISABLING - prevents all mob abilities including:
+        // - Wither shooting skulls
+        // - Creepers exploding
+        // - Cave spiders poisoning
+        // - Endermen teleporting
+        // - Ghasts shooting fireballs
+        // - And all other vanilla mob behaviors
+        EntityAIDisabler.disableAllAI(entity)
+
         entity.isInvulnerable = false
         entity.fireTicks = 0
         entity.noDamageTicks = 0
         entity.visualFire = TriState.TRUE
         entity.isPersistent = true
-        entity.isSilent = true
-        entity.isCollidable = false
-
-        // Clear target to prevent attacking players, but don't disable awareness
-        // We need awareness enabled for pathfinding to work
-        entity.setTarget(null)
 
         // Remove regeneration effects
         entity.removePotionEffect(PotionEffectType.REGENERATION)

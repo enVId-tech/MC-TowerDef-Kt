@@ -4,10 +4,12 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.PlayerStatsManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.DebugLogger
+import dev.etran.towerDefMc.utils.EntityAIDisabler
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -83,17 +85,29 @@ object TowerFactory {
         DebugLogger.logTower("Player ${player.name} placing tower at ${location.blockX}, ${location.blockY}, ${location.blockZ}")
 
         val world = location.world
-        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
-        val itemMD_PDC = itemHeld.itemMeta.persistentDataContainer
 
-        entity.setAI(false)
-        entity.setAdult()
+        // Get entity type from tower data if available, otherwise default to zombie
+        val itemMD_PDC = itemHeld.itemMeta.persistentDataContainer
+        val entityType = EntityType.ZOMBIE // Default, could be customized from item data in future
+
+        val entity = world.spawnEntity(location, entityType) as? LivingEntity
+        if (entity == null) {
+            player.sendMessage("§cFailed to spawn tower entity!")
+            return
+        }
+
+        // COMPREHENSIVE AI DISABLING - prevents all mob abilities including:
+        // - Wither shooting skulls
+        // - Iron golems attacking
+        // - Blazes shooting fireballs
+        // - And all other vanilla mob behaviors
+        EntityAIDisabler.disableAllAI(entity)
+
         entity.isInvulnerable = true
         entity.fireTicks = 0
         entity.visualFire = TriState.FALSE
         entity.isPersistent = true
-        entity.isSilent = true
-        entity.isSilent = true
+
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Tower")
         entity.persistentDataContainer.set(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING, "Basic_Tower_1")
         entity.persistentDataContainer.set(
