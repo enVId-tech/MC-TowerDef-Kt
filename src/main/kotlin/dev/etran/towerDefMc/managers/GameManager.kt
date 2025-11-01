@@ -50,6 +50,19 @@ class GameManager(
     fun startGame(initialPlayers: List<UUID>) {
         if (isRunning) return
 
+        // Validate that there are paths or start points configured
+        val hasPaths = pathManager.getAllPaths().any { it.isVisible }
+        val hasStartPoints = waypointManager.startpoints.values.isNotEmpty()
+
+        if (!hasPaths && !hasStartPoints) {
+            // Send message to all players trying to start the game
+            initialPlayers.forEach { uuid ->
+                plugin.server.getPlayer(uuid)?.sendMessage("§c§lCannot start game: No paths or start points configured!")
+            }
+            plugin.logger.warning("Game $gameId: Cannot start - no paths or start points configured!")
+            return
+        }
+
         // Reset game state for a fresh start
         health = config.maxHealth
         isRunning = true
@@ -84,7 +97,8 @@ class GameManager(
         // Clean up all entities for this game
         GameInstanceTracker.clearGame(gameId)
 
-        GameRegistry.removeGame(this)
+        // Don't delete the game file, just stop the instance
+        GameRegistry.activeGames.remove(gameId)
     }
 
     /**

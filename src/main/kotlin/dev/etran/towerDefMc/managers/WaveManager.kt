@@ -20,6 +20,8 @@ class WaveManager(
     private var timeRemaining = 0.0
     private var waveCheckTaskId: Int? = null
     private var isSpawningComplete = false
+    private val activeSpawnTasks = mutableListOf<Int>() // Track active spawn task IDs
+    private var waitTaskId: Int? = null // Track wait command task
 
 
     companion object {
@@ -41,6 +43,32 @@ class WaveManager(
         timeRemaining = 0.0
         isSpawningComplete = false
         cancelWaveCheckTask()
+
+        // Clear waypoint manager checkpoints to allow new game to set them up fresh
+        waypointManager.checkpoints.clear()
+    }
+
+    /**
+     * Stop all wave activities (spawning, wave progression, etc.)
+     * Call this when the game ends
+     */
+    fun stopAllWaveActivities() {
+        // Cancel wave completion check
+        cancelWaveCheckTask()
+
+        // Cancel all active spawn tasks
+        activeSpawnTasks.forEach { taskId ->
+            plugin.server.scheduler.cancelTask(taskId)
+        }
+        activeSpawnTasks.clear()
+
+        // Cancel wait command task if active
+        waitTaskId?.let {
+            plugin.server.scheduler.cancelTask(it)
+            waitTaskId = null
+        }
+
+        println("All wave activities stopped for Game $gameId")
     }
 
     private fun cancelWaveCheckTask() {
@@ -128,10 +156,10 @@ class WaveManager(
     }
 
     private fun handleWaitCommand(command: WaitCommand) {
-        plugin.server.scheduler.runTaskLater(plugin, Runnable {
+        waitTaskId = plugin.server.scheduler.runTaskLater(plugin, Runnable {
             commandIndex++
             processNextCommand()
-        }, (command.waitSeconds * 20).toLong())
+        }, (command.waitSeconds * 20).toLong()).taskId
     }
 
     private fun handleEnemySpawnCommand(command: EnemySpawnCommand) {
@@ -152,11 +180,20 @@ class WaveManager(
             }
         }
 
-        object : BukkitRunnable() {
+        val spawnTask = object : BukkitRunnable() {
             private var currentEnemyType: String? = null
             private var currentQuantity = 0
 
             override fun run() {
+                // Check if game is still running before spawning
+                val game = GameRegistry.activeGames[gameId]
+                if (game == null || !game.isGameRunning) {
+                    this.cancel()
+                    activeSpawnTasks.remove(this.taskId)
+                    println("Spawn task cancelled - game is no longer running")
+                    return
+                }
+
                 if (currentQuantity <= 0) {
                     currentEnemyType = spawnQueue.keys.firstOrNull()
                     if (currentEnemyType != null) {
@@ -167,6 +204,7 @@ class WaveManager(
                 // If no more enemies in this command's queue, cancel the task
                 if (currentEnemyType == null) {
                     this.cancel()
+                    activeSpawnTasks.remove(this.taskId)
                     println("Spawn sequence finished for command.")
                     processNextCommand()
                     return
@@ -180,6 +218,7 @@ class WaveManager(
                     if (waypointManager.startpoints.values.isEmpty()) {
                         plugin.logger.warning("Game $gameId: No paths or start points configured! Cannot spawn enemies.")
                         this.cancel()
+                        activeSpawnTasks.remove(this.taskId)
                         return
                     }
                     val startpointLoc: Location = waypointManager.startpoints.values.random().location
@@ -205,6 +244,9 @@ class WaveManager(
 
                 println("Spawned: $currentEnemyType for Game $gameId. Total spawned: $spawnedEnemies")
             }
-        }.runTaskTimer(plugin, 0L, intervalTicks)
+        }
+
+        val taskId = spawnTask.runTaskTimer(plugin, 0L, intervalTicks).taskId
+        activeSpawnTasks.add(taskId)
     }
 }

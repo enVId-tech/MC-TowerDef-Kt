@@ -154,6 +154,9 @@ object PathModificationSession {
                     stand.remove()
                     player.playSound(player.location, Sound.ENTITY_ITEM_BREAK, 1f, 1f)
                     player.sendMessage("§eCheckpoint ${checkpointIndex + 1} removed!")
+
+                    // Immediately update the path to reflect the removal and renumber
+                    updatePathVisualization(session)
                 }
             }
         }
@@ -350,5 +353,42 @@ object PathModificationSession {
                 PersistentDataType.STRING
             ) == true
         }
+    }
+
+    /**
+     * Update the path visualization to reflect current changes
+     */
+    private fun updatePathVisualization(session: Session) {
+        val gameManager = GameRegistry.allGames[session.gameId] ?: return
+        val path = gameManager.pathManager.getPath(session.pathId) ?: return
+
+        // Create a temporary path with current modifications
+        val currentCheckpoints = path.checkpoints.filterIndexed { index, _ ->
+            index !in session.removedCheckpoints
+        }.toMutableList()
+
+        val currentStartPoint = session.newStartPoint ?: path.startPoint
+        val currentEndPoint = session.newEndPoint ?: path.endPoint
+
+        // Delete and recreate the path with updated numbering
+        gameManager.pathManager.deletePath(session.pathId)
+        val newPathId = gameManager.pathManager.createPath(path.name, currentStartPoint, currentEndPoint)
+
+        // Update the session to track the new path ID
+        // Use reflection to update the pathId in the session
+        val pathIdField = Session::class.java.getDeclaredField("pathId")
+        pathIdField.isAccessible = true
+        pathIdField.set(session, newPathId)
+
+        // Add the current checkpoints
+        currentCheckpoints.forEach { checkpoint ->
+            gameManager.pathManager.addCheckpointToPath(newPathId, checkpoint)
+        }
+
+        // Show the path for continued modification
+        gameManager.pathManager.showPath(newPathId)
+
+        // Clear removed checkpoints since they're now reflected in the visualization
+        session.removedCheckpoints.clear()
     }
 }

@@ -215,13 +215,16 @@ class PathManager {
         val path = paths[pathId] ?: return
         val stands = mutableListOf<ArmorStand>()
 
+        // Determine if this path's stands should be visible
+        val shouldBeVisible = standsAreVisible && path.isVisible
+
         // Create start point stand
         val startStand = path.startPoint.world.spawn(path.startPoint, ArmorStand::class.java) { stand ->
-            stand.isVisible = standsAreVisible
+            stand.isVisible = shouldBeVisible
             stand.setGravity(false)
             stand.isInvulnerable = true
             stand.customName(Component.text("§a§lSTART - ${path.name}"))
-            stand.isCustomNameVisible = standsAreVisible
+            stand.isCustomNameVisible = shouldBeVisible
             stand.persistentDataContainer.set(
                 TowerDefMC.ELEMENT_TYPES,
                 PersistentDataType.STRING,
@@ -233,11 +236,11 @@ class PathManager {
         // Create checkpoint stands
         path.checkpoints.forEachIndexed { index, checkpoint ->
             val checkpointStand = checkpoint.world.spawn(checkpoint, ArmorStand::class.java) { stand ->
-                stand.isVisible = standsAreVisible
+                stand.isVisible = shouldBeVisible
                 stand.setGravity(false)
                 stand.isInvulnerable = true
                 stand.customName(Component.text("§e§lCHECKPOINT ${index + 1} - ${path.name}"))
-                stand.isCustomNameVisible = standsAreVisible
+                stand.isCustomNameVisible = shouldBeVisible
                 stand.persistentDataContainer.set(
                     TowerDefMC.ELEMENT_TYPES,
                     PersistentDataType.STRING,
@@ -249,11 +252,11 @@ class PathManager {
 
         // Create end point stand
         val endStand = path.endPoint.world.spawn(path.endPoint, ArmorStand::class.java) { stand ->
-            stand.isVisible = standsAreVisible
+            stand.isVisible = shouldBeVisible
             stand.setGravity(false)
             stand.isInvulnerable = true
             stand.customName(Component.text("§c§lEND - ${path.name}"))
-            stand.isCustomNameVisible = standsAreVisible
+            stand.isCustomNameVisible = shouldBeVisible
             stand.persistentDataContainer.set(
                 TowerDefMC.ELEMENT_TYPES,
                 PersistentDataType.STRING,

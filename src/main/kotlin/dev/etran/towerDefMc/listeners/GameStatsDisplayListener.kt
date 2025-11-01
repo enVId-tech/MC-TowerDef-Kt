@@ -50,26 +50,16 @@ class GameStatsDisplayListener : Listener {
             // Place the lectern block
             lecternLocation.block.type = Material.LECTERN
 
-            // Set the lectern's facing direction based on the block face clicked
+            // Set the lectern's facing direction to face the player
             val lecternBlockData = lecternLocation.block.blockData as? org.bukkit.block.data.type.Lectern
             if (lecternBlockData != null) {
-                // Set facing direction opposite to the block face that was clicked
-                lecternBlockData.facing = when (blockFace) {
-                    org.bukkit.block.BlockFace.NORTH -> org.bukkit.block.BlockFace.SOUTH
-                    org.bukkit.block.BlockFace.SOUTH -> org.bukkit.block.BlockFace.NORTH
-                    org.bukkit.block.BlockFace.EAST -> org.bukkit.block.BlockFace.WEST
-                    org.bukkit.block.BlockFace.WEST -> org.bukkit.block.BlockFace.EAST
-                    org.bukkit.block.BlockFace.UP, org.bukkit.block.BlockFace.DOWN -> {
-                        // If placed on top or bottom, use player's facing direction
-                        val playerYaw = player.location.yaw
-                        when {
-                            playerYaw >= -45 && playerYaw < 45 -> org.bukkit.block.BlockFace.SOUTH
-                            playerYaw >= 45 && playerYaw < 135 -> org.bukkit.block.BlockFace.WEST
-                            playerYaw >= 135 || playerYaw < -135 -> org.bukkit.block.BlockFace.NORTH
-                            else -> org.bukkit.block.BlockFace.EAST
-                        }
-                    }
-                    else -> org.bukkit.block.BlockFace.NORTH // Default fallback
+                // Set facing direction towards the player
+                val playerYaw = player.location.yaw
+                lecternBlockData.facing = when {
+                    playerYaw >= -45 && playerYaw < 45 -> org.bukkit.block.BlockFace.SOUTH
+                    playerYaw >= 45 && playerYaw < 135 -> org.bukkit.block.BlockFace.WEST
+                    playerYaw >= 135 || playerYaw < -135 -> org.bukkit.block.BlockFace.NORTH
+                    else -> org.bukkit.block.BlockFace.EAST
                 }
                 lecternLocation.block.blockData = lecternBlockData
             }

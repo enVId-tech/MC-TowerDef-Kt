@@ -104,10 +104,9 @@ object EnemyFactory {
         entity.isSilent = true
         entity.isCollidable = false
 
-        // Remove all AI goals to prevent attacking players
+        // Clear target to prevent attacking players, but don't disable awareness
+        // We need awareness enabled for pathfinding to work
         entity.setTarget(null)
-        // Make entity unable to target players or other entities
-        entity.setAware(false)
 
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy")
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, enemyType)

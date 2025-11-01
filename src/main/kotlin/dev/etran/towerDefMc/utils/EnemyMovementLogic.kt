@@ -7,12 +7,13 @@ import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mob
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.ceil
 
 fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, gameId: Int) {
     // Ensure mob never targets players (reset any targeting that might have occurred)
+    // But don't disable awareness as that prevents pathfinding
     if (entity is Mob) {
         entity.setTarget(null)
-        entity.setAware(false)
     }
 
     val container = entity.persistentDataContainer
@@ -48,7 +49,7 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
                 if (enemyGameId != null) {
                     // Deal damage based on current health of the enemy
                     val damage = if (entity is org.bukkit.entity.LivingEntity) {
-                        Math.ceil(entity.health).toInt()
+                        ceil(entity.health).toInt()
                     } else {
                         1
                     }
