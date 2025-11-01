@@ -150,10 +150,16 @@ object GameStatsDisplayFactory {
         // Get the display lines
         val displayLines = buildGameStatsDisplayLines(game)
 
-        // Spawn an armor stand for each line, stacked vertically
+        // Calculate starting height: place the BOTTOM line at the lectern's top level
+        // Then stack upward. Each line is 0.3 blocks apart for better readability
+        val totalHeight = displayLines.size * 0.3
+
+        // Spawn an armor stand for each line, stacked vertically from bottom to top
         displayLines.forEachIndexed { index, line ->
-            // Stack armor stands 0.25 blocks apart (from top to bottom)
-            val yOffset = -(index * 0.25)
+            // Stack armor stands upward, starting from the base
+            // Reverse index so the first line is at the top
+            val lineFromBottom = displayLines.size - 1 - index
+            val yOffset = lineFromBottom * 0.3
             val standLocation = location.clone().add(0.0, yOffset, 0.0)
 
             val armorStand = world.spawnEntity(standLocation, EntityType.ARMOR_STAND) as ArmorStand
@@ -162,6 +168,7 @@ object GameStatsDisplayFactory {
             armorStand.setGravity(false)
             armorStand.isInvulnerable = true
             armorStand.isCustomNameVisible = true
+            armorStand.isMarker = true  // Makes it smaller and prevents collision
             armorStand.customName(Component.text(line))
             armorStand.persistentDataContainer.set(
                 TowerDefMC.ELEMENT_TYPES,
