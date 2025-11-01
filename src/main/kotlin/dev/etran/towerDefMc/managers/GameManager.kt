@@ -91,6 +91,9 @@ class GameManager(
 
         plugin.logger.info("Game $gameId ended. Result: ${if (win) "Win" else "Loss"}")
 
+        // Stop all wave activities (spawning, wave progression, etc.)
+        waveManager.stopAllWaveActivities()
+
         // Remove game stats display armor stands
         dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
 
@@ -109,6 +112,9 @@ class GameManager(
         isRunning = false
 
         plugin.logger.info("Game $gameId stopped manually")
+
+        // Stop all wave activities (spawning, wave progression, etc.)
+        waveManager.stopAllWaveActivities()
 
         // Remove game stats display armor stands
         dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)

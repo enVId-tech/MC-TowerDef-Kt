@@ -10,6 +10,7 @@ import dev.etran.towerDefMc.commands.ToggleStandVisibility
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
+import dev.etran.towerDefMc.listeners.EnemyTargetListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
 import dev.etran.towerDefMc.listeners.MenuListener
@@ -138,6 +139,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(FireproofListener, this)
         server.pluginManager.registerEvents(PlayerHoldListener, this)
         server.pluginManager.registerEvents(EnemyHealthListener, this)
+        server.pluginManager.registerEvents(EnemyTargetListener(), this)
         server.pluginManager.registerEvents(MenuListener, this)
         server.pluginManager.registerEvents(SpawnModeListener(), this)
         server.pluginManager.registerEvents(PathLocationListener(), this)
