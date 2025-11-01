@@ -40,10 +40,8 @@ object EntityDeathListener : Listener {
                             PlayerStatsManager.recordKill(gameId, playerUUID)
                         }
 
-                        // Award cash for killing enemy (50 cash per kill)
-                        PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
-                            PlayerStatsManager.awardCash(gameId, playerUUID, 50)
-                        }
+                        // Don't award extra cash on kill - cash is already awarded for damage dealt
+                        // This prevents double-dipping (damage cash + kill bonus)
                     }
                 }
             }

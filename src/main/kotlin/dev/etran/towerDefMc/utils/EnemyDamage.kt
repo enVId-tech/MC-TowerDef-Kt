@@ -6,6 +6,8 @@ import dev.etran.towerDefMc.managers.PlayerStatsManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.entity.LivingEntity
 import org.bukkit.persistence.PersistentDataType
+import kotlin.math.max
+import kotlin.math.min
 
 fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
     val currentTime = System.currentTimeMillis()
@@ -33,7 +35,6 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
         val damage = tower.persistentDataContainer.getOrDefault(
             TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 5.0
         )
-        enemy.damage(damage)
 
         // Award cash to the tower owner based on damage dealt
         val gameId = GameInstanceTracker.getGameId(tower)
@@ -45,16 +46,22 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
             try {
                 val ownerUUID = java.util.UUID.fromString(towerOwnerUUID)
 
-                // Award cash equal to the damage dealt (rounded to nearest int)
-                val cashReward = damage.toInt()
+                // Calculate actual damage that will be dealt (capped by remaining health)
+                val actualDamage = min(damage, enemy.health)
+
+                // Award cash equal to the actual damage dealt (rounded to nearest int)
+                val cashReward = actualDamage.toInt()
                 PlayerStatsManager.awardCash(gameId, ownerUUID, cashReward)
 
                 // Record damage in stats
-                PlayerStatsManager.recordDamage(gameId, ownerUUID, damage)
+                PlayerStatsManager.recordDamage(gameId, ownerUUID, actualDamage)
             } catch (e: IllegalArgumentException) {
                 // Invalid UUID format, skip cash reward
             }
         }
+
+        // Apply damage directly to health instead of using damage() to avoid event issues
+        enemy.health = max(0.0, enemy.health - damage)
     }
 
     tower.persistentDataContainer.set(TowerDefMC.READY_TIME, PersistentDataType.LONG, nextReadyTime)

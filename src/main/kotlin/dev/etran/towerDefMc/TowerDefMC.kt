@@ -8,7 +8,11 @@ import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.commands.GiveStatsTracker
 import dev.etran.towerDefMc.commands.ToggleStandVisibility
 import dev.etran.towerDefMc.commands.GeneratorCommand
+import dev.etran.towerDefMc.commands.GiveCash
 import dev.etran.towerDefMc.commands.GiveShopVillager
+import dev.etran.towerDefMc.commands.NextWave
+import dev.etran.towerDefMc.commands.SpawnEnemy
+import dev.etran.towerDefMc.commands.StopGame
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
@@ -40,6 +44,8 @@ import dev.etran.towerDefMc.utils.TaskUtility
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.TextDisplay
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 
 class TowerDefMC : JavaPlugin() {
@@ -177,10 +183,10 @@ class TowerDefMC : JavaPlugin() {
         getCommand("giveShopVillager")?.setExecutor(GiveShopVillager)
 
         // New admin game control commands
-        getCommand("stopgame")?.setExecutor(dev.etran.towerDefMc.commands.StopGame)
-        getCommand("givecash")?.setExecutor(dev.etran.towerDefMc.commands.GiveCash)
-        getCommand("spawnenemy")?.setExecutor(dev.etran.towerDefMc.commands.SpawnEnemy)
-        getCommand("nextwave")?.setExecutor(dev.etran.towerDefMc.commands.NextWave)
+        getCommand("stopgame")?.setExecutor(StopGame)
+        getCommand("givecash")?.setExecutor(GiveCash)
+        getCommand("spawnenemy")?.setExecutor(SpawnEnemy)
+        getCommand("nextwave")?.setExecutor(NextWave)
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"
@@ -250,9 +256,9 @@ class TowerDefMC : JavaPlugin() {
             this, Runnable {
                 for (world in Bukkit.getWorlds()) {
                     // Find all TextDisplay entities with health bar markers
-                    world.entities.filterIsInstance<org.bukkit.entity.TextDisplay>().forEach { textDisplay ->
+                    world.entities.filterIsInstance<TextDisplay>().forEach { textDisplay ->
                         val ownerUUID = textDisplay.persistentDataContainer.get(
-                            HEALTH_OWNER_UUID, org.bukkit.persistence.PersistentDataType.STRING
+                            HEALTH_OWNER_UUID, PersistentDataType.STRING
                         )
 
                         if (ownerUUID != null) {
