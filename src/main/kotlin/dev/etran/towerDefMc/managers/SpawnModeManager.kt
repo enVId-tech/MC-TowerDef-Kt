@@ -40,7 +40,22 @@ object SpawnModeManager {
         }
     }
 
+    data class SpawnableSurfaceSession(
+        val player: Player,
+        val gameId: Int,
+        val surfaceId: Int,
+        val highlightTaskId: Int
+    )
+
+    private data class ChatInputSession(
+        val player: Player,
+        val callback: (String) -> Unit
+    )
+
     private val activeSessions = mutableMapOf<UUID, SpawnModeSession>()
+    private val activeSurfaceSessions = mutableMapOf<UUID, SpawnableSurfaceSession>()
+    private val chatInputSessions = mutableMapOf<UUID, ChatInputSession>()
+    private var nextTaskId = 0
 
     /**
      * Start spawn mode for a player
@@ -173,5 +188,161 @@ object SpawnModeManager {
 
     private fun formatLocation(loc: Location): String {
         return "${loc.world?.name} (${loc.blockX}, ${loc.blockY}, ${loc.blockZ})"
+    }
+
+    /**
+     * Start spawnable surface mode for a player
+     */
+    fun startSpawnableSurfaceMode(player: Player, gameId: Int, surfaceId: Int) {
+        if (activeSurfaceSessions.containsKey(player.uniqueId)) {
+            player.sendMessage("§cYou are already editing a spawnable surface!")
+            return
+        }
+
+        val gameManager = GameRegistry.allGames[gameId]
+        val surface = gameManager?.spawnableSurfaceManager?.getSurface(surfaceId)
+
+        if (gameManager == null || surface == null) {
+            player.sendMessage("§cError: Surface not found!")
+            return
+        }
+
+        // Start particle highlight task
+        val taskId = nextTaskId++
+        val task = TowerDefMC.instance.server.scheduler.runTaskTimer(TowerDefMC.instance, Runnable {
+            // Highlight all spawnable surface blocks
+            surface.locations.forEach { location ->
+                player.world.spawnParticle(
+                    Particle.HAPPY_VILLAGER,
+                    location.clone().add(0.5, 1.0, 0.5),
+                    2,
+                    0.3, 0.3, 0.3,
+                    0.0
+                )
+            }
+        }, 0L, 10L) // Every 0.5 seconds
+
+        // Create session
+        val session = SpawnableSurfaceSession(player, gameId, surfaceId, taskId)
+        activeSurfaceSessions[player.uniqueId] = session
+
+        player.sendMessage("§aEditing spawnable surface: ${surface.name}")
+        player.sendMessage("§7All placed blocks are highlighted with green particles")
+    }
+
+    /**
+     * End spawnable surface mode
+     */
+    fun endSpawnableSurfaceMode(player: Player) {
+        val session = activeSurfaceSessions.remove(player.uniqueId) ?: return
+
+        // Cancel highlight task
+        TowerDefMC.instance.server.scheduler.cancelTask(session.highlightTaskId)
+
+        player.sendMessage("§aFinished editing spawnable surface")
+    }
+
+    /**
+     * Check if player is in spawnable surface mode
+     */
+    fun isInSpawnableSurfaceMode(player: Player): Boolean {
+        return activeSurfaceSessions.containsKey(player.uniqueId)
+    }
+
+    /**
+     * Get the surface session for a player
+     */
+    fun getSpawnableSurfaceSession(player: Player): SpawnableSurfaceSession? {
+        return activeSurfaceSessions[player.uniqueId]
+    }
+
+    /**
+     * Handle spawnable surface block placement
+     */
+    fun placeSpawnableSurfaceBlock(player: Player, location: Location): Boolean {
+        val session = activeSurfaceSessions[player.uniqueId] ?: return false
+
+        val gameManager = GameRegistry.allGames[session.gameId]
+        val surface = gameManager?.spawnableSurfaceManager?.getSurface(session.surfaceId)
+
+        if (gameManager == null || surface == null) {
+            player.sendMessage("§cError: Surface not found!")
+            return false
+        }
+
+        // Check if block already exists at this location
+        val blockExists = surface.locations.any { loc ->
+            loc.world == location.world &&
+            loc.blockX == location.blockX &&
+            loc.blockY == location.blockY &&
+            loc.blockZ == location.blockZ
+        }
+
+        if (blockExists) {
+            player.sendMessage("§cA block already exists at this location!")
+            return false
+        }
+
+        // Add location
+        gameManager.spawnableSurfaceManager.addLocation(session.surfaceId, location)
+        gameManager.saveGame()
+
+        player.sendMessage("§aPlaced spawnable surface block")
+        player.world.playSound(location, Sound.BLOCK_STONE_PLACE, 1f, 1f)
+        player.world.spawnParticle(Particle.HAPPY_VILLAGER, location.clone().add(0.5, 1.0, 0.5), 10)
+
+        return true
+    }
+
+    /**
+     * Handle spawnable surface block removal
+     */
+    fun removeSpawnableSurfaceBlock(player: Player, location: Location): Boolean {
+        val session = activeSurfaceSessions[player.uniqueId] ?: return false
+
+        val gameManager = GameRegistry.allGames[session.gameId]
+        val surface = gameManager?.spawnableSurfaceManager?.getSurface(session.surfaceId)
+
+        if (gameManager == null || surface == null) {
+            player.sendMessage("§cError: Surface not found!")
+            return false
+        }
+
+        // Remove location
+        val removed = gameManager.spawnableSurfaceManager.removeLocation(session.surfaceId, location)
+
+        if (removed) {
+            gameManager.saveGame()
+            player.sendMessage("§aRemoved spawnable surface block")
+            player.world.playSound(location, Sound.BLOCK_STONE_BREAK, 1f, 1f)
+            player.world.spawnParticle(Particle.CLOUD, location.clone().add(0.5, 1.0, 0.5), 10)
+        } else {
+            player.sendMessage("§cNo spawnable surface block at this location!")
+        }
+
+        return removed
+    }
+
+    /**
+     * Start chat input mode for a player
+     */
+    fun startChatInput(player: Player, callback: (String) -> Unit) {
+        chatInputSessions[player.uniqueId] = ChatInputSession(player, callback)
+    }
+
+    /**
+     * Handle chat input
+     */
+    fun handleChatInput(player: Player, message: String): Boolean {
+        val session = chatInputSessions.remove(player.uniqueId) ?: return false
+        session.callback(message)
+        return true
+    }
+
+    /**
+     * Check if player is in chat input mode
+     */
+    fun isInChatInputMode(player: Player): Boolean {
+        return chatInputSessions.containsKey(player.uniqueId)
     }
 }

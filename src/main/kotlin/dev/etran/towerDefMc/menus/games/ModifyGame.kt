@@ -6,6 +6,7 @@ import dev.etran.towerDefMc.menus.Home
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.menus.enemies.PathsSelector
+import dev.etran.towerDefMc.menus.surfaces.SpawnableSurfacesMenu
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
@@ -104,6 +105,21 @@ class ModifyGame(
             )
         )
 
+        // Spawnable Surfaces Button
+        val surfaceCount = gameManager.spawnableSurfaceManager.getAllSurfaces().size
+        inventory.setItem(
+            32, createMenuItem(
+                Material.GRASS_BLOCK, "§aSpawnable Surfaces", listOf(
+                    "§7Define where towers can be placed",
+                    "§7Total surfaces: $surfaceCount",
+                    "§7Create custom placement areas",
+                    "§7If no surfaces defined, place anywhere",
+                    "",
+                    "§eClick to manage surfaces"
+                )
+            )
+        )
+
         // Start Game Button
         inventory.setItem(
             33, createMenuItem(
@@ -188,6 +204,7 @@ class ModifyGame(
             19 -> handleWavesClick()
             22 -> handleTowersClick()
             30 -> handlePathsClick()
+            32 -> handleSurfacesClick()
             33 -> handleStartGameClick()
             36 -> handleStatsDisplayClick()
             39 -> handleShopVillagerClick()
@@ -214,6 +231,12 @@ class ModifyGame(
         player.closeInventory()
         val pathsMenu = PathsSelector(player, gameId)
         pathsMenu.open()
+    }
+
+    private fun handleSurfacesClick() {
+        player.closeInventory()
+        val surfacesMenu = SpawnableSurfacesMenu(player, gameId)
+        surfacesMenu.open()
     }
 
     private fun handleStartGameClick() {

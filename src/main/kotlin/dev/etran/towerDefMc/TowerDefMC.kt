@@ -17,6 +17,7 @@ import dev.etran.towerDefMc.commands.AddPlayerToGame
 import dev.etran.towerDefMc.commands.DebugCommand
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
+import dev.etran.towerDefMc.listeners.ChatInputListener
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
 import dev.etran.towerDefMc.listeners.EnemyTargetListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
@@ -33,6 +34,7 @@ import dev.etran.towerDefMc.listeners.SpawnModeListener
 import dev.etran.towerDefMc.listeners.TowerUpgradeListener
 import dev.etran.towerDefMc.listeners.TowerShopListener
 import dev.etran.towerDefMc.listeners.ShopVillagerPlacementListener
+import dev.etran.towerDefMc.listeners.SpawnableSurfaceListener
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.GameManager
 import dev.etran.towerDefMc.managers.PlayerHUDManager
@@ -172,6 +174,8 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(GameStatsDisplayListener(), this)
         server.pluginManager.registerEvents(TowerShopListener(), this)
         server.pluginManager.registerEvents(ShopVillagerPlacementListener(), this)
+        server.pluginManager.registerEvents(SpawnableSurfaceListener, this)
+        server.pluginManager.registerEvents(ChatInputListener, this)
 
         logger.info {
             "Tower Defense Plugin - Continuous Listeners Registered"

@@ -71,13 +71,18 @@ object GameRegistry {
                     deserializePath(pathMap)
                 }
 
+                val spawnableSurfacesData = config.getMapList("game-data.spawnableSurfaces").mapNotNull { surfaceMap ->
+                    deserializeSpawnableSurface(surfaceMap)
+                }
+
                 val gameConfigurationData = GameSaveConfig(
                     maxHealth = config.getInt("game-data.maxHealth"),
                     defaultCash = config.getInt("game-data.defaultCash"),
                     name = config.getString("game-data.name") ?: "",
                     waves = wavesData,
                     allowedTowers = config.getStringList("game-data.allowedTowers"),
-                    paths = pathsData
+                    paths = pathsData,
+                    spawnableSurfaces = spawnableSurfacesData
                 )
 
                 val newGameManager = GameManager(
@@ -85,7 +90,7 @@ object GameRegistry {
                 )
 
                 allGames[gameId] = newGameManager
-                DebugLogger.logGame("Loaded game $gameId: '${gameConfigurationData.name}' with ${wavesData.size} waves and ${pathsData.size} paths")
+                DebugLogger.logGame("Loaded game $gameId: '${gameConfigurationData.name}' with ${wavesData.size} waves, ${pathsData.size} paths, and ${spawnableSurfacesData.size} spawnable surfaces")
             } catch (e: Exception) {
                 plugin.logger.severe("Failed to load game from ${file.name}: ${e.message}")
                 DebugLogger.logGame("Error loading game ${file.name}: ${e.message}")
@@ -252,6 +257,31 @@ object GameRegistry {
         }
     }
 
+    private fun deserializeSpawnableSurface(surfaceMap: Map<*, *>): SerializableSpawnableSurfaceData? {
+        try {
+            val id = (surfaceMap["id"] as? Number)?.toInt() ?: return null
+            val name = surfaceMap["name"] as? String ?: "Unnamed Surface"
+            val material = surfaceMap["material"] as? String ?: "BARRIER"
+            val locationsList = surfaceMap["locations"] as? List<*> ?: emptyList<Any>()
+
+            val locations = locationsList.mapNotNull { location ->
+                if (location is Map<*, *>) {
+                    deserializeLocation(location)
+                } else null
+            }
+
+            return SerializableSpawnableSurfaceData(
+                id = id,
+                name = name,
+                material = material,
+                locations = locations
+            )
+        } catch (e: Exception) {
+            plugin.logger.warning("Failed to deserialize spawnable surface: ${e.message}")
+            return null
+        }
+    }
+
     fun addGame(game: GameManager) {
         // Use the game's existing ID instead of generating a new one
         allGames[game.gameId] = game
@@ -311,7 +341,22 @@ object GameRegistry {
         }
         yamlConfig.set("game-data.paths", pathsData)
 
+        // Serialize spawnable surfaces to maps
+        val spawnableSurfacesData = config.spawnableSurfaces.map { surface ->
+            serializeSpawnableSurface(surface)
+        }
+        yamlConfig.set("game-data.spawnableSurfaces", spawnableSurfacesData)
+
         yamlConfig.save(configFile)
-        plugin.logger.info("Saved Game $gameId (${config.name}) with ${config.paths.size} paths")
+        plugin.logger.info("Saved Game $gameId (${config.name}) with ${config.paths.size} paths and ${config.spawnableSurfaces.size} spawnable surfaces")
+    }
+
+    private fun serializeSpawnableSurface(surface: SerializableSpawnableSurfaceData): Map<String, Any?> {
+        return mapOf(
+            "id" to surface.id,
+            "name" to surface.name,
+            "material" to surface.material,
+            "locations" to surface.locations.map { serializeLocation(it) }
+        )
     }
 }

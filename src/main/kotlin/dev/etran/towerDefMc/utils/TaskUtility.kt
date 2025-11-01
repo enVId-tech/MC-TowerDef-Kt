@@ -109,6 +109,11 @@ object TaskUtility {
             return false
         }
 
+        // Check if location is a valid spawnable surface (if surfaces are defined)
+        if (!game.spawnableSurfaceManager.isValidSpawnLocation(location)) {
+            return false
+        }
+
         // Check for nearby towers (within 1 block radius to prevent overlap)
         val towerCheckLocation = location.clone().add(0.5, 1.0, 0.5)
         val nearbyEntities = towerCheckLocation.getNearbyEntities(1.0, 1.0, 1.0)

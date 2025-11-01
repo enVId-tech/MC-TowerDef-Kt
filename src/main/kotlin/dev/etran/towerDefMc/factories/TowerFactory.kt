@@ -56,6 +56,12 @@ object TowerFactory {
             return
         }
 
+        // Check if location is a valid spawnable surface (if surfaces are defined)
+        if (!game.spawnableSurfaceManager.isValidSpawnLocation(block.location)) {
+            player.sendMessage("§cYou can only place towers on designated spawnable surfaces!")
+            return
+        }
+
         // Check for nearby towers (within 1 block radius to prevent overlap)
         if (location.getNearbyEntities(1.0, 1.0, 1.0).any { entity ->
             entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) == "Tower"

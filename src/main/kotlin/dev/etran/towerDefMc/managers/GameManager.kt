@@ -15,6 +15,7 @@ class GameManager(
     // -- External Managers (now game-specific, not global) --
     val waypointManager = WaypointManager()
     val pathManager = PathManager()
+    val spawnableSurfaceManager = SpawnableSurfaceManager()
     val waveManager = WaveManager(config, waypointManager, pathManager, gameId)
 
     // -- Game State Properties --
@@ -277,11 +278,12 @@ class GameManager(
     }
 
     /**
-     * Save the game including paths
+     * Save the game including paths and spawnable surfaces
      */
     fun saveGame() {
-        // Serialize paths before saving
+        // Serialize paths and spawnable surfaces before saving
         config.paths = pathManager.serializePaths()
+        config.spawnableSurfaces = spawnableSurfaceManager.serializeSurfaces()
         saveToFile()
     }
 
@@ -316,6 +318,10 @@ class GameManager(
         // Load paths from config
         if (config.paths.isNotEmpty()) {
             pathManager.loadPaths(config.paths)
+        }
+        // Load spawnable surfaces from config
+        if (config.spawnableSurfaces.isNotEmpty()) {
+            spawnableSurfaceManager.loadSurfaces(config.spawnableSurfaces)
         }
     }
 }
