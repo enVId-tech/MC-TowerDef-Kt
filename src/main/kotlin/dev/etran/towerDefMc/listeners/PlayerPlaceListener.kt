@@ -9,6 +9,11 @@ import dev.etran.towerDefMc.factories.TowerFactory
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.DebugLogger
 import dev.etran.towerDefMc.utils.EntityAIDisabler
+import net.kyori.adventure.util.TriState
+import org.bukkit.GameMode
+import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Ageable
+import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -89,7 +94,7 @@ object PlayerPlaceListener : Listener {
         val player = event.player
 
         val world = location.world
-        val entity = world.spawnEntity(location, data.spawnEggType) as? org.bukkit.entity.LivingEntity
+        val entity = world.spawnEntity(location, data.spawnEggType) as? LivingEntity
 
         if (entity == null) {
             player.sendMessage("§cFailed to spawn enemy!")
@@ -97,10 +102,10 @@ object PlayerPlaceListener : Listener {
         }
 
         // Apply attributes
-        entity.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.baseValue = 1000.0
+        entity.getAttribute(Attribute.MAX_HEALTH)?.baseValue = 1000.0
         entity.health = 1000.0
-        entity.getAttribute(org.bukkit.attribute.Attribute.SCALE)?.baseValue = data.size
-        entity.getAttribute(org.bukkit.attribute.Attribute.MOVEMENT_SPEED)?.baseValue = data.speed * 0.1
+        entity.getAttribute(Attribute.SCALE)?.baseValue = data.size
+        entity.getAttribute(Attribute.MOVEMENT_SPEED)?.baseValue = data.speed * 0.1
 
         // COMPREHENSIVE AI DISABLING - Critical for all mob types
         EntityAIDisabler.disableAllAI(entity)
@@ -108,11 +113,11 @@ object PlayerPlaceListener : Listener {
         entity.isInvulnerable = false
         entity.fireTicks = 0
         entity.noDamageTicks = 0
-        entity.visualFire = net.kyori.adventure.util.TriState.TRUE
+        entity.visualFire = TriState.TRUE
         entity.isPersistent = true
 
         // Set baby mode if configured
-        if (data.isBaby && entity is org.bukkit.entity.Ageable) {
+        if (data.isBaby && entity is Ageable) {
             entity.setBaby()
         }
 
@@ -126,7 +131,7 @@ object PlayerPlaceListener : Listener {
         dev.etran.towerDefMc.utils.createHealthBar(entity)
 
         player.sendMessage("§aGenerated enemy placed!")
-        if (player.gameMode != org.bukkit.GameMode.CREATIVE && player.gameMode != org.bukkit.GameMode.SPECTATOR) {
+        if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
     }
@@ -159,7 +164,7 @@ object PlayerPlaceListener : Listener {
         }
 
         val world = location.world
-        val entity = world.spawnEntity(location, data.spawnEggType) as? org.bukkit.entity.LivingEntity
+        val entity = world.spawnEntity(location, data.spawnEggType) as? LivingEntity
 
         if (entity == null) {
             player.sendMessage("§cFailed to spawn tower!")
@@ -167,18 +172,18 @@ object PlayerPlaceListener : Listener {
         }
 
         // Apply attributes
-        entity.getAttribute(org.bukkit.attribute.Attribute.SCALE)?.baseValue = data.size
+        entity.getAttribute(Attribute.SCALE)?.baseValue = data.size
 
         // COMPREHENSIVE AI DISABLING - Critical for all mob types
         EntityAIDisabler.disableAllAI(entity)
 
         entity.isInvulnerable = true
         entity.fireTicks = 0
-        entity.visualFire = net.kyori.adventure.util.TriState.FALSE
+        entity.visualFire = TriState.FALSE
         entity.isPersistent = true
 
         // Set baby mode if configured
-        if (data.isBaby && entity is org.bukkit.entity.Ageable) {
+        if (data.isBaby && entity is Ageable) {
             entity.setBaby()
         }
 
@@ -196,7 +201,7 @@ object PlayerPlaceListener : Listener {
         dev.etran.towerDefMc.managers.GameInstanceTracker.registerEntity(entity, game.gameId)
 
         player.sendMessage("§aGenerated tower placed! §7Sneak + Right-click to upgrade.")
-        if (player.gameMode != org.bukkit.GameMode.CREATIVE && player.gameMode != org.bukkit.GameMode.SPECTATOR) {
+        if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
         }
     }

@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.factories
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.PlayerStatsManager
 import dev.etran.towerDefMc.registries.GameRegistry
+import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.DebugLogger
 import dev.etran.towerDefMc.utils.EntityAIDisabler
 import net.kyori.adventure.util.TriState
@@ -86,9 +87,17 @@ object TowerFactory {
 
         val world = location.world
 
-        // Get entity type from tower data if available, otherwise default to zombie
+        // Get entity type from tower data if available, otherwise default to skeleton
         val itemMD_PDC = itemHeld.itemMeta.persistentDataContainer
-        val entityType = EntityType.ZOMBIE // Default, could be customized from item data in future
+        val towerTypeId = itemMD_PDC.get(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING)
+
+        // Try to get entity type from registry first, then fall back to default
+        val entityType = if (towerTypeId != null) {
+            val towerConfig = TowerRegistry.getTower(towerTypeId)
+            towerConfig?.entityType ?: EntityType.SKELETON
+        } else {
+            EntityType.SKELETON // Default for basic towers
+        }
 
         val entity = world.spawnEntity(location, entityType) as? LivingEntity
         if (entity == null) {

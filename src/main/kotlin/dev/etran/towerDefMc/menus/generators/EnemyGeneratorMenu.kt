@@ -244,6 +244,7 @@ class EnemyGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
         val enemyType = dev.etran.towerDefMc.registries.EnemyRegistry.EnemyType(
             id = enemyId,
             displayName = displayName,
+            entityType = spawnEggType,
             icon = itemMaterial,
             description = listOf(
                 "Entity: ${spawnEggType.name}",

@@ -97,14 +97,47 @@ object EnemyFactory {
             // Fallback to basic enemy if type not found
             DebugLogger.logEnemy("Warning: Enemy type '$enemyType' not found in registry, using default")
         } else {
-            DebugLogger.logEnemy("Spawning enemy type '$enemyType' with health=${enemyConfig.health}, speed=${enemyConfig.speed}")
+            DebugLogger.logEnemy("Spawning enemy type '$enemyType' with entityType=${enemyConfig.entityType}, health=${enemyConfig.health}, speed=${enemyConfig.speed}")
         }
 
         val world = location.world
 
-        // Spawn the entity as a zombie (entity type is controlled by the generator system, not registry)
-        val entity = world.spawnEntity(location, EntityType.ZOMBIE) as? LivingEntity ?: return null
+        // Use entity type from config, or default to ZOMBIE
+        val entityTypeToSpawn = enemyConfig?.entityType ?: EntityType.ZOMBIE
 
+        // Try to spawn the entity with better error handling
+        val entity = try {
+            // Special handling for boss entities like WITHER
+            if (entityTypeToSpawn == EntityType.WITHER) {
+                // Spawn wither slightly higher to avoid collision issues
+                val spawnLocation = location.clone().add(0.0, 1.0, 0.0)
+                world.spawnEntity(spawnLocation, entityTypeToSpawn) as? LivingEntity
+            } else {
+                world.spawnEntity(location, entityTypeToSpawn) as? LivingEntity
+            }
+        } catch (e: Exception) {
+            DebugLogger.logEnemy("Failed to spawn entity type $entityTypeToSpawn: ${e.message}")
+            // Log stack trace for debugging
+            e.printStackTrace()
+            null
+        }
+
+        if (entity == null) {
+            DebugLogger.logEnemy("Error: Could not spawn entity type $entityTypeToSpawn at location, falling back to ZOMBIE")
+            // Fallback to zombie if entity type fails
+            val fallbackEntity = world.spawnEntity(location, EntityType.ZOMBIE) as? LivingEntity ?: return null
+            return configureEnemyEntity(fallbackEntity, enemyType, enemyConfig, location)
+        }
+
+        return configureEnemyEntity(entity, enemyType, enemyConfig, location)
+    }
+
+    private fun configureEnemyEntity(
+        entity: LivingEntity,
+        enemyType: String,
+        enemyConfig: EnemyRegistry.EnemyType?,
+        location: Location
+    ): LivingEntity {
         val scale = entity.getAttribute(Attribute.SCALE)
         val maxHealth = entity.getAttribute(Attribute.MAX_HEALTH)
         val speed = entity.getAttribute(Attribute.MOVEMENT_SPEED)
@@ -126,7 +159,7 @@ object EnemyFactory {
                 TowerDefMC.createKey("custom_max_health"), PersistentDataType.DOUBLE, enemyConfig.health
             )
 
-            DebugLogger.logEnemy("Enemy configured with custom_health=${enemyConfig.health}, speed_base=${enemyConfig.speed * 0.1}")
+            DebugLogger.logEnemy("Enemy configured with entityType=${enemyConfig.entityType}, custom_health=${enemyConfig.health}, speed_base=${enemyConfig.speed * 0.1}")
         } else {
             // Default values
             if (scale != null) scale.baseValue = 1.5

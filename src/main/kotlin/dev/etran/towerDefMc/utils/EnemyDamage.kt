@@ -10,7 +10,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
-    TowerDefMC.instance.logger.info("[DAMAGE] damageEnemy called - tower: ${tower.uniqueId}, enemy: ${enemy.uniqueId}")
+    DebugLogger.logWave("[DAMAGE] damageEnemy called - tower: ${tower.uniqueId}, enemy: ${enemy.uniqueId}")
 
     val currentTime = System.currentTimeMillis()
 
@@ -18,11 +18,11 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
     val readyTime = tower.persistentDataContainer.get(TowerDefMC.READY_TIME, PersistentDataType.LONG) ?: 0L
 
     if (currentTime < readyTime) {
-        TowerDefMC.instance.logger.info("[DAMAGE] Tower on cooldown, skipping (ready at: $readyTime, now: $currentTime)")
+        DebugLogger.logTower("[DAMAGE] Tower on cooldown, skipping (ready at: $readyTime, now: $currentTime)")
         return
     }
 
-    TowerDefMC.instance.logger.info("[DAMAGE] Tower ready to attack, proceeding with damage")
+    DebugLogger.logTower("[DAMAGE] Tower ready to attack, proceeding with damage")
 
     // Cooldown passed
 

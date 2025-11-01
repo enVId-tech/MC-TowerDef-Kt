@@ -254,6 +254,7 @@ class TowerGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
         val towerType = TowerRegistry.TowerType(
             id = towerId,
             displayName = displayName,
+            entityType = spawnEggType,
             icon = itemMaterial,
             description = listOf(
                 "Entity: ${spawnEggType.name}",

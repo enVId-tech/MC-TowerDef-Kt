@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.registries
 import dev.etran.towerDefMc.TowerDefMC
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.EntityType
 import java.io.File
 
 object EnemyRegistry {
@@ -12,6 +13,7 @@ object EnemyRegistry {
     data class EnemyType(
         val id: String,
         val displayName: String,
+        val entityType: EntityType,
         val icon: Material,
         val description: List<String>,
         val health: Double,
@@ -40,6 +42,7 @@ object EnemyRegistry {
             val enemyType = EnemyType(
                 id = key,
                 displayName = section.getString("displayName") ?: key,
+                entityType = EntityType.valueOf(section.getString("entityType") ?: "ZOMBIE"),
                 icon = Material.valueOf(section.getString("icon") ?: "ZOMBIE_HEAD"),
                 description = section.getStringList("description"),
                 health = section.getDouble("health", 20.0),
@@ -60,6 +63,7 @@ object EnemyRegistry {
         // Basic Enemy
         config.set("enemies.Basic_Enemy_1.displayName", "Basic Zombie")
         config.set("enemies.Basic_Enemy_1.icon", "ZOMBIE_HEAD")
+        config.set("enemies.Basic_Enemy_1.entityType", "ZOMBIE")
         config.set(
             "enemies.Basic_Enemy_1.description", listOf(
                 "Standard enemy", "Medium speed", "Low health"
@@ -72,6 +76,7 @@ object EnemyRegistry {
         // Fast Enemy
         config.set("enemies.Fast_Enemy.displayName", "Fast Runner")
         config.set("enemies.Fast_Enemy.icon", "LEATHER_BOOTS")
+        config.set("enemies.Fast_Enemy.entityType", "SKELETON")
         config.set(
             "enemies.Fast_Enemy.description", listOf(
                 "Fast enemy", "High speed", "Low health"
@@ -84,6 +89,7 @@ object EnemyRegistry {
         // Tank Enemy
         config.set("enemies.Tank_Enemy.displayName", "Tank")
         config.set("enemies.Tank_Enemy.icon", "IRON_CHESTPLATE")
+        config.set("enemies.Tank_Enemy.entityType", "IRON_GOLEM")
         config.set(
             "enemies.Tank_Enemy.description", listOf(
                 "Slow enemy", "Low speed", "High health"
@@ -96,6 +102,7 @@ object EnemyRegistry {
         // Boss Enemy
         config.set("enemies.Boss_Enemy.displayName", "Boss")
         config.set("enemies.Boss_Enemy.icon", "WITHER_SKELETON_SKULL")
+        config.set("enemies.Boss_Enemy.entityType", "WITHER")
         config.set(
             "enemies.Boss_Enemy.description", listOf(
                 "Boss enemy", "Medium speed", "Very high health"
@@ -129,6 +136,7 @@ object EnemyRegistry {
 
         config.set("enemies.$id.displayName", enemyType.displayName)
         config.set("enemies.$id.icon", enemyType.icon.name)
+        config.set("enemies.$id.entityType", enemyType.entityType.name)
         config.set("enemies.$id.description", enemyType.description)
         config.set("enemies.$id.health", enemyType.health)
         config.set("enemies.$id.speed", enemyType.speed)

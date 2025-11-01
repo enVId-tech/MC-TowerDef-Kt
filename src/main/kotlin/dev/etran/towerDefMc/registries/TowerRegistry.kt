@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.registries
 import dev.etran.towerDefMc.TowerDefMC
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.EntityType
 import java.io.File
 
 object TowerRegistry {
@@ -12,6 +13,7 @@ object TowerRegistry {
     data class TowerType(
         val id: String,
         val displayName: String,
+        val entityType: EntityType,
         val icon: Material,
         val description: List<String>,
         val range: Double,
@@ -40,6 +42,7 @@ object TowerRegistry {
             val towerType = TowerType(
                 id = key,
                 displayName = section.getString("displayName") ?: key,
+                entityType = EntityType.valueOf(section.getString("entityType") ?: "SKELETON"),
                 icon = Material.valueOf(section.getString("icon") ?: "BOW"),
                 description = section.getStringList("description"),
                 range = section.getDouble("range", 5.0),
@@ -60,6 +63,7 @@ object TowerRegistry {
         // Basic Tower
         config.set("towers.Basic_Tower_1.displayName", "Basic Archer")
         config.set("towers.Basic_Tower_1.icon", "BOW")
+        config.set("towers.Basic_Tower_1.entityType", "SKELETON")
         config.set(
             "towers.Basic_Tower_1.description", listOf(
                 "Standard tower", "Medium range", "Low damage"
@@ -72,6 +76,7 @@ object TowerRegistry {
         // Sniper Tower
         config.set("towers.Sniper_Tower.displayName", "Sniper Tower")
         config.set("towers.Sniper_Tower.icon", "CROSSBOW")
+        config.set("towers.Sniper_Tower.entityType", "SKELETON")
         config.set(
             "towers.Sniper_Tower.description", listOf(
                 "Long range tower", "High range", "Medium damage", "Slow attack speed"
@@ -84,6 +89,7 @@ object TowerRegistry {
         // Machine Gun Tower
         config.set("towers.Machine_Gun_Tower.displayName", "Machine Gun")
         config.set("towers.Machine_Gun_Tower.icon", "IRON_SHOVEL")
+        config.set("towers.Machine_Gun_Tower.entityType", "BLAZE")
         config.set(
             "towers.Machine_Gun_Tower.description", listOf(
                 "Fast firing tower", "Short range", "Low damage", "Very fast attack speed"
@@ -96,6 +102,7 @@ object TowerRegistry {
         // Cannon Tower
         config.set("towers.Cannon_Tower.displayName", "Cannon")
         config.set("towers.Cannon_Tower.icon", "TNT")
+        config.set("towers.Cannon_Tower.entityType", "GHAST")
         config.set(
             "towers.Cannon_Tower.description", listOf(
                 "Heavy damage tower", "Medium range", "Very high damage", "Slow attack speed"
@@ -108,6 +115,7 @@ object TowerRegistry {
         // Support Tower
         config.set("towers.Support_Tower.displayName", "Support Tower")
         config.set("towers.Support_Tower.icon", "ENCHANTED_BOOK")
+        config.set("towers.Support_Tower.entityType", "VILLAGER")
         config.set(
             "towers.Support_Tower.description", listOf(
                 "Buff tower", "Short range", "No damage", "Buffs nearby towers"
@@ -141,6 +149,7 @@ object TowerRegistry {
 
         config.set("towers.$id.displayName", towerType.displayName)
         config.set("towers.$id.icon", towerType.icon.name)
+        config.set("towers.$id.entityType", towerType.entityType.name)
         config.set("towers.$id.description", towerType.description)
         config.set("towers.$id.range", towerType.range)
         config.set("towers.$id.damage", towerType.damage)
