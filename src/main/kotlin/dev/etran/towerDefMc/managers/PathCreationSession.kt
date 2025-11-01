@@ -147,9 +147,6 @@ object PathCreationSession {
             return
         }
 
-        // Remove temporary stands
-        session.placedStands.forEach { it.remove() }
-
         // Create the actual path
         val pathId = gameManager.pathManager.createPath("New Path", session.startPoint!!, session.endPoint!!)
 
@@ -173,6 +170,9 @@ object PathCreationSession {
         player.sendMessage("§7- ${session.checkpoints.size} checkpoint(s) placed")
         player.sendMessage("§7- End point placed")
         player.sendMessage("§a§l=================================")
+
+        // Remove temporary stands BEFORE returning to menu
+        session.placedStands.forEach { it.remove() }
 
         // Return to menu
         Bukkit.getScheduler().runTaskLater(TowerDefMC.instance, Runnable {

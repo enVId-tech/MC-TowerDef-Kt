@@ -49,11 +49,18 @@ class GameManager(
     @Suppress("unused")
     fun startGame(initialPlayers: List<UUID>) {
         if (isRunning) return
+
+        // Reset game state for a fresh start
+        health = config.maxHealth
         isRunning = true
 
+        players.clear()
         players.addAll(initialPlayers)
 
         plugin.logger.info("Game $gameId started: ${config.name}. Max Health: $health")
+
+        // Reset wave manager state
+        waveManager.resetWaves()
 
         // Start the first wave sequence
         waveManager.startNextWave()
@@ -69,6 +76,22 @@ class GameManager(
         GameInstanceTracker.clearGame(gameId)
 
         GameRegistry.removeGame(this)
+    }
+
+    /**
+     * Stop the game manually (cancellation)
+     */
+    fun stopGame() {
+        if (!isRunning) return
+        isRunning = false
+
+        plugin.logger.info("Game $gameId stopped manually")
+
+        // Clean up all entities for this game
+        GameInstanceTracker.clearGame(gameId)
+
+        // Don't remove from registry, just stop it so it can be restarted
+        GameRegistry.activeGames.remove(gameId)
     }
 
     fun onHealthLost(amount: Int) {

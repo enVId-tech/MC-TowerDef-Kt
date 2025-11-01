@@ -1,7 +1,6 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.TowerDefMC
-import dev.etran.towerDefMc.factories.WaypointFactory
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.menus.enemies.PathsSelector
@@ -115,6 +114,22 @@ class ModifyGame(
             )
         )
 
+        // Stop Game Button (only show if game is running)
+        if (gameManager.isGameRunning) {
+            inventory.setItem(
+                25, createMenuItem(
+                    Material.REDSTONE_BLOCK,
+                    "§c§lSTOP GAME",
+                    listOf(
+                        "§7Stop the currently running game",
+                        "§7This will end the game for all players",
+                        "",
+                        "§cClick to stop the game"
+                    )
+                )
+            )
+        }
+
         // Game Stats Display Button
         inventory.setItem(
             36, createMenuItem(
@@ -151,6 +166,7 @@ class ModifyGame(
             36 -> handleStatsDisplayClick()
             49 -> handleBack()
             10, 13, 16 -> handleValueUpdate(event)
+            25 -> handleStopGameClick() // Handle stop game click
         }
     }
 
@@ -210,11 +226,26 @@ class ModifyGame(
         player.sendMessage("§aThe first wave will begin shortly!")
     }
 
+    private fun handleStopGameClick() {
+        if (gameManager == null) {
+            player.sendMessage("§cError: Game not found!")
+            return
+        }
+
+        // Stop the game
+        gameManager.stopGame()
+
+        player.sendMessage("§a§l========================================")
+        player.sendMessage("§6§l        GAME STOPPED!")
+        player.sendMessage("§a§l========================================")
+        player.sendMessage("§e${gameManager.config.name}")
+        player.sendMessage("§7The game has been stopped.")
+        player.sendMessage("§a§l========================================")
+    }
+
     private fun handleStatsDisplayClick() {
-        // Give the player an item to place the game stats display
-        player.sendMessage("§aYou will receive an item to place the game stats display.")
-        player.sendMessage("§7This item will allow you to view game statistics.")
-        // TODO: Implement the actual item giving and placement logic
+        // Call the actual method that gives the item
+        handleGameStatsDisplayClick()
     }
 
     private fun handleBack() {

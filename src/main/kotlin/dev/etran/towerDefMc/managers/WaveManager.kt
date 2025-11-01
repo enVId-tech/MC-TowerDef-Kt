@@ -27,6 +27,17 @@ class WaveManager(
         }
     }
 
+    /**
+     * Reset wave manager state for a fresh game start
+     */
+    fun resetWaves() {
+        currentWave = 0
+        commandIndex = -1
+        currentWaveData = null
+        enemiesRemaining = 0
+        timeRemaining = 0.0
+    }
+
     @Suppress("unused")
     fun checkWaveCompletion(): Boolean {
         return enemiesRemaining <= 0 || timeRemaining <= 0
@@ -59,6 +70,13 @@ class WaveManager(
     private fun processNextCommand() {
         if (commandIndex >= currentWaveData!!.sequence.size) {
             println("Wave completed!")
+            // Check if this was the last wave
+            if (currentWave >= gameConfig.waves.size) {
+                println("All waves completed! Game won!")
+                // Trigger game win
+                val game = dev.etran.towerDefMc.registries.GameRegistry.activeGames[gameId]
+                game?.endGame(true)
+            }
             return // Wave is finished
         }
 

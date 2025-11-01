@@ -30,28 +30,21 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
             // Check if next checkpoint exists
             val hasNextCheckpoint = waypointManager.checkpoints.containsKey(nextId)
 
-            // Only delete the enemy if:
-            // 1. Current checkpoint is marked as EndPoint, OR
-            // 2. There is no next checkpoint AND current checkpoint is the last one in the sequence
-            if (isEndPoint || !hasNextCheckpoint) {
-                // Additional check: only delete if this is truly the last checkpoint
-                // This prevents deletion when start/end overlap but there are checkpoints in between
-                val isLastCheckpoint = currentTargetId == waypointManager.checkpoints.keys.maxOrNull()
+            // Only delete the enemy if current checkpoint is marked as EndPoint AND there's no next checkpoint
+            if (isEndPoint && !hasNextCheckpoint) {
+                // Clean up health bar first
+                cleanUpEnemyHealthBar(entity)
+                entity.remove()
 
-                if (isLastCheckpoint || isEndPoint) {
-                    cleanUpEnemyHealthBar(entity)
-                    entity.remove()
-
-                    // Trigger game loss - enemy reached the end
-                    val enemyGameId = GameInstanceTracker.getGameId(entity)
-                    if (enemyGameId != null) {
-                        GameRegistry.activeGames[enemyGameId]?.onHealthLost(1)
-                    }
-
-                    // Unregister the entity
-                    GameInstanceTracker.unregisterEntity(entity)
-                    return
+                // Trigger game loss - enemy reached the end
+                val enemyGameId = GameInstanceTracker.getGameId(entity)
+                if (enemyGameId != null) {
+                    GameRegistry.activeGames[enemyGameId]?.onHealthLost(1)
                 }
+
+                // Unregister the entity
+                GameInstanceTracker.unregisterEntity(entity)
+                return
             }
 
             // If we didn't delete the enemy, move to next checkpoint
