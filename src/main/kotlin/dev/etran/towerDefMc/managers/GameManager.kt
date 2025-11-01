@@ -12,8 +12,8 @@ class GameManager(
 ) {
     // -- External Managers (now game-specific, not global) --
     val waypointManager = WaypointManager()
-    val waveManager = WaveManager(config, waypointManager, gameId)
     val pathManager = PathManager()
+    val waveManager = WaveManager(config, waypointManager, pathManager, gameId)
 
     // -- Game State Properties --
     private var health: Int = config.maxHealth
