@@ -127,9 +127,10 @@ class PathManager {
         val path = paths[pathId] ?: return false
         path.isVisible = !path.isVisible
 
-        // Update armor stand visibility
+        // Update armor stand visibility AND custom name visibility
         pathArmorStands[pathId]?.forEach { stand ->
             stand.isInvisible = !path.isVisible
+            stand.isCustomNameVisible = path.isVisible
         }
 
         return true

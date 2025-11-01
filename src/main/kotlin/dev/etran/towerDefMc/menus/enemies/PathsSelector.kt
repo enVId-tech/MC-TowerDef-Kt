@@ -37,7 +37,7 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
                         "§7Checkpoints: ${path.checkpoints.size}",
                         "§7Visible: $visibilityIcon ${if (path.isVisible) "Enabled" else "Disabled"}",
                         "",
-                        "§eRight-click to toggle visibility",
+                        "§eClick to toggle visibility",
                         "§eShift-click to delete path"
                     )
                 )
@@ -81,20 +81,6 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
         )
 
         inventory.setItem(
-            41,
-            createMenuItem(
-                if (pathManager.standsAreVisible) Material.ENDER_EYE else Material.ENDER_PEARL,
-                "§6Toggle All Visibility",
-                listOf(
-                    "§7Toggle visibility of all path markers",
-                    "§7Current: ${if (pathManager.standsAreVisible) "§aVisible" else "§cHidden"}",
-                    "",
-                    "§eClick to toggle"
-                )
-            )
-        )
-
-        inventory.setItem(
             43,
             createMenuItem(
                 Material.BARRIER,
@@ -129,7 +115,6 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
             slot < 27 -> handlePathClick(event)
             slot == 37 -> handleCreateNewPath()
             slot == 39 -> handleModifyPathWaypoints()
-            slot == 41 -> handleToggleAllVisibility()
             slot == 43 -> handleClearAllPaths()
             slot == 49 -> handleBack()
         }
@@ -151,10 +136,11 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
                 gameManager?.saveGame()
                 refresh()
             }
-            event.isRightClick -> {
-                // Toggle visibility
+            event.isLeftClick || event.isRightClick -> {
+                // Toggle visibility (both left and right click)
                 pathManager.togglePathVisibility(path.id)
-                player.sendMessage("§ePath '${path.name}' visibility toggled!")
+                val newState = if (path.isVisible) "§ahidden" else "§avisible"
+                player.sendMessage("§ePath '${path.name}' is now $newState!")
                 gameManager?.saveGame()
                 refresh()
             }
@@ -188,11 +174,6 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
         PathModificationSession.startSession(player, gameId, paths[0].id)
     }
 
-    private fun handleToggleAllVisibility() {
-        val newState = pathManager!!.toggleGlobalStandVisibility()
-        player.sendMessage("§aPath markers are now ${if (newState) "§avisible" else "§chidden"}!")
-        refresh()
-    }
 
     private fun handleClearAllPaths() {
         pathManager!!.clearAllPaths()
