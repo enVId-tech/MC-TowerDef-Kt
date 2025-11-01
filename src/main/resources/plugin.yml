@@ -37,3 +37,23 @@ commands:
   giveStatsTracker:
     description: Give a stats tracker item to view in-game statistics
     usage: /<command> [amount]
+
+  stopgame:
+    description: Stop/end a running game
+    usage: /<command> <gameId>
+    permission: towerdef.admin
+
+  givecash:
+    description: Give cash to a player in a specific game
+    usage: /<command> <gameId> <playerName> <amount>
+    permission: towerdef.admin
+
+  spawnenemy:
+    description: Manually spawn enemies in a game
+    usage: /<command> <gameId> <enemyType> [amount]
+    permission: towerdef.admin
+
+  nextwave:
+    description: Start the next wave in a game
+    usage: /<command> <gameId>
+    permission: towerdef.admin
