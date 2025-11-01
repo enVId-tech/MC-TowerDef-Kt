@@ -115,6 +115,21 @@ class ModifyGame(
             )
         )
 
+        // Game Stats Display Button
+        inventory.setItem(
+            36, createMenuItem(
+                Material.LECTERN,
+                "§b§lPlace Game Stats Display",
+                listOf(
+                    "§7Receive an item to place a",
+                    "§7game statistics display board",
+                    "§7Shows: Health, Wave, Players, etc.",
+                    "",
+                    "§eClick to receive item"
+                )
+            )
+        )
+
         // Bottom row - Actions
         inventory.setItem(
             49, createMenuItem(
@@ -133,6 +148,7 @@ class ModifyGame(
             22 -> handleTowersClick()
             30 -> handlePathsClick()
             33 -> handleStartGameClick()
+            36 -> handleStatsDisplayClick()
             49 -> handleBack()
             10, 13, 16 -> handleValueUpdate(event)
         }
@@ -194,10 +210,43 @@ class ModifyGame(
         player.sendMessage("§aThe first wave will begin shortly!")
     }
 
+    private fun handleStatsDisplayClick() {
+        // Give the player an item to place the game stats display
+        player.sendMessage("§aYou will receive an item to place the game stats display.")
+        player.sendMessage("§7This item will allow you to view game statistics.")
+        // TODO: Implement the actual item giving and placement logic
+    }
+
     private fun handleBack() {
         player.closeInventory()
         val gameSelectorMenu = GameSelector(player)
         gameSelectorMenu.open()
+    }
+
+    private fun handleGameStatsDisplayClick() {
+        player.closeInventory()
+
+        val item = dev.etran.towerDefMc.factories.GameStatsDisplayFactory.createGameStatsItem(1)
+
+        // Add to inventory or drop if full
+        val leftover = player.inventory.addItem(item)
+        leftover.values.forEach { itemStack ->
+            player.world.dropItemNaturally(player.location, itemStack)
+        }
+
+        player.sendMessage("§a§l===========================================")
+        player.sendMessage("§6§lGame Stats Display Item Received!")
+        player.sendMessage("§a§l===========================================")
+        player.sendMessage("§7Right-click on a block to place the")
+        player.sendMessage("§7game statistics display board.")
+        player.sendMessage("§7")
+        player.sendMessage("§7The display will show:")
+        player.sendMessage("§e  • §7Current wave and total waves")
+        player.sendMessage("§e  • §7Game health remaining")
+        player.sendMessage("§e  • §7Number of active players")
+        player.sendMessage("§e  • §7Active enemy paths")
+        player.sendMessage("§e  • §7Team statistics (kills, towers, damage)")
+        player.sendMessage("§a§l===========================================")
     }
 
     private fun handleValueUpdate(event: InventoryClickEvent) {

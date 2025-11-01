@@ -23,6 +23,16 @@ class GameManager(
     private var isRunning: Boolean = false
     private var players: MutableSet<UUID> = mutableSetOf()
 
+    // Public getters for game state
+    val currentHealth: Int
+        get() = health
+
+    val isGameRunning: Boolean
+        get() = isRunning
+
+    val playerCount: Int
+        get() = players.size
+
     companion object {
         lateinit var plugin: TowerDefMC
 

@@ -37,6 +37,27 @@ object PlayerPlaceListener : Listener {
                 "Tower 1" -> TowerFactory.towerPlace(event)
                 "Enemy 1" -> EnemyFactory.enemyPlace(event)
                 "Stats_Tracker" -> StatsTrackerFactory.placeStatsTracker(event)
+                "Game_Stats_Display" -> {
+                    event.isCancelled = true
+                    val block = event.clickedBlock ?: return
+                    val location = block.location.add(0.5, 1.0, 0.5)
+
+                    // Check if location is clear
+                    if (location.getNearbyEntities(0.5, 1.0, 0.5).isNotEmpty()) {
+                        event.player.sendMessage("§cYou cannot place a stats display here!")
+                        return
+                    }
+
+                    dev.etran.towerDefMc.factories.GameStatsDisplayFactory.placeGameStatsDisplay(location, game.gameId)
+
+                    // Remove item from inventory if not in creative
+                    if (event.player.gameMode != org.bukkit.GameMode.CREATIVE &&
+                        event.player.gameMode != org.bukkit.GameMode.SPECTATOR) {
+                        event.player.inventory.itemInMainHand.amount -= 1
+                    }
+
+                    event.player.sendMessage("§aGame stats display placed!")
+                }
                 else -> event.player.sendMessage("This game element doesn't exist.")
             }
 
