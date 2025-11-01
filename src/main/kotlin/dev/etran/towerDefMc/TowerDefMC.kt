@@ -13,6 +13,7 @@ import dev.etran.towerDefMc.commands.GiveShopVillager
 import dev.etran.towerDefMc.commands.NextWave
 import dev.etran.towerDefMc.commands.SpawnEnemy
 import dev.etran.towerDefMc.commands.StopGame
+import dev.etran.towerDefMc.commands.AddPlayerToGame
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
@@ -187,6 +188,8 @@ class TowerDefMC : JavaPlugin() {
         getCommand("givecash")?.setExecutor(GiveCash)
         getCommand("spawnenemy")?.setExecutor(SpawnEnemy)
         getCommand("nextwave")?.setExecutor(NextWave)
+        getCommand("addplayer")?.setExecutor(AddPlayerToGame)
+        getCommand("addplayer")?.tabCompleter = AddPlayerToGame
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"

@@ -68,3 +68,8 @@ commands:
     description: Give a tower shop villager spawner
     usage: /<command>
     permission: towerdef.admin
+
+  addplayer:
+    description: Add a player to a specific game
+    usage: /<command> <gameId> <playerName>
+    permission: towerdef.admin
