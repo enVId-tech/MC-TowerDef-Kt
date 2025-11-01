@@ -189,6 +189,14 @@ class GameManager(
     }
 
     /**
+     * Update the tower sell refund percentage and save to file
+     */
+    fun updateTowerSellRefundPercentage(newPercentage: Int) {
+        config.towerSellRefundPercentage = newPercentage
+        saveToFile()
+    }
+
+    /**
      * Update the waves list and save to file
      */
     fun updateWaves(newWaves: List<WaveData>) {

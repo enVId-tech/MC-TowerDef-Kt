@@ -2,16 +2,19 @@ package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.factories.GameStatsDisplayFactory
+import dev.etran.towerDefMc.menus.Home
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.menus.enemies.PathsSelector
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.inventory.ItemStack
 
 class ModifyGame(
     player: Player, val gameId: Int
@@ -146,10 +149,42 @@ class ModifyGame(
             )
         )
 
+        // Shop Villager Spawner Button
+        inventory.setItem(
+            39, createMenuItem(
+                Material.VILLAGER_SPAWN_EGG,
+                "§6§lTower Shop Villager",
+                listOf(
+                    "§7Receive a shop villager spawner",
+                    "§7Place this villager to create a",
+                    "§7tower shop for your game",
+                    "§7Players can buy towers during gameplay",
+                    "",
+                    "§eClick to receive spawner"
+                )
+            )
+        )
+
         // Bottom row - Actions
+        // Delete Game Button (bottom-left)
+        inventory.setItem(
+            45, createMenuItem(
+                Material.BARRIER,
+                "§c§lDelete Game",
+                listOf(
+                    "§7Permanently delete this game",
+                    "§7This action cannot be undone!",
+                    "§7All game data will be lost",
+                    "",
+                    "§cClick to delete game"
+                )
+            )
+        )
+
+        // Back Button (center-bottom)
         inventory.setItem(
             49, createMenuItem(
-                Material.BARRIER, "§cBack", listOf("Return to game selection")
+                Material.OAK_DOOR, "§eBack", listOf("Return to game selection")
             )
         )
     }
@@ -162,12 +197,15 @@ class ModifyGame(
         when (event.slot) {
             19 -> handleWavesClick()
             22 -> handleTowersClick()
+            25 -> handleValueUpdate(event) // Tower sell refund percentage
             30 -> handlePathsClick()
             33 -> handleStartGameClick()
             36 -> handleStatsDisplayClick()
+            39 -> handleShopVillagerClick()
+            45 -> handleDeleteGameClick()
             49 -> handleBack()
             10, 13, 16 -> handleValueUpdate(event)
-            25 -> handleStopGameClick() // Handle stop game click
+            25 -> handleStopGameClick() // Handle stop game click (only if game is running)
         }
     }
 
@@ -349,5 +387,87 @@ class ModifyGame(
                 player.sendMessage("§aGame name updated to '$newValue' and saved!")
             }
         }
+    }
+
+    private fun handleShopVillagerClick() {
+        player.closeInventory()
+
+        // Use the existing GiveShopVillager command logic to create the item
+        val shopEgg = ItemStack(Material.VILLAGER_SPAWN_EGG, 1)
+        val meta = shopEgg.itemMeta
+
+        meta.displayName(Component.text("§6§lTower Shop Villager"))
+        meta.lore(listOf(
+            Component.text("§7Place this villager to create"),
+            Component.text("§7a tower shop for your game"),
+            Component.text(""),
+            Component.text("§eRight-click to place"),
+            Component.text("§7Players can buy towers from this shop")
+        ))
+
+        // Mark it as a shop villager spawner
+        meta.persistentDataContainer.set(
+            TowerDefMC.GAME_ITEMS,
+            PersistentDataType.STRING,
+            "Tower_Shop_Spawner"
+        )
+
+        // Store the game ID in the item so it knows which game it belongs to
+        meta.persistentDataContainer.set(
+            TowerDefMC.GAME_ID_KEY,
+            PersistentDataType.INTEGER,
+            gameId
+        )
+
+        shopEgg.itemMeta = meta
+
+        // Add to inventory or drop if full
+        val leftover = player.inventory.addItem(shopEgg)
+        leftover.values.forEach { itemStack ->
+            player.world.dropItemNaturally(player.location, itemStack)
+        }
+
+        player.sendMessage("§a§l===========================================")
+        player.sendMessage("§6§lTower Shop Villager Spawner Received!")
+        player.sendMessage("§a§l===========================================")
+        player.sendMessage("§7Place this villager in your game area")
+        player.sendMessage("§7to create a tower shop.")
+        player.sendMessage("§7Players can buy towers during gameplay.")
+        player.sendMessage("§a§l===========================================")
+    }
+
+    private fun handleDeleteGameClick() {
+        if (gameManager == null) {
+            player.sendMessage("§cError: Game not found!")
+            return
+        }
+
+        // Check if the game is currently running
+        if (gameManager.isGameRunning) {
+            player.sendMessage("§c§lCannot Delete Game!")
+            player.sendMessage("§cThe game is currently running.")
+            player.sendMessage("§7Stop the game first before deleting it.")
+            return
+        }
+
+        player.closeInventory()
+
+        // Delete the game
+        val game = GameRegistry.getGameById(gameId)
+        if (game != null) {
+            GameRegistry.removeGame(game)
+
+            player.sendMessage("§c§l===========================================")
+            player.sendMessage("§c§l        GAME DELETED!")
+            player.sendMessage("§c§l===========================================")
+            player.sendMessage("§7Game '§e${gameManager.config.name}§7' has been")
+            player.sendMessage("§7permanently deleted.")
+            player.sendMessage("§c§l===========================================")
+        } else {
+            player.sendMessage("No game could be found.")
+        }
+        // Return to home menu
+        val homeMenu = Home(player)
+        homeMenu.open()
     }
 }

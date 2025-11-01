@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.GameInstanceTracker
+import dev.etran.towerDefMc.utils.createHealthBar
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
@@ -71,7 +72,7 @@ class EnemyTargetListener : Listener {
     }
 
     /**
-     * Make enemies invincible to all damage except tower damage
+     * Make enemies invincible to all damage except tower damage and creative mode players
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onEntityDamage(event: EntityDamageEvent) {
@@ -87,7 +88,7 @@ class EnemyTargetListener : Listener {
 
         if (!isEnemy) return
 
-        // If this is damage from an entity, check if it's from a tower
+        // If this is damage from an entity, check if it's from a tower or creative player
         if (event is EntityDamageByEntityEvent) {
             val damager = event.damager
 
@@ -97,8 +98,11 @@ class EnemyTargetListener : Listener {
                 PersistentDataType.STRING
             )
 
-            // Only allow damage from towers
-            if (!isTower) {
+            // Check if damager is a player in creative mode
+            val isCreativePlayer = damager is Player && damager.gameMode == org.bukkit.GameMode.CREATIVE
+
+            // Allow damage from towers or creative mode players
+            if (!isTower && !isCreativePlayer) {
                 event.isCancelled = true
             }
         } else {
@@ -179,7 +183,7 @@ class EnemyTargetListener : Listener {
                 }
 
                 // Create health bar for transformed entity
-                dev.etran.towerDefMc.utils.createHealthBar(transformedEntity)
+                createHealthBar(transformedEntity)
             }
         }
     }

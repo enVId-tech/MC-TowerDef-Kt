@@ -57,3 +57,14 @@ commands:
     description: Start the next wave in a game
     usage: /<command> <gameId>
     permission: towerdef.admin
+
+  tdgenerator:
+    description: Open tower or enemy generator menus
+    usage: /<command> <tower|enemy>
+    permission: towerdef.generator
+    aliases: [tdgen, generator]
+
+  giveShopVillager:
+    description: Give a tower shop villager spawner
+    usage: /<command>
+    permission: towerdef.admin

@@ -7,6 +7,8 @@ import dev.etran.towerDefMc.commands.GiveEnemy
 import dev.etran.towerDefMc.commands.GiveTower
 import dev.etran.towerDefMc.commands.GiveStatsTracker
 import dev.etran.towerDefMc.commands.ToggleStandVisibility
+import dev.etran.towerDefMc.commands.GeneratorCommand
+import dev.etran.towerDefMc.commands.GiveShopVillager
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
@@ -22,6 +24,8 @@ import dev.etran.towerDefMc.listeners.PlayerHoldListener
 import dev.etran.towerDefMc.listeners.PlayerPlaceListener
 import dev.etran.towerDefMc.listeners.SpawnModeListener
 import dev.etran.towerDefMc.listeners.TowerUpgradeListener
+import dev.etran.towerDefMc.listeners.TowerShopListener
+import dev.etran.towerDefMc.listeners.ShopVillagerPlacementListener
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.GameManager
 import dev.etran.towerDefMc.managers.PlayerHUDManager
@@ -148,6 +152,8 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PathArmorStandRemovalListener(), this)
         server.pluginManager.registerEvents(TowerUpgradeListener(), this)
         server.pluginManager.registerEvents(dev.etran.towerDefMc.listeners.GameStatsDisplayListener(), this)
+        server.pluginManager.registerEvents(TowerShopListener(), this)
+        server.pluginManager.registerEvents(ShopVillagerPlacementListener(), this)
 
         logger.info {
             "Tower Defense Plugin - Continuous Listeners Registered"
@@ -162,6 +168,11 @@ class TowerDefMC : JavaPlugin() {
         getCommand("toggleStandVisibility")?.setExecutor(ToggleStandVisibility)
         getCommand("tdmenu")?.setExecutor(MenuCommands)
         getCommand("giveStatsTracker")?.setExecutor(GiveStatsTracker)
+
+        // Generator commands
+        getCommand("tdgenerator")?.setExecutor(GeneratorCommand)
+        getCommand("tdgenerator")?.tabCompleter = GeneratorCommand
+        getCommand("giveShopVillager")?.setExecutor(GiveShopVillager)
 
         // New admin game control commands
         getCommand("stopgame")?.setExecutor(dev.etran.towerDefMc.commands.StopGame)

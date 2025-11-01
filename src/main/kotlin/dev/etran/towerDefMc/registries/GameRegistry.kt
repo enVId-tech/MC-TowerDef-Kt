@@ -38,6 +38,10 @@ object GameRegistry {
         return configFiles?.toList() ?: emptyList()
     }
 
+    fun getGameById(gameId: Int): GameManager? {
+        return allGames[gameId]
+    }
+
     fun loadAllSavedGames() {
         val gameFiles = getAllGameFiles()
 
