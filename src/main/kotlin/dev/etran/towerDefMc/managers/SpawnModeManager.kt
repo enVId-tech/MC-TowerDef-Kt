@@ -2,8 +2,12 @@ package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.registries.GameRegistry
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.Particle
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -125,8 +129,8 @@ object SpawnModeManager {
         }
 
         // Play effects
-        player.world.playSound(location, org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f)
-        player.world.spawnParticle(org.bukkit.Particle.HAPPY_VILLAGER, location, 20, 0.5, 0.5, 0.5)
+        player.world.playSound(location, Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f)
+        player.world.spawnParticle(Particle.HAPPY_VILLAGER, location, 20, 0.5, 0.5, 0.5)
 
         return true
     }
@@ -141,16 +145,16 @@ object SpawnModeManager {
         val item = ItemStack(material)
         val meta = item.itemMeta
 
-        meta.displayName(net.kyori.adventure.text.Component.text("§6${getSpawnTypeName(spawnType)} Placer"))
+        meta.displayName(Component.text("§6${getSpawnTypeName(spawnType)} Placer"))
         meta.lore(listOf(
-            net.kyori.adventure.text.Component.text("§7Right-click to place a ${getSpawnTypeName(spawnType).lowercase()}"),
-            net.kyori.adventure.text.Component.text("§7Type anything in chat to exit")
+            Component.text("§7Right-click to place a ${getSpawnTypeName(spawnType).lowercase()}"),
+            Component.text("§7Type anything in chat to exit")
         ))
 
         // Mark as spawn item
         val pdc = meta.persistentDataContainer
         pdc.set(
-            org.bukkit.NamespacedKey(TowerDefMC.instance, "spawn_item"),
+            NamespacedKey(TowerDefMC.instance, "spawn_item"),
             PersistentDataType.STRING,
             spawnType.name
         )
@@ -171,4 +175,3 @@ object SpawnModeManager {
         return "${loc.world?.name} (${loc.blockX}, ${loc.blockY}, ${loc.blockZ})"
     }
 }
-
