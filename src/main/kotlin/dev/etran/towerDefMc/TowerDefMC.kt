@@ -138,6 +138,7 @@ class TowerDefMC : JavaPlugin() {
         EnemyRegistry.initialize(this)
         TowerRegistry.initialize(this)
         GameInstanceTracker.initialize(this)
+        dev.etran.towerDefMc.utils.GameEndingSequence.initialize(this)
 
         // Load saved games from files
         GameRegistry.loadAllSavedGames()

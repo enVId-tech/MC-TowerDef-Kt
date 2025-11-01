@@ -33,6 +33,9 @@ class GameManager(
     val playerCount: Int
         get() = players.size
 
+    val activePlayers: Set<UUID>
+        get() = players.toSet()
+
     companion object {
         lateinit var plugin: TowerDefMC
 
@@ -98,17 +101,41 @@ class GameManager(
 
         plugin.logger.info("Game $gameId ended. Result: ${if (win) "Win" else "Loss"}")
 
-        // Stop all wave activities (spawning, wave progression, etc.)
-        waveManager.stopAllWaveActivities()
+        // Display ending sequence before cleanup
+        if (win) {
+            dev.etran.towerDefMc.utils.GameEndingSequence.displayVictorySequence(
+                gameId,
+                config.name,
+                players.toSet(),
+                waveManager.currentWave
+            )
+        } else {
+            dev.etran.towerDefMc.utils.GameEndingSequence.displayDefeatSequence(
+                gameId,
+                config.name,
+                players.toSet(),
+                waveManager.currentWave,
+                health
+            )
+        }
 
-        // Remove game stats display armor stands
-        dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
+        // Delay cleanup to allow players to see the ending sequence
+        plugin.server.scheduler.runTaskLater(plugin, Runnable {
+            // Stop all wave activities (spawning, wave progression, etc.)
+            waveManager.stopAllWaveActivities()
 
-        // Clean up all entities for this game
-        GameInstanceTracker.clearGame(gameId)
+            // Remove game stats display armor stands
+            dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
 
-        // Don't delete the game file, just stop the instance
-        GameRegistry.activeGames.remove(gameId)
+            // Clean up all entities for this game
+            GameInstanceTracker.clearGame(gameId)
+
+            // Clear player stats after displaying them
+            PlayerStatsManager.clearGameStats(gameId)
+
+            // Don't delete the game file, just stop the instance
+            GameRegistry.activeGames.remove(gameId)
+        }, 200L) // 10 second delay to allow players to read stats
     }
 
     /**
