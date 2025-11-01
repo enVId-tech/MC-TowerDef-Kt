@@ -51,7 +51,8 @@ class GameManager(
         if (isRunning) return
 
         // Validate that there are paths or start points configured
-        val hasPaths = pathManager.getAllPaths().any { it.isVisible }
+        // Check for ANY paths (visible or not) or start points
+        val hasPaths = pathManager.getAllPaths().isNotEmpty()
         val hasStartPoints = waypointManager.startpoints.values.isNotEmpty()
 
         if (!hasPaths && !hasStartPoints) {

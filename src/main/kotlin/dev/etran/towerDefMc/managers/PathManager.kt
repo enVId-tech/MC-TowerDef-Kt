@@ -84,6 +84,14 @@ class PathManager {
     }
 
     /**
+     * Get a random path regardless of visibility (for spawning enemies)
+     */
+    fun getRandomPathForSpawning(): PathData? {
+        if (paths.isEmpty()) return null
+        return paths.values.random()
+    }
+
+    /**
      * Setup waypoint manager checkpoints from a specific path
      * This populates the waypoint manager with the path's points so enemies can navigate
      */

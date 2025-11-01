@@ -92,19 +92,26 @@ class EnemyTargetListener : Listener {
         if (event is EntityDamageByEntityEvent) {
             val damager = event.damager
 
-            // Check if damager is a tower
+            // Check if damager is a tower by looking at multiple possible indicators
             val isTower = damager.persistentDataContainer.has(
                 TowerDefMC.TOWER_TYPES,
                 PersistentDataType.STRING
-            )
+            ) || damager.persistentDataContainer.get(
+                TowerDefMC.ELEMENT_TYPES,
+                PersistentDataType.STRING
+            ) == "Tower"
 
             // Check if damager is a player in creative mode
             val isCreativePlayer = damager is Player && damager.gameMode == org.bukkit.GameMode.CREATIVE
 
             // Allow damage from towers or creative mode players
-            if (!isTower && !isCreativePlayer) {
-                event.isCancelled = true
+            if (isTower || isCreativePlayer) {
+                // Allow the damage - do not cancel
+                return
             }
+
+            // Block all other entity damage
+            event.isCancelled = true
         } else {
             // Cancel all non-entity damage (fall, drown, fire, etc.)
             event.isCancelled = true

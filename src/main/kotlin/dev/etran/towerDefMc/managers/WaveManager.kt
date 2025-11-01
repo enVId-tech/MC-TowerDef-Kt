@@ -187,7 +187,8 @@ class WaveManager(
         val spawnQueue = command.enemies.toMutableMap()
 
         // Get a random path once for this spawn command and set up waypoint manager
-        val randomPath = pathManager.getRandomPath()
+        // Use getRandomPathForSpawning() to get paths regardless of visibility
+        val randomPath = pathManager.getRandomPathForSpawning()
         if (randomPath != null) {
             // Clear all existing waypoints first to prevent duplication
             waypointManager.clearAllWaypoints()
@@ -227,7 +228,8 @@ class WaveManager(
                 }
 
                 // Get a random path and use its start point (or pick new one each time)
-                val spawnPath = randomPath ?: pathManager.getRandomPath()
+                // Use getRandomPathForSpawning() instead of getRandomPath()
+                val spawnPath = randomPath ?: pathManager.getRandomPathForSpawning()
 
                 if (spawnPath == null) {
                     // Fallback to old waypoint system if no paths exist
