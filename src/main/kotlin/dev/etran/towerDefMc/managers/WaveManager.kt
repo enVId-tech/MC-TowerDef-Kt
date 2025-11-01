@@ -94,7 +94,7 @@ class WaveManager(
 
             if (customHealth == null) {
                 // This enemy is already dead/removed, unregister it
-                println("Removing ghost enemy ${enemy.uniqueId} from tracker (customHealth is null)")
+                dev.etran.towerDefMc.utils.DebugLogger.logEnemy("Removing ghost enemy ${enemy.uniqueId} from tracker (customHealth is null)")
                 GameInstanceTracker.unregisterEntity(enemy)
                 false
             } else {
@@ -106,14 +106,14 @@ class WaveManager(
 
         // Debug logging to help track wave completion issues
         if (aliveCount > 0) {
-            println("Game $gameId - Wave $currentWave: $aliveCount enemies still alive")
+            dev.etran.towerDefMc.utils.DebugLogger.logWave("Game $gameId - Wave $currentWave: $aliveCount enemies still alive")
             // Log the actual entities to help debug ghost enemies
             actuallyAlive.forEach { enemy ->
                 val customHealth = enemy.persistentDataContainer.get(
                     TowerDefMC.createKey("custom_health"),
                     PersistentDataType.DOUBLE
                 )
-                println("  - Enemy ${enemy.uniqueId}: isDead=${enemy.isDead}, health=${enemy.health}, customHealth=$customHealth")
+                dev.etran.towerDefMc.utils.DebugLogger.logEnemy("  - Enemy ${enemy.uniqueId}: isDead=${enemy.isDead}, health=${enemy.health}, customHealth=$customHealth")
             }
         }
 
@@ -164,7 +164,7 @@ class WaveManager(
         // Check every second (20 ticks) if the wave is complete
         waveCheckTaskId = plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, {
             if (checkWaveCompletion()) {
-                println("Wave $currentWave completed!")
+                dev.etran.towerDefMc.utils.DebugLogger.logWave("Wave $currentWave completed!")
 
                 // Get all players in this game
                 val game = GameRegistry.activeGames[gameId]
@@ -176,7 +176,7 @@ class WaveManager(
                     PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
                         PlayerStatsManager.awardCash(gameId, playerUUID, cashReward)
                     }
-                    println("Awarded $cashReward cash to all players for completing wave $currentWave")
+                    dev.etran.towerDefMc.utils.DebugLogger.logStats("Awarded $cashReward cash to all players for completing wave $currentWave")
                 }
 
                 // Display wave complete announcement with title and rewards
@@ -194,7 +194,7 @@ class WaveManager(
 
                 // Check if this was the last wave
                 if (currentWave >= gameConfig.waves.size) {
-                    println("All waves completed! Game won!")
+                    dev.etran.towerDefMc.utils.DebugLogger.logImportant("All waves completed! Game won!")
                     game?.endGame(true)
                 } else {
                     // Show preparation message
@@ -239,7 +239,7 @@ class WaveManager(
     }
 
     private fun handleEnemySpawnCommand(command: EnemySpawnCommand) {
-        println("Command $commandIndex: Starting spawn sequence (Interval: ${command.intervalSeconds}s).")
+        dev.etran.towerDefMc.utils.DebugLogger.logWave("Command $commandIndex: Starting spawn sequence (Interval: ${command.intervalSeconds}s).")
         commandIndex++
 
         val intervalTicks = (command.intervalSeconds * 20).toLong()
@@ -267,7 +267,7 @@ class WaveManager(
                 if (game == null || !game.isGameRunning) {
                     this.cancel()
                     activeSpawnTasks.remove(this.taskId)
-                    println("Spawn task cancelled - game is no longer running")
+                    dev.etran.towerDefMc.utils.DebugLogger.logWave("Spawn task cancelled - game is no longer running")
                     return
                 }
 
@@ -282,7 +282,7 @@ class WaveManager(
                 if (currentEnemyType == null) {
                     this.cancel()
                     activeSpawnTasks.remove(this.taskId)
-                    println("Spawn sequence finished for command.")
+                    dev.etran.towerDefMc.utils.DebugLogger.logWave("Spawn sequence finished for command.")
                     processNextCommand()
                     return
                 }
@@ -320,7 +320,7 @@ class WaveManager(
                 spawnedEnemies++
                 currentQuantity--
 
-                println("Spawned: $currentEnemyType for Game $gameId. Total spawned: $spawnedEnemies")
+                dev.etran.towerDefMc.utils.DebugLogger.logEnemy("Spawned: $currentEnemyType for Game $gameId. Total spawned: $spawnedEnemies")
             }
         }
 

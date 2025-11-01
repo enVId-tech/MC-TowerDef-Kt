@@ -14,6 +14,7 @@ import dev.etran.towerDefMc.commands.NextWave
 import dev.etran.towerDefMc.commands.SpawnEnemy
 import dev.etran.towerDefMc.commands.StopGame
 import dev.etran.towerDefMc.commands.AddPlayerToGame
+import dev.etran.towerDefMc.commands.DebugCommand
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.EnemyHealthListener
@@ -41,7 +42,9 @@ import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
+import dev.etran.towerDefMc.utils.GameEndingSequence
 import dev.etran.towerDefMc.utils.TaskUtility
+import dev.etran.towerDefMc.utils.WaveAnnouncement
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -138,8 +141,8 @@ class TowerDefMC : JavaPlugin() {
         EnemyRegistry.initialize(this)
         TowerRegistry.initialize(this)
         GameInstanceTracker.initialize(this)
-        dev.etran.towerDefMc.utils.GameEndingSequence.initialize(this)
-        dev.etran.towerDefMc.utils.WaveAnnouncement.initialize(this)
+        GameEndingSequence.initialize(this)
+        WaveAnnouncement.initialize(this)
 
         // Load saved games from files
         GameRegistry.loadAllSavedGames()
@@ -192,6 +195,8 @@ class TowerDefMC : JavaPlugin() {
         getCommand("nextwave")?.setExecutor(NextWave)
         getCommand("addplayer")?.setExecutor(AddPlayerToGame)
         getCommand("addplayer")?.tabCompleter = AddPlayerToGame
+        getCommand("tddebug")?.setExecutor(DebugCommand)
+        getCommand("tddebug")?.tabCompleter = DebugCommand
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"

@@ -73,3 +73,9 @@ commands:
     description: Add a player to a specific game
     usage: /<command> <gameId> <playerName>
     permission: towerdef.admin
+
+  tddebug:
+    description: Toggle debug logging for various systems
+    usage: /<command> [category] [on|off|toggle]
+    permission: towerdef.admin
+    aliases: [debugtd, tdlog]
