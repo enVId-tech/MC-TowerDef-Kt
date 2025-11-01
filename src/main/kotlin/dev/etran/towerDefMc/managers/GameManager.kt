@@ -123,6 +123,9 @@ class GameManager(
             dev.etran.towerDefMc.listeners.PlayerHoldListener.stopPlayerTask(playerId)
         }
 
+        // Clear game items from all players' inventories
+        clearPlayerInventories()
+
         // Display ending sequence before cleanup
         if (win) {
             dev.etran.towerDefMc.utils.GameEndingSequence.displayVictorySequence(
@@ -172,6 +175,9 @@ class GameManager(
         players.forEach { playerId ->
             dev.etran.towerDefMc.listeners.PlayerHoldListener.stopPlayerTask(playerId)
         }
+
+        // Clear game items from all players' inventories
+        clearPlayerInventories()
 
         // Stop all wave activities (spawning, wave progression, etc.)
         waveManager.stopAllWaveActivities()
@@ -322,6 +328,42 @@ class GameManager(
         // Load spawnable surfaces from config
         if (config.spawnableSurfaces.isNotEmpty()) {
             spawnableSurfaceManager.loadSurfaces(config.spawnableSurfaces)
+        }
+    }
+
+    /**
+     * Clear all game-related items from players' inventories
+     */
+    private fun clearPlayerInventories() {
+        players.forEach { playerId ->
+            val player = plugin.server.getPlayer(playerId) ?: return@forEach
+
+            // Remove all tower items
+            player.inventory.contents.forEachIndexed { index, item ->
+                if (item != null) {
+                    val meta = item.itemMeta
+                    if (meta != null) {
+                        // Check if it's a tower item
+                        val isTowerItem = meta.persistentDataContainer.has(
+                            TowerDefMC.TOWER_RANGE,
+                            org.bukkit.persistence.PersistentDataType.DOUBLE
+                        )
+
+                        // Check if it's any game item
+                        val isGameItem = meta.persistentDataContainer.has(
+                            TowerDefMC.GAME_ITEMS,
+                            org.bukkit.persistence.PersistentDataType.STRING
+                        )
+
+                        if (isTowerItem || isGameItem) {
+                            player.inventory.setItem(index, null)
+                        }
+                    }
+                }
+            }
+
+            player.sendMessage("§7Game items cleared from inventory")
+            DebugLogger.logGame("Cleared game items from player ${player.name}'s inventory")
         }
     }
 }
