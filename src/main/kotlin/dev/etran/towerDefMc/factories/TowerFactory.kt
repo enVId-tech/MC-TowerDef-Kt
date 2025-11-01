@@ -102,6 +102,11 @@ object TowerFactory {
         // Record tower placement in player stats and store game ID
         val game = GameRegistry.getGameByPlayer(player.uniqueId)
         if (game != null) {
+            // Ensure player stats are initialized before recording tower placement
+            if (PlayerStatsManager.getPlayerStats(game.gameId, player.uniqueId) == null) {
+                PlayerStatsManager.initializePlayer(game.gameId, player.uniqueId, game.config.defaultCash)
+            }
+
             PlayerStatsManager.recordTowerPlaced(game.gameId, player.uniqueId)
 
             // Store the game ID on the tower entity so it can be cleaned up when game ends

@@ -72,12 +72,26 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
 
                 // Award cash equal to the actual damage dealt (rounded to nearest int)
                 val cashReward = actualDamage.toInt()
-                PlayerStatsManager.awardCash(gameId, ownerUUID, cashReward)
 
-                // Record damage in stats
-                PlayerStatsManager.recordDamage(gameId, ownerUUID, actualDamage)
+                // Verify the game is still active
+                val gameManager = GameRegistry.allGames[gameId]
+                if (gameManager != null && gameManager.hasPlayer(ownerUUID)) {
+                    PlayerStatsManager.awardCash(gameId, ownerUUID, cashReward)
+                    // Record damage in stats
+                    PlayerStatsManager.recordDamage(gameId, ownerUUID, actualDamage)
+                } else {
+                    println("Warning: Tower owner $ownerUUID not found in game $gameId when awarding cash")
+                }
             } catch (e: IllegalArgumentException) {
                 // Invalid UUID format, skip cash reward
+                println("Warning: Invalid tower owner UUID format: $towerOwnerUUID")
+            }
+        } else {
+            if (gameId == null) {
+                println("Warning: Tower ${tower.uniqueId} has no game ID when dealing damage")
+            }
+            if (towerOwnerUUID == null) {
+                println("Warning: Tower ${tower.uniqueId} has no owner when dealing damage")
             }
         }
 

@@ -50,7 +50,15 @@ object PlayerStatsManager {
      * Award cash to a player
      */
     fun awardCash(gameId: Int, playerUUID: UUID, amount: Int) {
-        getPlayerStats(gameId, playerUUID)?.addCash(amount)
+        val stats = getPlayerStats(gameId, playerUUID)
+        if (stats == null) {
+            // Player stats don't exist - initialize them first
+            println("Warning: Player $playerUUID had no stats in game $gameId, initializing now")
+            initializePlayer(gameId, playerUUID, 0)
+            getPlayerStats(gameId, playerUUID)?.addCash(amount)
+        } else {
+            stats.addCash(amount)
+        }
     }
 
     /**
@@ -64,28 +72,56 @@ object PlayerStatsManager {
      * Record a kill for a player
      */
     fun recordKill(gameId: Int, playerUUID: UUID) {
-        getPlayerStats(gameId, playerUUID)?.addKill()
+        val stats = getPlayerStats(gameId, playerUUID)
+        if (stats == null) {
+            println("Warning: Player $playerUUID had no stats in game $gameId when recording kill")
+            initializePlayer(gameId, playerUUID, 0)
+            getPlayerStats(gameId, playerUUID)?.addKill()
+        } else {
+            stats.addKill()
+        }
     }
 
     /**
      * Record damage dealt by a player
      */
     fun recordDamage(gameId: Int, playerUUID: UUID, damage: Double) {
-        getPlayerStats(gameId, playerUUID)?.addDamage(damage)
+        val stats = getPlayerStats(gameId, playerUUID)
+        if (stats == null) {
+            println("Warning: Player $playerUUID had no stats in game $gameId when recording damage")
+            initializePlayer(gameId, playerUUID, 0)
+            getPlayerStats(gameId, playerUUID)?.addDamage(damage)
+        } else {
+            stats.addDamage(damage)
+        }
     }
 
     /**
      * Record tower placement
      */
     fun recordTowerPlaced(gameId: Int, playerUUID: UUID) {
-        getPlayerStats(gameId, playerUUID)?.addTowerPlaced()
+        val stats = getPlayerStats(gameId, playerUUID)
+        if (stats == null) {
+            println("Warning: Player $playerUUID had no stats in game $gameId when recording tower placement")
+            initializePlayer(gameId, playerUUID, 0)
+            getPlayerStats(gameId, playerUUID)?.addTowerPlaced()
+        } else {
+            stats.addTowerPlaced()
+        }
     }
 
     /**
      * Record tower upgrade
      */
     fun recordTowerUpgraded(gameId: Int, playerUUID: UUID) {
-        getPlayerStats(gameId, playerUUID)?.addTowerUpgraded()
+        val stats = getPlayerStats(gameId, playerUUID)
+        if (stats == null) {
+            println("Warning: Player $playerUUID had no stats in game $gameId when recording tower upgrade")
+            initializePlayer(gameId, playerUUID, 0)
+            getPlayerStats(gameId, playerUUID)?.addTowerUpgraded()
+        } else {
+            stats.addTowerUpgraded()
+        }
     }
 
     /**
@@ -95,4 +131,3 @@ object PlayerStatsManager {
         gamePlayerStats[gameId]?.values?.forEach { it.completeWave() }
     }
 }
-
