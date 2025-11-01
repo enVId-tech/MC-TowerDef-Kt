@@ -135,6 +135,19 @@ class WaveManager(
 
             println("--- Starting Wave $currentWave: ${waveDetails.name} ---")
 
+            // Get all players in this game
+            val game = GameRegistry.activeGames[gameId]
+            val playerUUIDs = game?.activePlayers ?: emptySet()
+
+            // Announce wave start with on-screen display and chat details
+            dev.etran.towerDefMc.utils.WaveAnnouncement.announceWaveStart(
+                gameId,
+                currentWave,
+                waveDetails,
+                gameConfig.waves.size,
+                playerUUIDs
+            )
+
             commandIndex = 0
             processNextCommand()
 
@@ -153,17 +166,26 @@ class WaveManager(
             if (checkWaveCompletion()) {
                 println("Wave $currentWave completed!")
 
+                // Get all players in this game
+                val game = GameRegistry.activeGames[gameId]
+                val playerUUIDs = game?.activePlayers ?: emptySet()
+
                 // Award cash to all players for completing the wave
                 val cashReward = currentWaveData?.cashGiven ?: 0
                 if (cashReward > 0) {
                     PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
                         PlayerStatsManager.awardCash(gameId, playerUUID, cashReward)
-
-                        // Send message to player
-                        plugin.server.getPlayer(playerUUID)?.sendMessage("§a§l+ $cashReward cash §7(Wave $currentWave completed!)")
                     }
                     println("Awarded $cashReward cash to all players for completing wave $currentWave")
                 }
+
+                // Display wave complete announcement with title and rewards
+                dev.etran.towerDefMc.utils.WaveAnnouncement.announceWaveComplete(
+                    gameId,
+                    currentWave,
+                    cashReward,
+                    playerUUIDs
+                )
 
                 // Record wave completion in stats
                 PlayerStatsManager.recordWaveCompletion(gameId)
@@ -173,9 +195,13 @@ class WaveManager(
                 // Check if this was the last wave
                 if (currentWave >= gameConfig.waves.size) {
                     println("All waves completed! Game won!")
-                    val game = GameRegistry.activeGames[gameId]
                     game?.endGame(true)
                 } else {
+                    // Show preparation message
+                    plugin.server.scheduler.runTaskLater(plugin, Runnable {
+                        dev.etran.towerDefMc.utils.WaveAnnouncement.announcePreparation(playerUUIDs, 3)
+                    }, 40L) // After 2 seconds
+
                     // Move to next wave after a short delay
                     plugin.server.scheduler.runTaskLater(plugin, Runnable {
                         startNextWave()
