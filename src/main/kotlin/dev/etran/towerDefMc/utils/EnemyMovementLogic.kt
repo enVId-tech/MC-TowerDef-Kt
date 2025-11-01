@@ -22,33 +22,46 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
         if (distanceSq <= switchRangeSq) {
             val nextId = currentTargetId + 1
 
-            // Check for EndPoint or Max Checkpoint
+            // Check if current checkpoint is the EndPoint
             val isEndPoint = targetCheckpoint.persistentDataContainer.get(
                 TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
             ) == "EndPoint"
 
-            // If the current target was an EndPoint OR the next ID is out of bounds, remove the entity
-            if (isEndPoint || !waypointManager.checkpoints.containsKey(nextId)) {
-                cleanUpEnemyHealthBar(entity)
-                entity.remove()
+            // Check if next checkpoint exists
+            val hasNextCheckpoint = waypointManager.checkpoints.containsKey(nextId)
 
-                // Trigger game loss - enemy reached the end
-                // Find the specific game this enemy belongs to
-                val enemyGameId = GameInstanceTracker.getGameId(entity)
-                if (enemyGameId != null) {
-                    GameRegistry.activeGames[enemyGameId]?.onHealthLost(1)
+            // Only delete the enemy if:
+            // 1. Current checkpoint is marked as EndPoint, OR
+            // 2. There is no next checkpoint AND current checkpoint is the last one in the sequence
+            if (isEndPoint || !hasNextCheckpoint) {
+                // Additional check: only delete if this is truly the last checkpoint
+                // This prevents deletion when start/end overlap but there are checkpoints in between
+                val isLastCheckpoint = currentTargetId == waypointManager.checkpoints.keys.maxOrNull()
+
+                if (isLastCheckpoint || isEndPoint) {
+                    cleanUpEnemyHealthBar(entity)
+                    entity.remove()
+
+                    // Trigger game loss - enemy reached the end
+                    val enemyGameId = GameInstanceTracker.getGameId(entity)
+                    if (enemyGameId != null) {
+                        GameRegistry.activeGames[enemyGameId]?.onHealthLost(1)
+                    }
+
+                    // Unregister the entity
+                    GameInstanceTracker.unregisterEntity(entity)
+                    return
                 }
-
-                // Unregister the entity
-                GameInstanceTracker.unregisterEntity(entity)
-                return
             }
 
-            // Update the TARGET_CHECKPOINT_ID to the next checkpoint
-            container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
+            // If we didn't delete the enemy, move to next checkpoint
+            if (hasNextCheckpoint) {
+                // Update the TARGET_CHECKPOINT_ID to the next checkpoint
+                container.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, nextId)
 
-            // Immediately update targetCheckpoint object to the new location for continuous pathing
-            targetCheckpoint = waypointManager.checkpoints[nextId]
+                // Immediately update targetCheckpoint object to the new location for continuous pathing
+                targetCheckpoint = waypointManager.checkpoints[nextId]
+            }
         }
     } else {
         // The current target ID is invalid (e.g., checkpoint was destroyed).

@@ -24,7 +24,7 @@ class PathManager {
      */
     fun createPath(name: String, startPoint: Location, endPoint: Location): Int {
         val pathId = nextPathId++
-        val path = PathData(pathId, name, startPoint, mutableListOf(), endPoint, false) // Hidden by default
+        val path = PathData(pathId, name, startPoint, mutableListOf(), endPoint, true) // Visible by default
         paths[pathId] = path
 
         // Create armor stands for visualization
@@ -194,11 +194,11 @@ class PathManager {
 
         // Create start point stand
         val startStand = path.startPoint.world.spawn(path.startPoint, ArmorStand::class.java) { stand ->
-            stand.isVisible = standsAreVisible && path.isVisible
+            stand.isVisible = standsAreVisible
             stand.setGravity(false)
             stand.isInvulnerable = true
             stand.customName(Component.text("§a§lSTART - ${path.name}"))
-            stand.isCustomNameVisible = standsAreVisible && path.isVisible
+            stand.isCustomNameVisible = standsAreVisible
             stand.persistentDataContainer.set(
                 TowerDefMC.ELEMENT_TYPES,
                 PersistentDataType.STRING,
@@ -210,11 +210,11 @@ class PathManager {
         // Create checkpoint stands
         path.checkpoints.forEachIndexed { index, checkpoint ->
             val checkpointStand = checkpoint.world.spawn(checkpoint, ArmorStand::class.java) { stand ->
-                stand.isVisible = standsAreVisible && path.isVisible
+                stand.isVisible = standsAreVisible
                 stand.setGravity(false)
                 stand.isInvulnerable = true
                 stand.customName(Component.text("§e§lCHECKPOINT ${index + 1} - ${path.name}"))
-                stand.isCustomNameVisible = standsAreVisible && path.isVisible
+                stand.isCustomNameVisible = standsAreVisible
                 stand.persistentDataContainer.set(
                     TowerDefMC.ELEMENT_TYPES,
                     PersistentDataType.STRING,
@@ -226,11 +226,11 @@ class PathManager {
 
         // Create end point stand
         val endStand = path.endPoint.world.spawn(path.endPoint, ArmorStand::class.java) { stand ->
-            stand.isVisible = standsAreVisible && path.isVisible
+            stand.isVisible = standsAreVisible
             stand.setGravity(false)
             stand.isInvulnerable = true
             stand.customName(Component.text("§c§lEND - ${path.name}"))
-            stand.isCustomNameVisible = standsAreVisible && path.isVisible
+            stand.isCustomNameVisible = standsAreVisible
             stand.persistentDataContainer.set(
                 TowerDefMC.ELEMENT_TYPES,
                 PersistentDataType.STRING,
