@@ -5,9 +5,11 @@ import dev.etran.towerDefMc.data.TowerGeneratorData
 import dev.etran.towerDefMc.utils.CustomMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
@@ -21,15 +23,23 @@ class TowerGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
     private var upgradePath: String = "none"
     private var isBaby: Boolean = false
     private var entitySize: Double = 1.0
+    private var itemMaterial: Material = Material.ARROW
 
     override fun setMenuItems() {
-        // Display the spawn egg being configured (slot 4)
-        val spawnEggMaterial = Material.getMaterial("${spawnEggType.name}_SPAWN_EGG") ?: Material.EGG
-        inventory.setItem(
-            4, createMenuItem(
-                spawnEggMaterial, "§6§lTower Spawn Egg", listOf("§7Entity Type: §e${spawnEggType.name}")
-            )
-        )
+        // Display the item material being used (slot 4) - clickable to change
+        val displayItem = ItemStack(itemMaterial)
+        val displayMeta = displayItem.itemMeta
+        displayMeta.displayName(Component.text("§6§lItem Representation"))
+        displayMeta.lore(listOf(
+            Component.text("§7Current: §e${itemMaterial.name}"),
+            Component.text("§7Entity Type: §e${spawnEggType.name}"),
+            Component.text(""),
+            Component.text("§eClick to change item material!")
+        ))
+        displayMeta.addEnchant(Enchantment.UNBREAKING, 1, true)
+        displayMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        displayItem.itemMeta = displayMeta
+        inventory.setItem(4, displayItem)
 
         // Tower Properties
         inventory.setItem(
@@ -211,6 +221,14 @@ class TowerGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
             49 -> { // Generate
                 generateTower(player)
             }
+
+            4 -> { // Item material selection
+                MaterialSelectorMenu(player, itemMaterial) { selectedMaterial ->
+                    itemMaterial = selectedMaterial
+                    setMenuItems()
+                    open()
+                }.open()
+            }
         }
     }
 
@@ -224,17 +242,18 @@ class TowerGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
             range = range,
             upgradePath = upgradePath,
             isBaby = isBaby,
-            size = entitySize
+            size = entitySize,
+            itemMaterial = itemMaterial
         )
 
-        // Create the tower item
-        val spawnEggMaterial = Material.getMaterial("${spawnEggType.name}_SPAWN_EGG") ?: Material.ZOMBIE_SPAWN_EGG
-        val towerItem = ItemStack(spawnEggMaterial, 1)
+        // Create the tower item using the selected material
+        val towerItem = ItemStack(itemMaterial, 1)
         val meta = towerItem.itemMeta
 
         meta.displayName(Component.text("§6$displayName"))
         meta.lore(
             listOf(
+                Component.text("§7Entity: §e${spawnEggType.name}"),
                 Component.text("§7Cost: §e$cost"),
                 Component.text("§7Damage: §c$damage"),
                 Component.text("§7Attack Interval: §b${damageInterval}s"),
@@ -245,6 +264,10 @@ class TowerGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
                 Component.text("§7Size: §e$entitySize")
             )
         )
+
+        // Add enchantment glint
+        meta.addEnchant(Enchantment.UNBREAKING, 1, true)
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
 
         // Store tower data in PDC
         meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Generated_Tower")

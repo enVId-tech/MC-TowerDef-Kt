@@ -5,9 +5,11 @@ import dev.etran.towerDefMc.data.EnemyGeneratorData
 import dev.etran.towerDefMc.utils.CustomMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
@@ -22,15 +24,23 @@ class EnemyGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
     private var stunDuration: Double = 0.0
     private var isBaby: Boolean = false
     private var entitySize: Double = 1.0
+    private var itemMaterial: Material = Material.ARROW
 
     override fun setMenuItems() {
-        // Display the spawn egg being configured (slot 4)
-        val spawnEggMaterial = Material.getMaterial("${spawnEggType.name}_SPAWN_EGG") ?: Material.EGG
-        inventory.setItem(
-            4, createMenuItem(
-                spawnEggMaterial, "§6§lEnemy Spawn Egg", listOf("§7Entity Type: §e${spawnEggType.name}")
-            )
-        )
+        // Display the item material being used (slot 4) - clickable to change
+        val displayItem = ItemStack(itemMaterial)
+        val displayMeta = displayItem.itemMeta
+        displayMeta.displayName(Component.text("§6§lItem Representation"))
+        displayMeta.lore(listOf(
+            Component.text("§7Current: §e${itemMaterial.name}"),
+            Component.text("§7Entity Type: §e${spawnEggType.name}"),
+            Component.text(""),
+            Component.text("§eClick to change item material!")
+        ))
+        displayMeta.addEnchant(Enchantment.UNBREAKING, 1, true)
+        displayMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+        displayItem.itemMeta = displayMeta
+        inventory.setItem(4, displayItem)
 
         // Enemy Properties
         inventory.setItem(
@@ -142,6 +152,14 @@ class EnemyGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
         val player = event.whoClicked as? Player ?: return
 
         when (event.slot) {
+            4 -> { // Item material selection
+                MaterialSelectorMenu(player, itemMaterial) { selectedMaterial ->
+                    itemMaterial = selectedMaterial
+                    setMenuItems()
+                    open()
+                }.open()
+            }
+
             10 -> { // Health
                 player.closeInventory()
                 player.sendMessage("§eEnter the enemy health (or 'cancel'):")
@@ -215,17 +233,18 @@ class EnemyGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
             canStunTowers = canStunTowers,
             stunDuration = stunDuration,
             isBaby = isBaby,
-            size = entitySize
+            size = entitySize,
+            itemMaterial = itemMaterial
         )
 
-        // Create the enemy item
-        val spawnEggMaterial = Material.getMaterial("${spawnEggType.name}_SPAWN_EGG") ?: Material.ZOMBIE_SPAWN_EGG
-        val enemyItem = ItemStack(spawnEggMaterial, 1)
+        // Create the enemy item using the selected material
+        val enemyItem = ItemStack(itemMaterial, 1)
         val meta = enemyItem.itemMeta
 
         meta.displayName(Component.text("§c$displayName"))
         meta.lore(
             listOf(
+                Component.text("§7Entity: §e${spawnEggType.name}"),
                 Component.text("§7Health: §c$health"),
                 Component.text("§7Speed: §b$speed"),
                 Component.text("§7Defense: §7${defenseMultiplier}x"),
@@ -237,6 +256,10 @@ class EnemyGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
                 Component.text("§7Size: §e$entitySize")
             )
         )
+
+        // Add enchantment glint
+        meta.addEnchant(Enchantment.UNBREAKING, 1, true)
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
 
         // Store enemy data in PDC
         meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Generated_Enemy")

@@ -1,5 +1,6 @@
 package dev.etran.towerDefMc.data
 
+import org.bukkit.Material
 import org.bukkit.entity.EntityType
 
 /**
@@ -17,10 +18,11 @@ data class EnemyGeneratorData(
     // Mob properties
     val isBaby: Boolean = false,
     val size: Double = 1.0,
-    val customModelData: Int? = null
+    val customModelData: Int? = null,
+    val itemMaterial: Material = Material.ARROW
 ) {
     fun toItemMetaString(): String {
-        return "$spawnEggType|$displayName|$health|$speed|$defenseMultiplier|$canBeStunned|$canStunTowers|$stunDuration|$isBaby|$size|${customModelData ?: ""}"
+        return "$spawnEggType|$displayName|$health|$speed|$defenseMultiplier|$canBeStunned|$canStunTowers|$stunDuration|$isBaby|$size|${customModelData ?: ""}|${itemMaterial.name}"
     }
 
     companion object {
@@ -40,12 +42,14 @@ data class EnemyGeneratorData(
                     stunDuration = parts[7].toDouble(),
                     isBaby = parts[8].toBoolean(),
                     size = parts[9].toDouble(),
-                    customModelData = parts.getOrNull(10)?.toIntOrNull()
+                    customModelData = parts.getOrNull(10)?.toIntOrNull(),
+                    itemMaterial = parts.getOrNull(11)?.let {
+                        try { Material.valueOf(it) } catch (_: Exception) { Material.ARROW }
+                    } ?: Material.ARROW
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
     }
 }
-

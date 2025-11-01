@@ -1,5 +1,6 @@
 package dev.etran.towerDefMc.data
 
+import org.bukkit.Material
 import org.bukkit.entity.EntityType
 
 /**
@@ -16,10 +17,11 @@ data class TowerGeneratorData(
     // Mob properties
     val isBaby: Boolean = false,
     val size: Double = 1.0,
-    val customModelData: Int? = null
+    val customModelData: Int? = null,
+    val itemMaterial: Material = Material.ARROW
 ) {
     fun toItemMetaString(): String {
-        return "$spawnEggType|$displayName|$cost|$damage|$damageInterval|$range|$upgradePath|$isBaby|$size|${customModelData ?: ""}"
+        return "$spawnEggType|$displayName|$cost|$damage|$damageInterval|$range|$upgradePath|$isBaby|$size|${customModelData ?: ""}|${itemMaterial.name}"
     }
 
     companion object {
@@ -38,12 +40,14 @@ data class TowerGeneratorData(
                     upgradePath = parts[6],
                     isBaby = parts[7].toBoolean(),
                     size = parts[8].toDouble(),
-                    customModelData = parts.getOrNull(9)?.toIntOrNull()
+                    customModelData = parts.getOrNull(9)?.toIntOrNull(),
+                    itemMaterial = parts.getOrNull(10)?.let {
+                        try { Material.valueOf(it) } catch (_: Exception) { Material.ARROW }
+                    } ?: Material.ARROW
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
     }
 }
-
