@@ -49,9 +49,28 @@ object TowerFactory {
             return
         }
 
-        // TODO: Add this into a configuration file for the user to be able to make custom towers later on
-        if (location.getNearbyEntities(0.5, 1.0, 0.5).count() >= 1) {
-            player.sendMessage("You cannot place a tower here!")
+        // Check if player is in an active game
+        val game = GameRegistry.getGameByPlayer(player.uniqueId)
+        if (game == null || !game.isGameRunning) {
+            player.sendMessage("§cYou must be in an active game to place towers.")
+            return
+        }
+
+        // Check for nearby towers (within 1 block radius to prevent overlap)
+        if (location.getNearbyEntities(1.0, 1.0, 1.0).any { entity ->
+            entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) == "Tower"
+        }) {
+            player.sendMessage("§cYou cannot place a tower here! Too close to another tower.")
+            return
+        }
+
+        // Check if location is on an enemy path (check path armor stands)
+        val pathCheckLocation = block.location
+        if (pathCheckLocation.getNearbyEntities(1.5, 2.0, 1.5).any { entity ->
+            val elementType = entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING)
+            elementType == "PathStart" || elementType == "PathEnd" || elementType == "PathCheckpoint"
+        }) {
+            player.sendMessage("§cYou cannot place a tower on an enemy path!")
             return
         }
 
@@ -99,7 +118,7 @@ object TowerFactory {
         )
 
         // Record tower placement in player stats and store game ID
-        val game = GameRegistry.getGameByPlayer(player.uniqueId)
+        // Note: game variable already declared earlier for validation
         if (game != null) {
             // Ensure player stats are initialized before recording tower placement
             if (PlayerStatsManager.getPlayerStats(game.gameId, player.uniqueId) == null) {

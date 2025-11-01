@@ -117,6 +117,11 @@ class GameManager(
         plugin.logger.info("Game $gameId ended. Result: ${if (win) "Win" else "Loss"}")
         DebugLogger.logGame("Game $gameId: Ending game - Result: ${if (win) "WIN" else "LOSS"}, Wave: ${waveManager.currentWave}, Health: $health")
 
+        // Stop tower placement previews for all players in this game
+        players.forEach { playerId ->
+            dev.etran.towerDefMc.listeners.PlayerHoldListener.stopPlayerTask(playerId)
+        }
+
         // Display ending sequence before cleanup
         if (win) {
             dev.etran.towerDefMc.utils.GameEndingSequence.displayVictorySequence(
@@ -161,6 +166,11 @@ class GameManager(
 
         plugin.logger.info("Game $gameId stopped manually")
         DebugLogger.logGame("Game $gameId: Manually stopped by admin")
+
+        // Stop tower placement previews for all players in this game
+        players.forEach { playerId ->
+            dev.etran.towerDefMc.listeners.PlayerHoldListener.stopPlayerTask(playerId)
+        }
 
         // Stop all wave activities (spawning, wave progression, etc.)
         waveManager.stopAllWaveActivities()

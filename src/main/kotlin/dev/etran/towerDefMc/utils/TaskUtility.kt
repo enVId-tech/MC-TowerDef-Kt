@@ -1,5 +1,7 @@
 package dev.etran.towerDefMc.utils
 
+import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
@@ -8,6 +10,7 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
@@ -45,9 +48,10 @@ object TaskUtility {
      * @param center The center location on the block surface.
      * @param radius The radius of the circle in blocks.
      * @param points The number of points to use to draw the circle (higher = smoother).
+     * @param color The color of the particles (optional, defaults to soul particles).
      */
     private fun drawCircleParticles(
-        center: Location, radius: Double, points: Int = 40
+        center: Location, radius: Double, points: Int = 40, color: Color? = null
     ) {
         val world = center.world ?: return
         val angleStep = 2.0 * PI / points
@@ -61,7 +65,18 @@ object TaskUtility {
             val z = center.z + radius * sin(angle)
 
             val particleLoc = Location(world, x, y, z)
-            world.spawnParticle(Particle.SOUL, particleLoc, 1, 0.0, 0.0, 0.0, 0.0)
+            if (color != null) {
+                world.spawnParticle(
+                    Particle.DUST,
+                    particleLoc,
+                    1,
+                    0.0, 0.0, 0.0,
+                    0.0,
+                    Particle.DustOptions(color, 1.0f)
+                )
+            } else {
+                world.spawnParticle(Particle.SOUL, particleLoc, 1, 0.0, 0.0, 0.0, 0.0)
+            }
         }
     }
 
@@ -79,6 +94,48 @@ object TaskUtility {
             0.0, // Speed
             blockData // The block data to use for the texture
         )
+    }
+
+    /**
+     * Checks if a location is valid for tower placement
+     * @return true if placement is valid, false otherwise
+     */
+    private fun isValidPlacementLocation(location: Location, player: Player): Boolean {
+        // Check if player is in an active game
+        val game = GameRegistry.getGameByPlayer(player.uniqueId) ?: return false
+
+        // Check if game is running
+        if (!game.isGameRunning) {
+            return false
+        }
+
+        // Check for nearby towers (within 1 block radius to prevent overlap)
+        val towerCheckLocation = location.clone().add(0.5, 1.0, 0.5)
+        val nearbyEntities = towerCheckLocation.getNearbyEntities(1.0, 1.0, 1.0)
+
+        for (entity in nearbyEntities) {
+            val elementType = entity.persistentDataContainer.get(
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
+            )
+            if (elementType == "Tower") {
+                return false // Tower too close
+            }
+        }
+
+        // Check if location is on an enemy path (check path armor stands)
+        val pathCheckLocation = location.clone()
+        val nearbyPathEntities = pathCheckLocation.getNearbyEntities(1.5, 2.0, 1.5)
+
+        for (entity in nearbyPathEntities) {
+            val elementType = entity.persistentDataContainer.get(
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
+            )
+            if (elementType == "PathStart" || elementType == "PathEnd" || elementType == "PathCheckpoint") {
+                return false // Too close to path
+            }
+        }
+
+        return true
     }
 
     /**
@@ -104,30 +161,36 @@ object TaskUtility {
         val task = object : BukkitRunnable() {
             // Use red dust for "No Placement" indicator
             val redDust = Particle.DustOptions(Color.RED, 1.0f)
+            val greenColor = Color.fromRGB(0, 255, 0)
+            val redColor = Color.fromRGB(255, 0, 0)
 
             override fun run() {
                 val targetBlock = getHighlightedBlock(player)
 
-                if (targetBlock != null) {
+                if (targetBlock != null && targetBlock.type.isSolid) {
                     val centerLoc = targetBlock.location.toCenterLocation()
+                    val isValidPlacement = isValidPlacementLocation(targetBlock.location, player)
 
-                    if (targetBlock.type.isSolid) {
-                        // Valid placement preview
+                    if (isValidPlacement) {
+                        // Valid placement preview - show green circle and block preview
                         drawCircleParticles(
-                            centerLoc.clone(), towerRange, 10 * towerRange.toInt()
-                        ) // Use clone to avoid modifying centerLoc
+                            centerLoc.clone(), towerRange, 10 * towerRange.toInt(), greenColor
+                        )
                         drawBlockPreview(centerLoc.clone(), previewBlockData)
                     } else {
-                        // Invalid placement indicator
+                        // Invalid placement indicator - show red circle and X
+                        drawCircleParticles(
+                            centerLoc.clone(), towerRange, 10 * towerRange.toInt(), redColor
+                        )
+
+                        // Draw red X particles
                         targetBlock.world.spawnParticle(
-                            Particle.SOUL,
-                            centerLoc.add(0.0, 0.5, 0.0),
-                            15 * towerRange.toInt(), // Amount increased slightly
-                            0.3,
-                            0.3,
-                            0.3,
-                            0.0, // Small offset
-                            redDust // Red X effect
+                            Particle.DUST,
+                            centerLoc.clone().add(0.0, 0.5, 0.0),
+                            30,
+                            0.3, 0.3, 0.3,
+                            0.0,
+                            redDust
                         )
                     }
                 }

@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.TaskUtility
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -30,13 +31,17 @@ object PlayerHoldListener : Listener {
 
         val isTowerItem = towerRange != null && towerMaterial != null
 
-        if (isTowerItem && !isTaskRunning) {
-            // Case A: Switching TO a tower item -> START the preview task
+        // Check if player is in an active game
+        val game = GameRegistry.getGameByPlayer(playerId)
+        val isInActiveGame = game?.isGameRunning == true
+
+        if (isTowerItem && !isTaskRunning && isInActiveGame) {
+            // Case A: Switching TO a tower item in an active game -> START the preview task
             TaskUtility.startTargetHighlightTask(
                 player, activeMouseTasks, particleTickRate, towerRange, towerMaterial
             )
-        } else if (!isTowerItem && isTaskRunning) {
-            // Case B: Switching AWAY from a tower item -> STOP the preview task
+        } else if ((!isTowerItem || !isInActiveGame) && isTaskRunning) {
+            // Case B: Switching AWAY from a tower item OR game ended -> STOP the preview task
             TaskUtility.stopTargetHighlightTask(player, activeMouseTasks)
         }
     }
@@ -51,13 +56,26 @@ object PlayerHoldListener : Listener {
             itemInHand.itemMeta?.persistentDataContainer?.has(TOWER_RANGE_KEY, PersistentDataType.DOUBLE) ?: false
 
         if (isTowerItem && activeMouseTasks.containsKey(player.uniqueId)) {
-            // If the player successfully placed a tower block while the task was running, stop it.
-            TaskUtility.stopTargetHighlightTask(player, activeMouseTasks)
+            // Check if player has any more towers left after this placement
+            val remainingCount = player.inventory.itemInMainHand.amount
+
+            if (remainingCount <= 1) {
+                // Player has no more towers left, stop the preview
+                TaskUtility.stopTargetHighlightTask(player, activeMouseTasks)
+            }
         }
     }
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         TaskUtility.stopTargetHighlightTask(event.player, activeMouseTasks)
+    }
+
+    /**
+     * External method to stop a player's highlight task (e.g., when game ends)
+     */
+    fun stopPlayerTask(playerId: UUID) {
+        val player = org.bukkit.Bukkit.getPlayer(playerId) ?: return
+        TaskUtility.stopTargetHighlightTask(player, activeMouseTasks)
     }
 }
