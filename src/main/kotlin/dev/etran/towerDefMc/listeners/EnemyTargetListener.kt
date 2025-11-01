@@ -113,7 +113,18 @@ class EnemyTargetListener : Listener {
             // Block all other entity damage
             event.isCancelled = true
         } else {
-            // Cancel all non-entity damage (fall, drown, fire, etc.)
+            // Check if this damage was marked as coming from a tower
+            val isFromTower = entity.persistentDataContainer.has(
+                TowerDefMC.createKey("last_damager_is_tower"),
+                PersistentDataType.BYTE
+            )
+
+            if (isFromTower) {
+                // Allow tower damage that uses the direct damage() method
+                return
+            }
+
+            // Cancel all other non-entity damage (fall, drown, fire, etc.)
             event.isCancelled = true
         }
     }

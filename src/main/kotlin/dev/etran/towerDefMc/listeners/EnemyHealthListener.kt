@@ -20,6 +20,13 @@ object EnemyHealthListener : Listener {
         // Check for your custom enemy type here (e.g., based on custom tags)
         if (!enemy.persistentDataContainer.has(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING)) return
 
+        // Skip this listener if the enemy uses custom health system
+        // The health bar is updated directly in the damageEnemy function
+        if (enemy.persistentDataContainer.has(TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE)) {
+            return
+        }
+
+        // Legacy support for enemies without custom health
         val damage = event.finalDamage
 
         val newHealth = enemy.health - damage

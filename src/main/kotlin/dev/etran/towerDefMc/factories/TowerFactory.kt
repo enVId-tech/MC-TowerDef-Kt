@@ -110,6 +110,9 @@ object TowerFactory {
                 PersistentDataType.INTEGER,
                 game.gameId
             )
+
+            // Register the tower with GameInstanceTracker so cash rewards work
+            dev.etran.towerDefMc.managers.GameInstanceTracker.registerEntity(entity, game.gameId)
         }
 
         // Take away 1 from the user if they aren't in creative or spectator mode.

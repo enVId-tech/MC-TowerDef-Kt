@@ -86,17 +86,41 @@ object EnemyFactory {
         val maxHealth = entity.getAttribute(Attribute.MAX_HEALTH)
         val speed = entity.getAttribute(Attribute.MOVEMENT_SPEED)
 
+        // Keep Minecraft health at max to prevent vanilla death
+        if (maxHealth != null) maxHealth.baseValue = 1000.0
+        entity.health = 1000.0
+
         // Apply enemy-specific attributes from config
         if (enemyConfig != null) {
             if (scale != null) scale.baseValue = 1.5
-            if (maxHealth != null) maxHealth.baseValue = enemyConfig.health
             if (speed != null) speed.baseValue = enemyConfig.speed * 0.1 // Scale to Minecraft values
-            entity.health = enemyConfig.health
+
+            // Store custom health in persistent data (can be any large number)
+            entity.persistentDataContainer.set(
+                TowerDefMC.createKey("custom_health"),
+                PersistentDataType.DOUBLE,
+                enemyConfig.health
+            )
+            entity.persistentDataContainer.set(
+                TowerDefMC.createKey("custom_max_health"),
+                PersistentDataType.DOUBLE,
+                enemyConfig.health
+            )
         } else {
             // Default values
             if (scale != null) scale.baseValue = 1.5
-            if (maxHealth != null) maxHealth.baseValue = 20.0
-            entity.health = 20.0
+
+            // Store default custom health
+            entity.persistentDataContainer.set(
+                TowerDefMC.createKey("custom_health"),
+                PersistentDataType.DOUBLE,
+                20.0
+            )
+            entity.persistentDataContainer.set(
+                TowerDefMC.createKey("custom_max_health"),
+                PersistentDataType.DOUBLE,
+                20.0
+            )
         }
 
         entity.setAI(false)
@@ -120,7 +144,7 @@ object EnemyFactory {
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, enemyType)
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
 
-        // Create health bar AFTER setting the actual health to match max health
+        // Create health bar AFTER setting the custom health
         createHealthBar(entity)
 
         return entity

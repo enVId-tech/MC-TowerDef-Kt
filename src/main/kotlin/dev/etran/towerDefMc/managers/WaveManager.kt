@@ -83,6 +83,12 @@ class WaveManager(
         if (!isSpawningComplete) return false
 
         val aliveEnemies = GameInstanceTracker.getLivingEntitiesInGame(gameId).size
+
+        // Debug logging to help track wave completion issues
+        if (aliveEnemies > 0) {
+            println("Game $gameId - Wave $currentWave: $aliveEnemies enemies still alive")
+        }
+
         return aliveEnemies <= 0
     }
 

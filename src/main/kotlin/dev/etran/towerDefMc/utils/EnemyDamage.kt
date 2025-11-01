@@ -25,16 +25,20 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
     val delaySeconds = tower.persistentDataContainer.get(TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE) ?: 1.0
 
     // Convert seconds (Double) to milliseconds (Long)
-    // The result is a Double (seconds * 1000.0), which converts to a Long.
     val delayMs = (delaySeconds * 1000.0).toLong()
 
     val nextReadyTime = currentTime + delayMs
 
     if (!enemy.isDead) {
-        enemy.noDamageTicks = 0
         val damage = tower.persistentDataContainer.getOrDefault(
             TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 5.0
         )
+
+        // Get custom health from persistent data
+        val currentCustomHealth = enemy.persistentDataContainer.get(
+            TowerDefMC.createKey("custom_health"),
+            PersistentDataType.DOUBLE
+        ) ?: enemy.health
 
         // Award cash to the tower owner based on damage dealt
         val gameId = GameInstanceTracker.getGameId(tower)
@@ -46,8 +50,8 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
             try {
                 val ownerUUID = java.util.UUID.fromString(towerOwnerUUID)
 
-                // Calculate actual damage that will be dealt (capped by remaining health)
-                val actualDamage = min(damage, enemy.health)
+                // Calculate actual damage that will be dealt (capped by remaining custom health)
+                val actualDamage = min(damage, currentCustomHealth)
 
                 // Award cash equal to the actual damage dealt (rounded to nearest int)
                 val cashReward = actualDamage.toInt()
@@ -60,8 +64,50 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
             }
         }
 
-        // Apply damage directly to health instead of using damage() to avoid event issues
-        enemy.health = max(0.0, enemy.health - damage)
+        // Apply damage to custom health
+        val newCustomHealth = max(0.0, currentCustomHealth - damage)
+        enemy.persistentDataContainer.set(
+            TowerDefMC.createKey("custom_health"),
+            PersistentDataType.DOUBLE,
+            newCustomHealth
+        )
+
+        // Update health bar with custom health
+        val healthBar = enemy.world.getNearbyEntities(enemy.location, 1.0, 2.0, 1.0)
+            .filterIsInstance<org.bukkit.entity.TextDisplay>()
+            .firstOrNull { display ->
+                display.persistentDataContainer.get(
+                    TowerDefMC.HEALTH_OWNER_UUID,
+                    PersistentDataType.STRING
+                ) == enemy.uniqueId.toString()
+            }
+
+        if (healthBar != null) {
+            val maxCustomHealth = enemy.persistentDataContainer.get(
+                TowerDefMC.createKey("custom_max_health"),
+                PersistentDataType.DOUBLE
+            ) ?: 20.0
+            updateHealthBar(enemy, healthBar, newCustomHealth, maxCustomHealth)
+        }
+
+        // If custom health reaches 0 or below, kill the enemy
+        if (newCustomHealth <= 0.0) {
+            // Clean up health bar
+            cleanUpEnemyHealthBar(enemy)
+
+            // Unregister from game tracker
+            GameInstanceTracker.unregisterEntity(enemy)
+
+            // Track the kill
+            if (gameId != null) {
+                PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                    PlayerStatsManager.recordKill(gameId, playerUUID)
+                }
+            }
+
+            // Remove the entity
+            enemy.remove()
+        }
     }
 
     tower.persistentDataContainer.set(TowerDefMC.READY_TIME, PersistentDataType.LONG, nextReadyTime)

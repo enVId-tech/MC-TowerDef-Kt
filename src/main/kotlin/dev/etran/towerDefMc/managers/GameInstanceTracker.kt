@@ -73,6 +73,9 @@ object GameInstanceTracker {
         return entityUUIDs.mapNotNull { uuid ->
             plugin.server.worlds.asSequence().flatMap { it.entities }
                 .firstOrNull { it.uniqueId == uuid } as? LivingEntity
+        }.filter { entity ->
+            // Only count entities that are actually alive and not dead
+            !entity.isDead && entity.health > 0
         }
     }
 

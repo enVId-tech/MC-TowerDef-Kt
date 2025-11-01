@@ -58,6 +58,11 @@ fun getHealthBarComponent(currentHealth: Double, maxHealth: Double): Component {
     return Component.text().append(graphicalBar).append(numericalDisplay).build()
 }
 
+fun updateHealthBar(enemy: LivingEntity, healthBar: TextDisplay, currentHealth: Double, maxHealth: Double) {
+    val newComponent = getHealthBarComponent(currentHealth, maxHealth)
+    healthBar.text(newComponent)
+}
+
 fun updateHealthBar(enemy: LivingEntity, healthBar: TextDisplay, calculatedHealth: Double) {
     val maxHealth = enemy.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
 
@@ -70,7 +75,8 @@ fun createHealthBar(enemy: LivingEntity): TextDisplay {
     val offset = 0.5 // Blocks above the enemy's head (adjustable)
     val targetLocation = enemy.location.add(0.0, enemy.height + offset, 0.0)
 
-    val textDisplay = enemy.world.spawn(targetLocation, TextDisplay::class.java)
+    val world = targetLocation.world
+    val textDisplay = world.spawn(targetLocation, TextDisplay::class.java)
 
     // Configuration
     textDisplay.billboard = Billboard.CENTER
@@ -84,7 +90,18 @@ fun createHealthBar(enemy: LivingEntity): TextDisplay {
 
     enemy.addPassenger(textDisplay)
 
-    updateHealthBar(enemy, textDisplay, enemy.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0)
+    // Get custom health values if available
+    val currentCustomHealth = enemy.persistentDataContainer.get(
+        TowerDefMC.createKey("custom_health"),
+        PersistentDataType.DOUBLE
+    ) ?: enemy.health
+
+    val maxCustomHealth = enemy.persistentDataContainer.get(
+        TowerDefMC.createKey("custom_max_health"),
+        PersistentDataType.DOUBLE
+    ) ?: (enemy.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0)
+
+    textDisplay.text(getHealthBarComponent(currentCustomHealth, maxCustomHealth))
 
     return textDisplay
 }

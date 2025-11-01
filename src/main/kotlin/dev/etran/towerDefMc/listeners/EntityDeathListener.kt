@@ -33,9 +33,15 @@ object EntityDeathListener : Listener {
                     }
                 }
                 "Enemy" -> {
-                    // Track enemy kills for all players in the game
+                    // Get the game ID before unregistering
                     val gameId = GameInstanceTracker.getGameId(gameElement)
+
+                    // Unregister the enemy from the game instance tracker
+                    // This is critical for wave completion detection
+                    GameInstanceTracker.unregisterEntity(gameElement)
+
                     if (gameId != null) {
+                        // Track enemy kills for all players in the game
                         PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
                             PlayerStatsManager.recordKill(gameId, playerUUID)
                         }
