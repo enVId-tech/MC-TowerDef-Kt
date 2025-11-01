@@ -99,10 +99,17 @@ object TowerFactory {
             player.uniqueId.toString()
         )
 
-        // Record tower placement in player stats
+        // Record tower placement in player stats and store game ID
         val game = GameRegistry.getGameByPlayer(player.uniqueId)
         if (game != null) {
             PlayerStatsManager.recordTowerPlaced(game.gameId, player.uniqueId)
+
+            // Store the game ID on the tower entity so it can be cleaned up when game ends
+            entity.persistentDataContainer.set(
+                TowerDefMC.createKey("tower_game_id"),
+                PersistentDataType.INTEGER,
+                game.gameId
+            )
         }
 
         // Take away 1 from the user if they aren't in creative or spectator mode.

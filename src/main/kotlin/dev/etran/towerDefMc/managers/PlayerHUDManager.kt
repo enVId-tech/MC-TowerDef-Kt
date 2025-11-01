@@ -67,14 +67,14 @@ object PlayerHUDManager {
 
         // Also display game info as subtitle periodically (every 10 seconds / 200 ticks)
         if ((Bukkit.getCurrentTick() % 200).toLong() == 0L) {
-            displayGameInfo(player, game)
+//            displayGameInfo(player, game)
         }
     }
 
     /**
      * Display game information to a player using title/subtitle
      */
-    private fun displayGameInfo(player: Player, game: dev.etran.towerDefMc.managers.GameManager) {
+    private fun displayGameInfo(player: Player, game: GameManager) {
         val allPlayerStats = PlayerStatsManager.getAllPlayerStats(game.gameId)
         val playerCount = allPlayerStats.size
         val activePaths = game.pathManager.getAllPaths().count { it.isVisible }
@@ -116,7 +116,7 @@ object PlayerHUDManager {
         allPlayerStats.keys.forEach { playerUUID ->
             val player = Bukkit.getPlayer(playerUUID)
             if (player != null && player.isOnline) {
-                displayGameInfo(player, game)
+//                displayGameInfo(player, game)
             }
         }
     }

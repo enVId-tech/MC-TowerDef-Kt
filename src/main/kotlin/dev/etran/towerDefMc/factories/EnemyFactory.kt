@@ -13,6 +13,7 @@ import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffectType
 
 object EnemyFactory {
     fun newBasicEnemy(amount: Int = 1): ItemStack {
@@ -52,6 +53,10 @@ object EnemyFactory {
         entity.isPersistent = true
         entity.isSilent = true
         entity.isCollidable = false
+
+        // Remove regeneration effects
+        entity.removePotionEffect(PotionEffectType.REGENERATION)
+
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy")
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, "Basic_Enemy_1")
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
@@ -107,6 +112,9 @@ object EnemyFactory {
         // Clear target to prevent attacking players, but don't disable awareness
         // We need awareness enabled for pathfinding to work
         entity.setTarget(null)
+
+        // Remove regeneration effects
+        entity.removePotionEffect(PotionEffectType.REGENERATION)
 
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy")
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, enemyType)

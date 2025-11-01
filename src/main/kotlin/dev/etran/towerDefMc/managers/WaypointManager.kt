@@ -299,9 +299,13 @@ class WaypointManager {
     fun toggleStandVisibility(): Boolean {
         try {
             standsAreVisible = !standsAreVisible
+
             Bukkit.getWorlds().forEach { world ->
                 world.entities.filterIsInstance<ArmorStand>().filter { entity ->
-                    entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) != null
+                    val elementType = entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING)
+                    // Only toggle visibility for Checkpoint, StartPoint, and EndPoint
+                    // NOT for PathStart, PathCheckpoint, or PathEnd (those are managed by PathManager)
+                    elementType == "Checkpoint" || elementType == "StartPoint" || elementType == "EndPoint"
                 }.forEach { entity ->
                     if (standsAreVisible) {
                         entity.isInvisible = false

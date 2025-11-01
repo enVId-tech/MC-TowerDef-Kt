@@ -98,6 +98,19 @@ object GameInstanceTracker {
             entityToGame.remove(entityUUID)
         }
         gameToEntities.remove(gameId)
+
+        // Also remove all towers that belong to this game
+        plugin.server.worlds.forEach { world ->
+            world.entities.filterIsInstance<org.bukkit.entity.LivingEntity>().forEach { entity ->
+                val towerGameId = entity.persistentDataContainer.get(
+                    TowerDefMC.createKey("tower_game_id"),
+                    org.bukkit.persistence.PersistentDataType.INTEGER
+                )
+                if (towerGameId == gameId) {
+                    entity.remove()
+                }
+            }
+        }
     }
 
     /**
