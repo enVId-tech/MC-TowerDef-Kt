@@ -117,6 +117,26 @@ object EnemyRegistry {
         return enemies[id]
     }
 
+    fun addGeneratedEnemy(id: String, enemyType: EnemyType) {
+        enemies[id] = enemyType
+        saveEnemyToFile(id, enemyType)
+        plugin.logger.info("Added generated enemy: ${enemyType.displayName}")
+    }
+
+    private fun saveEnemyToFile(id: String, enemyType: EnemyType) {
+        val enemiesFile = File(plugin.dataFolder, "enemies.yml")
+        val config = YamlConfiguration.loadConfiguration(enemiesFile)
+
+        config.set("enemies.$id.displayName", enemyType.displayName)
+        config.set("enemies.$id.icon", enemyType.icon.name)
+        config.set("enemies.$id.description", enemyType.description)
+        config.set("enemies.$id.health", enemyType.health)
+        config.set("enemies.$id.speed", enemyType.speed)
+        config.set("enemies.$id.damage", enemyType.damage)
+
+        config.save(enemiesFile)
+    }
+
     @Suppress("unused")
     fun reloadEnemies() {
         enemies.clear()

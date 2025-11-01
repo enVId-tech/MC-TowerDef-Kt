@@ -237,46 +237,32 @@ class EnemyGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
             itemMaterial = itemMaterial
         )
 
-        // Create the enemy item using the selected material
-        val enemyItem = ItemStack(itemMaterial, 1)
-        val meta = enemyItem.itemMeta
+        // Generate a unique ID for the enemy
+        val enemyId = "Generated_${displayName.replace(" ", "_")}_${System.currentTimeMillis()}"
 
-        meta.displayName(Component.text("§c$displayName"))
-        meta.lore(
-            listOf(
-                Component.text("§7Entity: §e${spawnEggType.name}"),
-                Component.text("§7Health: §c$health"),
-                Component.text("§7Speed: §b$speed"),
-                Component.text("§7Defense: §7${defenseMultiplier}x"),
-                Component.text("§7Can Be Stunned: ${if (canBeStunned) "§aYes" else "§cNo"}"),
-                Component.text("§7Can Stun Towers: ${if (canStunTowers) "§aYes" else "§cNo"}"),
-                Component.text("§7Stun Duration: §d${stunDuration}s"),
-                Component.text(""),
-                Component.text("§7Baby: ${if (isBaby) "§aYes" else "§cNo"}"),
-                Component.text("§7Size: §e$entitySize")
-            )
+        // Create enemy type for registry
+        val enemyType = dev.etran.towerDefMc.registries.EnemyRegistry.EnemyType(
+            id = enemyId,
+            displayName = displayName,
+            icon = itemMaterial,
+            description = listOf(
+                "Entity: ${spawnEggType.name}",
+                "Health: $health",
+                "Speed: ${speed}x",
+                "Defense: ${defenseMultiplier}x",
+                if (canStunTowers) "Can stun towers for ${stunDuration}s" else "Cannot stun towers"
+            ),
+            health = health,
+            speed = speed,
+            damage = 0 // Generated enemies don't have damage stat in registry
         )
 
-        // Add enchantment glint
-        meta.addEnchant(Enchantment.UNBREAKING, 1, true)
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-
-        // Store enemy data in PDC
-        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Generated_Enemy")
-        meta.persistentDataContainer.set(
-            TowerDefMC.createKey("enemy_generator_data"), PersistentDataType.STRING, data.toItemMetaString()
-        )
-
-        enemyItem.itemMeta = meta
-
-        // Give to player
-        val leftover = player.inventory.addItem(enemyItem)
-        if (leftover.isNotEmpty()) {
-            player.world.dropItemNaturally(player.location, enemyItem)
-        }
+        // Add to registry
+        dev.etran.towerDefMc.registries.EnemyRegistry.addGeneratedEnemy(enemyId, enemyType)
 
         player.closeInventory()
-        player.sendMessage("§a§lEnemy generated successfully!")
-        player.sendMessage("§7${displayName} §ahas been added to your inventory.")
+        player.sendMessage("§a§lEnemy added to registry!")
+        player.sendMessage("§7$displayName §ahas been added to the enemies selection menu.")
+        player.sendMessage("§7You can now select it when creating waves.")
     }
 }

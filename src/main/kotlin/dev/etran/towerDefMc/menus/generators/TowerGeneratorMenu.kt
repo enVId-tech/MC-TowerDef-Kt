@@ -2,6 +2,7 @@ package dev.etran.towerDefMc.menus.generators
 
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.TowerGeneratorData
+import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.utils.CustomMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -246,49 +247,33 @@ class TowerGeneratorMenu(player: Player, private val spawnEggType: EntityType) :
             itemMaterial = itemMaterial
         )
 
-        // Create the tower item using the selected material
-        val towerItem = ItemStack(itemMaterial, 1)
-        val meta = towerItem.itemMeta
+        // Generate a unique ID for the tower
+        val towerId = "Generated_${displayName.replace(" ", "_")}_${System.currentTimeMillis()}"
 
-        meta.displayName(Component.text("§6$displayName"))
-        meta.lore(
-            listOf(
-                Component.text("§7Entity: §e${spawnEggType.name}"),
-                Component.text("§7Cost: §e$cost"),
-                Component.text("§7Damage: §c$damage"),
-                Component.text("§7Attack Interval: §b${damageInterval}s"),
-                Component.text("§7Range: §a$range"),
-                Component.text("§7Upgrade Path: §d$upgradePath"),
-                Component.text(""),
-                Component.text("§7Baby: ${if (isBaby) "§aYes" else "§cNo"}"),
-                Component.text("§7Size: §e$entitySize")
-            )
+        // Create tower type for registry
+        val towerType = TowerRegistry.TowerType(
+            id = towerId,
+            displayName = displayName,
+            icon = itemMaterial,
+            description = listOf(
+                "Entity: ${spawnEggType.name}",
+                "Cost: $cost coins",
+                "Damage: $damage",
+                "Attack Interval: ${damageInterval}s",
+                "Range: $range blocks"
+            ),
+            range = range,
+            damage = damage,
+            attackSpeed = 1.0 / damageInterval // Convert interval to attacks per second
         )
 
-        // Add enchantment glint
-        meta.addEnchant(Enchantment.UNBREAKING, 1, true)
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-
-        // Store tower data in PDC
-        meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Generated_Tower")
-        meta.persistentDataContainer.set(
-            TowerDefMC.createKey("tower_generator_data"), PersistentDataType.STRING, data.toItemMetaString()
-        )
-        meta.persistentDataContainer.set(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, range)
-        meta.persistentDataContainer.set(TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, damage)
-        meta.persistentDataContainer.set(TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, damageInterval)
-
-        towerItem.itemMeta = meta
-
-        // Give to player
-        val leftover = player.inventory.addItem(towerItem)
-        if (leftover.isNotEmpty()) {
-            player.world.dropItemNaturally(player.location, towerItem)
-        }
+        // Add to registry
+       TowerRegistry.addGeneratedTower(towerId, towerType)
 
         player.closeInventory()
-        player.sendMessage("§a§lTower generated successfully!")
-        player.sendMessage("§7${displayName} §ahas been added to your inventory.")
+        player.sendMessage("§a§lTower added to registry!")
+        player.sendMessage("§7$displayName §ahas been added to the towers selection menu.")
+        player.sendMessage("§7Players can now use it in games.")
     }
 
     private fun awaitNumberInput(

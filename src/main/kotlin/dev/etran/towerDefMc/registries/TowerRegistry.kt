@@ -128,5 +128,24 @@ object TowerRegistry {
     fun getTower(id: String): TowerType? {
         return towers[id]
     }
-}
 
+    fun addGeneratedTower(id: String, towerType: TowerType) {
+        towers[id] = towerType
+        saveTowerToFile(id, towerType)
+        plugin.logger.info("Added generated tower: ${towerType.displayName}")
+    }
+
+    private fun saveTowerToFile(id: String, towerType: TowerType) {
+        val towersFile = File(plugin.dataFolder, "towers.yml")
+        val config = YamlConfiguration.loadConfiguration(towersFile)
+
+        config.set("towers.$id.displayName", towerType.displayName)
+        config.set("towers.$id.icon", towerType.icon.name)
+        config.set("towers.$id.description", towerType.description)
+        config.set("towers.$id.range", towerType.range)
+        config.set("towers.$id.damage", towerType.damage)
+        config.set("towers.$id.attackSpeed", towerType.attackSpeed)
+
+        config.save(towersFile)
+    }
+}
