@@ -80,7 +80,21 @@ object GameInstanceTracker {
      * Clear all entities for a specific game (when game ends)
      */
     fun clearGame(gameId: Int) {
-        gameToEntities[gameId]?.forEach { entityUUID ->
+        val entityUUIDs = gameToEntities[gameId] ?: emptySet()
+
+        // Actually remove the entities from the world
+        entityUUIDs.forEach { entityUUID ->
+            plugin.server.worlds.asSequence()
+                .flatMap { it.entities }
+                .firstOrNull { it.uniqueId == entityUUID }
+                ?.let { entity ->
+                    // Clean up health bar if it's an enemy
+                    if (entity is org.bukkit.entity.LivingEntity) {
+                        dev.etran.towerDefMc.utils.cleanUpEnemyHealthBar(entity)
+                    }
+                    // Remove the entity
+                    entity.remove()
+                }
             entityToGame.remove(entityUUID)
         }
         gameToEntities.remove(gameId)

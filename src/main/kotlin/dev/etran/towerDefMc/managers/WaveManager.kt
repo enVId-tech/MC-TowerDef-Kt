@@ -16,8 +16,10 @@ class WaveManager(
     private var currentWaveData: WaveData? = null
     private var commandIndex = -1
     var currentWave = 0
-    private var enemiesRemaining = 0
+    private var spawnedEnemies = 0 // Track how many we spawned
     private var timeRemaining = 0.0
+    private var waveCheckTaskId: Int? = null
+    private var isSpawningComplete = false
 
 
     companion object {
@@ -35,13 +37,25 @@ class WaveManager(
         currentWave = 0
         commandIndex = -1
         currentWaveData = null
-        enemiesRemaining = 0
+        spawnedEnemies = 0
         timeRemaining = 0.0
+        isSpawningComplete = false
+        cancelWaveCheckTask()
     }
 
-    @Suppress("unused")
+    private fun cancelWaveCheckTask() {
+        waveCheckTaskId?.let {
+            plugin.server.scheduler.cancelTask(it)
+            waveCheckTaskId = null
+        }
+    }
+
     fun checkWaveCompletion(): Boolean {
-        return enemiesRemaining <= 0 || timeRemaining <= 0
+        // Wave is complete when spawning is done AND no enemies remain alive
+        if (!isSpawningComplete) return false
+
+        val aliveEnemies = GameInstanceTracker.getLivingEntitiesInGame(gameId).size
+        return aliveEnemies <= 0
     }
 
     fun startNextWave() {
@@ -54,31 +68,55 @@ class WaveManager(
             currentWaveData = waveDetails
 
             timeRemaining = 0.0
-            enemiesRemaining = waveDetails.sequence.sumOf {
-                if (it is EnemySpawnCommand) it.enemies.values.sum() else 0
-            }
+            spawnedEnemies = 0
+            isSpawningComplete = false
 
             println("--- Starting Wave $currentWave: ${waveDetails.name} ---")
-            println("Total Enemies to spawn: $enemiesRemaining")
 
             commandIndex = 0
             processNextCommand()
+
+            // Start checking for wave completion
+            startWaveCompletionCheck()
         } else {
             println("Game Over! All waves completed.")
         }
     }
 
+    private fun startWaveCompletionCheck() {
+        cancelWaveCheckTask()
+
+        // Check every second (20 ticks) if the wave is complete
+        waveCheckTaskId = plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, {
+            if (checkWaveCompletion()) {
+                println("Wave $currentWave completed!")
+                cancelWaveCheckTask()
+
+                // Check if this was the last wave
+                if (currentWave >= gameConfig.waves.size) {
+                    println("All waves completed! Game won!")
+                    val game = GameRegistry.activeGames[gameId]
+                    game?.endGame(true)
+                } else {
+                    // Move to next wave after a short delay
+                    plugin.server.scheduler.runTaskLater(plugin, Runnable {
+                        startNextWave()
+                    }, 60L) // 3 second delay between waves
+                }
+            }
+        }, 20L, 20L) // Check every second
+    }
+
     private fun processNextCommand() {
         if (commandIndex >= currentWaveData!!.sequence.size) {
-            println("Wave completed!")
+            println("All spawning complete for wave $currentWave!")
+            isSpawningComplete = true
             // Check if this was the last wave
             if (currentWave >= gameConfig.waves.size) {
-                println("All waves completed! Game won!")
-                // Trigger game win
-                val game = GameRegistry.activeGames[gameId]
-                game?.endGame(true)
+                // Don't end yet - wait for enemies to be killed
+                println("Final wave spawning complete, waiting for enemies to be eliminated...")
             }
-            return // Wave is finished
+            return // Spawning is finished, but wave continues until enemies are dead
         }
 
         val command = currentWaveData!!.sequence[commandIndex]
@@ -107,8 +145,11 @@ class WaveManager(
         // Get a random path once for this spawn command and set up waypoint manager
         val randomPath = pathManager.getRandomPath()
         if (randomPath != null) {
-            // Setup waypoint manager with this path's checkpoints
-            pathManager.setupWaypointManagerForPath(randomPath, waypointManager)
+            // Setup waypoint manager with this path's checkpoints ONLY ONCE per game
+            // Check if waypoints are already set up (don't duplicate)
+            if (waypointManager.checkpoints.isEmpty()) {
+                pathManager.setupWaypointManagerForPath(randomPath, waypointManager)
+            }
         }
 
         object : BukkitRunnable() {
@@ -131,8 +172,10 @@ class WaveManager(
                     return
                 }
 
-                // Get a random path and use its start point
-                if (randomPath == null) {
+                // Get a random path and use its start point (or pick new one each time)
+                val spawnPath = randomPath ?: pathManager.getRandomPath()
+
+                if (spawnPath == null) {
                     // Fallback to old waypoint system if no paths exist
                     if (waypointManager.startpoints.values.isEmpty()) {
                         plugin.logger.warning("Game $gameId: No paths or start points configured! Cannot spawn enemies.")
@@ -148,8 +191,8 @@ class WaveManager(
                     }
                 } else {
                     // Use the path's start point
-                    val startpointLoc: Location = randomPath.startPoint
-                    
+                    val startpointLoc: Location = spawnPath.startPoint
+
                     // Spawn the enemy and register it to this game
                     val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
                     if (entity != null) {
@@ -157,10 +200,10 @@ class WaveManager(
                     }
                 }
 
-                enemiesRemaining--
+                spawnedEnemies++
                 currentQuantity--
 
-                println("Spawned: $currentEnemyType for Game $gameId. Global remaining: $enemiesRemaining")
+                println("Spawned: $currentEnemyType for Game $gameId. Total spawned: $spawnedEnemies")
             }
         }.runTaskTimer(plugin, 0L, intervalTicks)
     }

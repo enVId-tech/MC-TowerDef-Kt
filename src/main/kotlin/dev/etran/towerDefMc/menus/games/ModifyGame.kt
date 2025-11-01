@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.menus.games
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.factories.GameStatsDisplayFactory
 import dev.etran.towerDefMc.menus.waves.Waves
 import dev.etran.towerDefMc.menus.towers.TowerSelection
 import dev.etran.towerDefMc.menus.enemies.PathsSelector
@@ -257,7 +258,7 @@ class ModifyGame(
     private fun handleGameStatsDisplayClick() {
         player.closeInventory()
 
-        val item = dev.etran.towerDefMc.factories.GameStatsDisplayFactory.createGameStatsItem(1)
+        val item = GameStatsDisplayFactory.createGameStatsItem(1)
 
         // Add to inventory or drop if full
         val leftover = player.inventory.addItem(item)

@@ -65,7 +65,7 @@ object GameStatsDisplayFactory {
                                 val x = coords[0].toInt()
                                 val y = coords[1].toInt()
                                 val z = coords[2].toInt()
-                                val location = org.bukkit.Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+                                val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
 
                                 // Check if the lectern still exists at this location
                                 if (location.block.type == Material.LECTERN) {

@@ -4,12 +4,17 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.WaypointManager
 import dev.etran.towerDefMc.registries.GameRegistry
-import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Mob
 import org.bukkit.persistence.PersistentDataType
 
 fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, gameId: Int) {
+    // Ensure mob never targets players (reset any targeting that might have occurred)
+    if (entity is Mob) {
+        entity.setTarget(null)
+        entity.setAware(false)
+    }
+
     val container = entity.persistentDataContainer
     val currentTargetId = container.get(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER) ?: 1
     var targetCheckpoint = waypointManager.checkpoints[currentTargetId]
@@ -26,25 +31,35 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
             // Check if current checkpoint is the EndPoint
             val isEndPoint = targetCheckpoint.persistentDataContainer.get(
                 TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
-            ) == "EndPoint"
+            ) == "EndPoint" || targetCheckpoint.persistentDataContainer.get(
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
+            ) == "PathEnd"
 
             // Check if next checkpoint exists
             val hasNextCheckpoint = waypointManager.checkpoints.containsKey(nextId)
 
-            // Only delete the enemy if current checkpoint is marked as EndPoint AND there's no next checkpoint
+            // Delete the enemy if current checkpoint is marked as EndPoint/PathEnd AND there's no next checkpoint
             if (isEndPoint && !hasNextCheckpoint) {
                 // Clean up health bar first
                 cleanUpEnemyHealthBar(entity)
-                entity.remove()
 
-                // Trigger game loss - enemy reached the end
+                // Trigger game damage - enemy reached the end
                 val enemyGameId = GameInstanceTracker.getGameId(entity)
                 if (enemyGameId != null) {
-                    GameRegistry.activeGames[enemyGameId]?.onHealthLost(1)
+                    // Deal damage based on current health of the enemy
+                    val damage = if (entity is org.bukkit.entity.LivingEntity) {
+                        Math.ceil(entity.health).toInt()
+                    } else {
+                        1
+                    }
+                    GameRegistry.activeGames[enemyGameId]?.onHealthLost(damage)
                 }
 
-                // Unregister the entity
+                // Unregister the entity BEFORE removing it
                 GameInstanceTracker.unregisterEntity(entity)
+
+                // Remove the entity
+                entity.remove()
                 return
             }
 
@@ -65,8 +80,8 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
         if (!waypointManager.checkpoints.containsKey(nextPotentialId)) {
             // No more valid checkpoints available after the current missing one, assume end of path.
             cleanUpEnemyHealthBar(entity)
-            entity.remove()
             GameInstanceTracker.unregisterEntity(entity)
+            entity.remove()
         } else {
             container.set(
                 TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, currentTargetId + 1
