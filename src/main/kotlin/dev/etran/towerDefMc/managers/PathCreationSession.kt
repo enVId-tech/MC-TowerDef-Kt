@@ -217,6 +217,11 @@ object PathCreationSession {
         val item = createPlacementItem(Material.LIME_WOOL, "§a§lPlace Start Point",
             listOf("§7Right-click to place the start point", "§7where enemies will spawn"))
         player.inventory.setItem(4, item)
+
+        // Add cancel button
+        val cancelItem = createPlacementItem(Material.BARRIER, "§c§lCancel Path Creation",
+            listOf("§7Right-click to cancel", "§7and restore your inventory"))
+        player.inventory.setItem(8, cancelItem)
     }
 
     private fun giveCheckpointItem(player: Player) {
@@ -228,6 +233,11 @@ object PathCreationSession {
         val endItem = createPlacementItem(Material.RED_WOOL, "§c§lPlace End Point",
             listOf("§7Right-click to place the end point", "§7This will complete the path"))
         player.inventory.setItem(8, endItem)
+
+        // Add cancel button
+        val cancelItem = createPlacementItem(Material.BARRIER, "§c§lCancel Path Creation",
+            listOf("§7Right-click to cancel", "§7and restore your inventory"))
+        player.inventory.setItem(0, cancelItem)
     }
 
     private fun updateCheckpointPhaseItems(player: Player) {
@@ -239,6 +249,11 @@ object PathCreationSession {
         val item = createPlacementItem(Material.RED_WOOL, "§c§lPlace End Point",
             listOf("§7Right-click to place the end point", "§7where enemies reach their goal"))
         player.inventory.setItem(4, item)
+
+        // Add cancel button
+        val cancelItem = createPlacementItem(Material.BARRIER, "§c§lCancel Path Creation",
+            listOf("§7Right-click to cancel", "§7and restore your inventory"))
+        player.inventory.setItem(8, cancelItem)
     }
 
     private fun createPlacementItem(material: Material, name: String, lore: List<String>): ItemStack {

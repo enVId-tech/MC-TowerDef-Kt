@@ -198,7 +198,7 @@ class PathManager {
             stand.setGravity(false)
             stand.isInvulnerable = true
             stand.customName(Component.text("§a§lSTART - ${path.name}"))
-            stand.isCustomNameVisible = true
+            stand.isCustomNameVisible = standsAreVisible && path.isVisible
             stand.persistentDataContainer.set(
                 TowerDefMC.ELEMENT_TYPES,
                 PersistentDataType.STRING,
@@ -214,7 +214,7 @@ class PathManager {
                 stand.setGravity(false)
                 stand.isInvulnerable = true
                 stand.customName(Component.text("§e§lCHECKPOINT ${index + 1} - ${path.name}"))
-                stand.isCustomNameVisible = true
+                stand.isCustomNameVisible = standsAreVisible && path.isVisible
                 stand.persistentDataContainer.set(
                     TowerDefMC.ELEMENT_TYPES,
                     PersistentDataType.STRING,
@@ -230,7 +230,7 @@ class PathManager {
             stand.setGravity(false)
             stand.isInvulnerable = true
             stand.customName(Component.text("§c§lEND - ${path.name}"))
-            stand.isCustomNameVisible = true
+            stand.isCustomNameVisible = standsAreVisible && path.isVisible
             stand.persistentDataContainer.set(
                 TowerDefMC.ELEMENT_TYPES,
                 PersistentDataType.STRING,

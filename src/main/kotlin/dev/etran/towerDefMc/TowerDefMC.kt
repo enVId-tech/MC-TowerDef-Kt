@@ -160,6 +160,12 @@ class TowerDefMC : JavaPlugin() {
         getCommand("tdmenu")?.setExecutor(MenuCommands)
         getCommand("giveStatsTracker")?.setExecutor(GiveStatsTracker)
 
+        // New admin game control commands
+        getCommand("stopgame")?.setExecutor(dev.etran.towerDefMc.commands.StopGame)
+        getCommand("givecash")?.setExecutor(dev.etran.towerDefMc.commands.GiveCash)
+        getCommand("spawnenemy")?.setExecutor(dev.etran.towerDefMc.commands.SpawnEnemy)
+        getCommand("nextwave")?.setExecutor(dev.etran.towerDefMc.commands.NextWave)
+
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"
         }

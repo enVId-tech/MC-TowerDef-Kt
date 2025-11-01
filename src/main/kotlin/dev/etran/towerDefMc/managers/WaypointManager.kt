@@ -52,7 +52,7 @@ class WaypointManager {
             stand.setGravity(false)
             stand.isInvulnerable = true
             stand.customName(Component.text("§a§lSTART POINT"))
-            stand.isCustomNameVisible = true
+            stand.isCustomNameVisible = standsAreVisible
 
             // Set the element type so it works with existing system
             stand.persistentDataContainer.set(

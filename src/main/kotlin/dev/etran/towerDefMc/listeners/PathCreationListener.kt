@@ -63,6 +63,11 @@ class PathCreationListener : Listener {
                         PathCreationSession.handlePlacement(player, location)
                     }
                 }
+                Material.BARRIER -> {
+                    // Cancel path creation
+                    PathCreationSession.cancelSession(player)
+                    player.sendMessage("§cPath creation cancelled!")
+                }
                 else -> {}
             }
         }
@@ -76,4 +81,3 @@ class PathCreationListener : Listener {
         }
     }
 }
-
