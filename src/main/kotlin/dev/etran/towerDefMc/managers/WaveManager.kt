@@ -10,7 +10,7 @@ import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
 
 class WaveManager(
-    private val gameConfig: GameSaveConfig, private val waypointManager: WaypointManager, private val gameId: Int
+    private val gameConfig: GameSaveConfig, private val waypointManager: WaypointManager, private val pathManager: PathManager, private val gameId: Int
 ) {
     private var currentWaveData: WaveData? = null
     private var commandIndex = -1
@@ -104,12 +104,31 @@ class WaveManager(
                     return
                 }
 
-                val startpointLoc: Location = waypointManager.startpoints.values.random().location
-
-                // Spawn the enemy and register it to this game
-                val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
-                if (entity != null) {
-                    GameInstanceTracker.registerEntity(entity, gameId)
+                // Get a random path and use its start point
+                val randomPath = pathManager.getRandomPath()
+                if (randomPath == null) {
+                    // Fallback to old waypoint system if no paths exist
+                    if (waypointManager.startpoints.values.isEmpty()) {
+                        plugin.logger.warning("Game $gameId: No paths or start points configured! Cannot spawn enemies.")
+                        this.cancel()
+                        return
+                    }
+                    val startpointLoc: Location = waypointManager.startpoints.values.random().location
+                    
+                    // Spawn the enemy and register it to this game
+                    val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
+                    if (entity != null) {
+                        GameInstanceTracker.registerEntity(entity, gameId)
+                    }
+                } else {
+                    // Use the path's start point
+                    val startpointLoc: Location = randomPath.startPoint
+                    
+                    // Spawn the enemy and register it to this game
+                    val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
+                    if (entity != null) {
+                        GameInstanceTracker.registerEntity(entity, gameId)
+                    }
                 }
 
                 enemiesRemaining--

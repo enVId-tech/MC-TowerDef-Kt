@@ -321,7 +321,9 @@ class PathManager {
         pathArmorStands.values.flatten().forEach { stand ->
             val pathId = pathArmorStands.entries.find { it.value.contains(stand) }?.key
             val path = pathId?.let { paths[it] }
-            stand.isInvisible = !standsAreVisible || (path != null && !path.isVisible)
+            val shouldBeVisible = standsAreVisible && (path == null || path.isVisible)
+            stand.isInvisible = !shouldBeVisible
+            stand.isCustomNameVisible = shouldBeVisible
         }
 
         return standsAreVisible
@@ -337,6 +339,7 @@ class PathManager {
         // Update armor stand visibility
         pathArmorStands[pathId]?.forEach { stand ->
             stand.isInvisible = false
+            stand.isCustomNameVisible = true
         }
     }
 
@@ -350,6 +353,7 @@ class PathManager {
         // Update armor stand visibility
         pathArmorStands[pathId]?.forEach { stand ->
             stand.isInvisible = true
+            stand.isCustomNameVisible = false
         }
     }
 }

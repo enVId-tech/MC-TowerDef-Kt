@@ -101,6 +101,20 @@ class ModifyGame(
             )
         )
 
+        // Start Game Button
+        inventory.setItem(
+            33, createMenuItem(
+                Material.EMERALD_BLOCK,
+                "§a§lSTART GAME",
+                listOf(
+                    "§7Start this tower defense game",
+                    "§7You will be added as a player",
+                    "",
+                    "§eClick to start the game!"
+                )
+            )
+        )
+
         // Bottom row - Actions
         inventory.setItem(
             49, createMenuItem(
@@ -118,6 +132,7 @@ class ModifyGame(
             19 -> handleWavesClick()
             22 -> handleTowersClick()
             30 -> handlePathsClick()
+            33 -> handleStartGameClick()
             49 -> handleBack()
             10, 13, 16 -> handleValueUpdate(event)
         }
@@ -139,6 +154,44 @@ class ModifyGame(
         player.closeInventory()
         val pathsMenu = PathsSelector(player, gameId)
         pathsMenu.open()
+    }
+
+    private fun handleStartGameClick() {
+        if (gameManager == null) {
+            player.sendMessage("§cError: Game not found!")
+            return
+        }
+
+        // Validate game setup
+        val paths = gameManager.pathManager.getAllPaths()
+        if (paths.isEmpty()) {
+            player.sendMessage("§c§lCannot start game!")
+            player.sendMessage("§cYou must create at least one enemy path first.")
+            player.sendMessage("§7Go to 'Enemy Paths' to create a path.")
+            return
+        }
+
+        if (gameManager.config.waves.isEmpty()) {
+            player.sendMessage("§c§lCannot start game!")
+            player.sendMessage("§cYou must configure at least one wave first.")
+            player.sendMessage("§7Go to 'Waves' to create waves.")
+            return
+        }
+
+        // Start the game
+        player.closeInventory()
+        gameManager.startGame(listOf(player.uniqueId))
+
+        player.sendMessage("§a§l========================================")
+        player.sendMessage("§6§l        GAME STARTED!")
+        player.sendMessage("§a§l========================================")
+        player.sendMessage("§e${gameManager.config.name}")
+        player.sendMessage("§7Health: §c${gameManager.config.maxHealth}")
+        player.sendMessage("§7Starting Cash: §a${gameManager.config.defaultCash}")
+        player.sendMessage("§7Waves: §e${gameManager.config.waves.size}")
+        player.sendMessage("§7Paths: §b${paths.size}")
+        player.sendMessage("§a§l========================================")
+        player.sendMessage("§aThe first wave will begin shortly!")
     }
 
     private fun handleBack() {

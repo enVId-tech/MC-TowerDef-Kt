@@ -297,9 +297,11 @@ class WaypointManager {
                 }.forEach { entity ->
                     if (standsAreVisible) {
                         entity.isInvisible = false
+                        entity.isCustomNameVisible = true
                         entity.addPotionEffect(PotionEffect(effectType, DURATION, AMPLIFIER))
                     } else {
                         entity.isInvisible = true
+                        entity.isCustomNameVisible = false
                         entity.removePotionEffect(effectType)
                     }
                 }
