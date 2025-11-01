@@ -118,6 +118,14 @@ object SpawnModeManager {
     fun placeSpawn(player: Player, location: Location): Boolean {
         val session = activeSessions[player.uniqueId] ?: return false
 
+        // Validate that the location is on solid ground
+        val blockBelow = location.clone().subtract(0.0, 1.0, 0.0).block
+        if (!blockBelow.type.isSolid) {
+            player.sendMessage("§cYou can only place waypoints on solid ground!")
+            player.world.playSound(location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
+            return false
+        }
+
         // Save spawn location to game config
         val gameManager = GameRegistry.allGames[session.gameId]
         if (gameManager == null) {

@@ -71,6 +71,14 @@ object PathCreationSession {
     fun handlePlacement(player: Player, location: Location): Boolean {
         val session = activeSessions[player.uniqueId] ?: return false
 
+        // Validate that the location is on solid ground
+        val blockBelow = location.clone().subtract(0.0, 1.0, 0.0).block
+        if (!blockBelow.type.isSolid) {
+            player.sendMessage("§cYou can only place waypoints on solid ground!")
+            player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
+            return false
+        }
+
         when (session.phase) {
             PlacementPhase.START_POINT -> {
                 session.startPoint = location

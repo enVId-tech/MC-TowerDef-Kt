@@ -166,6 +166,14 @@ object PathModificationSession {
     fun handleReplacement(player: Player, location: Location, material: Material): Boolean {
         val session = activeSessions[player.uniqueId] ?: return false
 
+        // Validate that the location is on solid ground
+        val blockBelow = location.clone().subtract(0.0, 1.0, 0.0).block
+        if (!blockBelow.type.isSolid) {
+            player.sendMessage("§cYou can only place waypoints on solid ground!")
+            player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
+            return false
+        }
+
         when (material) {
             Material.LIME_WOOL -> {
                 if (!session.removedStartPoint) {
