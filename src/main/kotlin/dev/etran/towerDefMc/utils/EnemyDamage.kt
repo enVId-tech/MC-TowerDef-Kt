@@ -10,14 +10,19 @@ import kotlin.math.max
 import kotlin.math.min
 
 fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
+    TowerDefMC.instance.logger.info("[DAMAGE] damageEnemy called - tower: ${tower.uniqueId}, enemy: ${enemy.uniqueId}")
+
     val currentTime = System.currentTimeMillis()
 
     // READY_TIME is still a LONG (timestamp in milliseconds)
     val readyTime = tower.persistentDataContainer.get(TowerDefMC.READY_TIME, PersistentDataType.LONG) ?: 0L
 
     if (currentTime < readyTime) {
+        TowerDefMC.instance.logger.info("[DAMAGE] Tower on cooldown, skipping (ready at: $readyTime, now: $currentTime)")
         return
     }
+
+    TowerDefMC.instance.logger.info("[DAMAGE] Tower ready to attack, proceeding with damage")
 
     // Cooldown passed
 
@@ -78,16 +83,17 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
                     PlayerStatsManager.awardCash(gameId, ownerUUID, cashReward)
                     // Record damage in stats
                     PlayerStatsManager.recordDamage(gameId, ownerUUID, actualDamage)
+                    TowerDefMC.instance.logger.info("[CASH REWARD] Awarded $cashReward cash to player $ownerUUID for $actualDamage damage (game $gameId)")
                 } else {
-                    DebugLogger.logTower("Warning: Tower owner $ownerUUID not found in game $gameId when awarding cash")
+                    TowerDefMC.instance.logger.warning("[CASH REWARD] Tower owner $ownerUUID not found in game $gameId (gameManager exists: ${gameManager != null}, hasPlayer: ${gameManager?.hasPlayer(ownerUUID)})")
                 }
             } catch (e: IllegalArgumentException) {
                 // Invalid UUID format, skip cash reward
-                DebugLogger.logTower("Warning: Invalid tower owner UUID format: $towerOwnerUUID")
+                TowerDefMC.instance.logger.warning("[CASH REWARD] Invalid tower owner UUID format: $towerOwnerUUID")
             }
         } else {
             if (gameId == null) {
-                DebugLogger.logTower("Warning: Tower ${tower.uniqueId} has no game ID when dealing damage")
+                TowerDefMC.instance.logger.warning("[CASH REWARD] Tower ${tower.uniqueId} has no game ID when dealing damage")
             }
             if (towerOwnerUUID == null) {
                 DebugLogger.logTower("Warning: Tower ${tower.uniqueId} has no owner when dealing damage")

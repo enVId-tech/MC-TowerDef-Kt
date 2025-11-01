@@ -1,40 +1,35 @@
 package dev.etran.towerDefMc.utils
 
-import org.bukkit.attribute.Attribute
 import org.bukkit.entity.*
-import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
 /**
- * Utility object for completely disabling all AI and abilities for any mob type.
+ * Utility object for disabling specific AI behaviors while keeping entities functional.
  * This ensures mobs used as towers or enemies cannot attack players, shoot projectiles,
- * teleport, explode, or perform any other vanilla behaviors.
+ * teleport, explode, or perform vanilla behaviors, but can still be controlled by custom logic.
  */
 object EntityAIDisabler {
 
     /**
-     * Completely disables all AI, attacks, and special abilities for any living entity.
-     * Safe to call on any EntityType - only applies changes where applicable.
+     * Disables vanilla AI behaviors but keeps the entity responsive to custom systems.
+     * AI is NOT fully disabled - only specific vanilla behaviors are removed.
      */
     fun disableAllAI(entity: LivingEntity) {
-        // Basic AI disabling
-        entity.setAI(false)
-        entity.isCollidable = false
-        entity.isSilent = true
-
-        // Clear target for mobs that can target (safe for all types)
+        // Clear target for mobs - prevents them from attacking players
         if (entity is Mob) {
             entity.target = null
+            entity.isAware = false // This prevents pathfinding to players but allows custom movement
         }
+
+        // Basic configuration
+        entity.isCollidable = false
+        entity.isSilent = true
+        entity.removeWhenFarAway = false
 
         // Prevent all potion effects that could cause issues
         entity.removePotionEffect(PotionEffectType.REGENERATION)
         entity.removePotionEffect(PotionEffectType.POISON)
         entity.removePotionEffect(PotionEffectType.WITHER)
-
-        // Apply slowness to ensure mob doesn't move on its own
-        // (movement will be controlled by our pathfinding system for enemies)
-        entity.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, Int.MAX_VALUE, 255, false, false, false))
 
         // Handle specific mob types with special abilities
         when (entity) {
@@ -70,9 +65,9 @@ object EntityAIDisabler {
     }
 
     private fun disableWitherAbilities(wither: Wither) {
-        wither.isInvulnerable = false // We need to be able to damage it
+        wither.isInvulnerable = false
         wither.target = null
-        wither.setAI(false)
+        wither.isAware = false
     }
 
     private fun disableEnderDragonAbilities(dragon: EnderDragon) {
@@ -81,7 +76,6 @@ object EntityAIDisabler {
         } catch (_: Exception) {
             // Phase may not be settable in some versions
         }
-        dragon.setAI(false)
     }
 
     private fun disableCreeperAbilities(creeper: Creeper) {
@@ -93,96 +87,95 @@ object EntityAIDisabler {
 
     private fun disableGhastAbilities(ghast: Ghast) {
         ghast.target = null
-        ghast.setAI(false)
+        ghast.isAware = false
     }
 
     private fun disableBlazeAbilities(blaze: Blaze) {
         blaze.target = null
-        blaze.setAI(false)
+        blaze.isAware = false
     }
 
     private fun disableShulkerAbilities(shulker: Shulker) {
         shulker.target = null
-        shulker.setAI(false)
+        shulker.isAware = false
     }
 
     private fun disableEndermanAbilities(enderman: Enderman) {
         enderman.target = null
-        enderman.setAI(false)
+        enderman.isAware = false
     }
 
     private fun disablePhantomAbilities(phantom: Phantom) {
         phantom.target = null
-        phantom.setAI(false)
+        phantom.isAware = false
     }
 
     private fun disableVexAbilities(vex: Vex) {
         vex.target = null
-        vex.setAI(false)
+        vex.isAware = false
         vex.isCharging = false
     }
 
     private fun disableEvokerAbilities(evoker: Evoker) {
         evoker.target = null
-        evoker.setAI(false)
-        // Spell casting is disabled by AI being disabled
+        evoker.isAware = false
     }
 
     private fun disableWitchAbilities(witch: Witch) {
         witch.target = null
-        witch.setAI(false)
+        witch.isAware = false
     }
 
     private fun disableGuardianAbilities(guardian: Guardian) {
         guardian.target = null
-        guardian.setAI(false)
+        guardian.isAware = false
         guardian.setLaser(false)
     }
 
     private fun disableVindicatorAbilities(vindicator: Vindicator) {
         vindicator.target = null
-        vindicator.setAI(false)
+        vindicator.isAware = false
         vindicator.isJohnny = false
     }
 
     private fun disablePillagerAbilities(pillager: Pillager) {
         pillager.target = null
-        pillager.setAI(false)
+        pillager.isAware = false
         pillager.equipment.setItemInMainHand(null)
         pillager.equipment.setItemInOffHand(null)
     }
 
     private fun disableSkeletonAbilities(skeleton: Skeleton) {
         skeleton.target = null
-        skeleton.setAI(false)
+        skeleton.isAware = false
         skeleton.equipment.setItemInMainHand(null)
         skeleton.equipment.setItemInOffHand(null)
     }
 
     private fun disableStrayAbilities(stray: Stray) {
         stray.target = null
-        stray.setAI(false)
+        stray.isAware = false
         stray.equipment.setItemInMainHand(null)
         stray.equipment.setItemInOffHand(null)
     }
 
     private fun disableWitherSkeletonAbilities(witherSkeleton: WitherSkeleton) {
         witherSkeleton.target = null
-        witherSkeleton.setAI(false)
+        witherSkeleton.isAware = false
         witherSkeleton.equipment.setItemInMainHand(null)
         witherSkeleton.equipment.setItemInOffHand(null)
     }
 
     private fun disableDrownedAbilities(drowned: Drowned) {
         drowned.target = null
-        drowned.setAI(false)
+        drowned.isAware = false
         drowned.equipment.setItemInMainHand(null)
         drowned.equipment.setItemInOffHand(null)
     }
 
     private fun disablePiglinBruteAbilities(piglinBrute: PiglinBrute) {
         piglinBrute.target = null
-        piglinBrute.setAI(false)
+        piglinBrute.isAware = false
         piglinBrute.equipment.setItemInMainHand(null)
         piglinBrute.equipment.setItemInOffHand(null)
         piglinBrute.isImmuneToZombification = true
@@ -190,7 +183,7 @@ object EntityAIDisabler {
 
     private fun disablePiglinAbilities(piglin: Piglin) {
         piglin.target = null
-        piglin.setAI(false)
+        piglin.isAware = false
         piglin.equipment.setItemInMainHand(null)
         piglin.equipment.setItemInOffHand(null)
         piglin.isImmuneToZombification = true
@@ -198,35 +191,35 @@ object EntityAIDisabler {
 
     private fun disableHoglinAbilities(hoglin: Hoglin) {
         hoglin.target = null
-        hoglin.setAI(false)
+        hoglin.isAware = false
         hoglin.isImmuneToZombification = true
     }
 
     private fun disableZoglinAbilities(zoglin: Zoglin) {
         zoglin.target = null
-        zoglin.setAI(false)
+        zoglin.isAware = false
     }
 
     private fun disableBeeAbilities(bee: Bee) {
         bee.target = null
-        bee.setAI(false)
+        bee.isAware = false
         bee.anger = 0
         bee.cannotEnterHiveTicks = Int.MAX_VALUE
     }
 
     private fun disableSpiderAbilities(spider: Spider) {
         spider.target = null
-        spider.setAI(false)
+        spider.isAware = false
     }
 
     private fun disableSlimeAbilities(slime: Slime) {
         slime.target = null
-        slime.setAI(false)
+        slime.isAware = false
         slime.size = 1 // Prevent splitting
     }
 
     private fun disableGolemAbilities(golem: Golem) {
-        golem.setAI(false)
+        golem.isAware = false
         if (golem is IronGolem) {
             golem.target = null
         } else if (golem is Snowman) {
@@ -236,12 +229,12 @@ object EntityAIDisabler {
 
     private fun disableRavagerAbilities(ravager: Ravager) {
         ravager.target = null
-        ravager.setAI(false)
+        ravager.isAware = false
         ravager.attackTicks = 0
     }
 
     private fun disableLlamaAbilities(llama: Llama) {
         llama.target = null
-        llama.setAI(false)
+        llama.isAware = false
     }
 }

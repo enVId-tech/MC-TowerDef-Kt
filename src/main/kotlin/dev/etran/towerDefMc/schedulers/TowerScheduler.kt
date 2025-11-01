@@ -17,6 +17,7 @@ object TowerScheduler {
     fun checkAndHandleTowers(world: World) {
         val currentTime = System.currentTimeMillis()
         var towerCount = 0
+        var attackingTowers = 0
 
         // Only get the entities in the world
         world.getEntitiesByClass(LivingEntity::class.java).forEach { entity ->
@@ -36,7 +37,9 @@ object TowerScheduler {
                     )
                     val targetEntity = getClosestMobToTower(world, entity as Entity, range)
                     if (targetEntity != null) {
-                        entity.setAI(false)
+                        attackingTowers++
+                        // Tower AI is already disabled by EntityAIDisabler when placed
+                        // No need to call setAI(false) every tick
                         entity.isInvulnerable = true
                         towerTurnToTarget(entity, targetEntity)
                         if (!targetEntity.isDead) {
@@ -49,7 +52,7 @@ object TowerScheduler {
 
         // Periodic debug logging
         if (currentTime - lastDebugTime > DEBUG_INTERVAL && towerCount > 0) {
-            DebugLogger.logTower("Active towers in world: $towerCount")
+            TowerDefMC.instance.logger.info("[TOWER SCHEDULER] Active towers: $towerCount, Currently attacking: $attackingTowers")
             lastDebugTime = currentTime
         }
     }

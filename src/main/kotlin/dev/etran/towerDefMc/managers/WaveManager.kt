@@ -302,6 +302,12 @@ class WaveManager(
                     // Spawn the enemy and register it to this game
                     val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
                     if (entity != null) {
+                        // Store game ID in persistent data for recovery after reload
+                        entity.persistentDataContainer.set(
+                            TowerDefMC.createKey("enemy_game_id"),
+                            PersistentDataType.INTEGER,
+                            gameId
+                        )
                         GameInstanceTracker.registerEntity(entity, gameId)
                     }
                 } else {
@@ -311,6 +317,12 @@ class WaveManager(
                     // Spawn the enemy and register it to this game
                     val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
                     if (entity != null) {
+                        // Store game ID in persistent data for recovery after reload
+                        entity.persistentDataContainer.set(
+                            TowerDefMC.createKey("enemy_game_id"),
+                            PersistentDataType.INTEGER,
+                            gameId
+                        )
                         GameInstanceTracker.registerEntity(entity, gameId)
                     }
                 }

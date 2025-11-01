@@ -13,6 +13,7 @@ import org.bukkit.entity.Mob
 fun setMobTargetLocation(mob: Mob, targetLocation: Location, speed: Double = 1.0, stopRadius: Double = 0.5): Boolean {
     val pathfinder = mob.pathfinder
     mob.setAI(true)
+    mob.isAware = true // Enable awareness so the mob can actually pathfind
     val success = pathfinder.moveTo(targetLocation, speed)
     return success
 }

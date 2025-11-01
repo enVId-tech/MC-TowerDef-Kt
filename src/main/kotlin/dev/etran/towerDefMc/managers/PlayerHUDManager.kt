@@ -57,6 +57,8 @@ object PlayerHUDManager {
             .append(Component.text("${stats.towersPlaced}", NamedTextColor.WHITE))
             .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("📊 ", NamedTextColor.GREEN))
             .append(Component.text("W${stats.wavesCompleted}", NamedTextColor.WHITE)).build()
+            .append(Component.text("❤ ", NamedTextColor.RED))
+            .append(Component.text("${game.currentHealth}/${game.config.maxHealth}", NamedTextColor.WHITE))
 
         player.sendActionBar(message)
 

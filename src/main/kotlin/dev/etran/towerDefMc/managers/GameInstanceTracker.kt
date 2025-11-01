@@ -52,9 +52,41 @@ object GameInstanceTracker {
 
     /**
      * Get the game ID that an entity belongs to
+     * Falls back to persistent data container if not in memory
      */
     fun getGameId(entity: Entity): Int? {
-        return entityToGame[entity.uniqueId]
+        // First check in-memory tracker
+        val memoryGameId = entityToGame[entity.uniqueId]
+        if (memoryGameId != null) {
+            return memoryGameId
+        }
+
+        // Fall back to persistent data container
+        if (entity is LivingEntity) {
+            val persistentGameId = entity.persistentDataContainer.get(
+                TowerDefMC.createKey("tower_game_id"),
+                org.bukkit.persistence.PersistentDataType.INTEGER
+            )
+
+            // If found in persistent data, re-register in memory for faster future lookups
+            if (persistentGameId != null) {
+                registerEntity(entity, persistentGameId)
+                return persistentGameId
+            }
+
+            // Also check for enemy game ID key
+            val enemyGameId = entity.persistentDataContainer.get(
+                TowerDefMC.createKey("enemy_game_id"),
+                org.bukkit.persistence.PersistentDataType.INTEGER
+            )
+
+            if (enemyGameId != null) {
+                registerEntity(entity, enemyGameId)
+                return enemyGameId
+            }
+        }
+
+        return null
     }
 
     /**
