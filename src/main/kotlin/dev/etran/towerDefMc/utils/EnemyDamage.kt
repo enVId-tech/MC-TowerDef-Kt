@@ -64,7 +64,7 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
             }
         }
 
-        // Apply damage to custom health
+        // Apply damage to custom health ONLY (no vanilla damage)
         val newCustomHealth = max(0.0, currentCustomHealth - damage)
         enemy.persistentDataContainer.set(
             TowerDefMC.createKey("custom_health"),
@@ -72,9 +72,8 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
             newCustomHealth
         )
 
-        // Update health bar with custom health
-        val healthBar = enemy.world.getNearbyEntities(enemy.location, 1.0, 2.0, 1.0)
-            .filterIsInstance<org.bukkit.entity.TextDisplay>()
+        // Update health bar with custom health - check passengers first since health bar is attached
+        val healthBar = enemy.passengers.filterIsInstance<org.bukkit.entity.TextDisplay>()
             .firstOrNull { display ->
                 display.persistentDataContainer.get(
                     TowerDefMC.HEALTH_OWNER_UUID,
@@ -95,7 +94,7 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
             // Clean up health bar
             cleanUpEnemyHealthBar(enemy)
 
-            // Unregister from game tracker
+            // Unregister from game tracker BEFORE removing
             GameInstanceTracker.unregisterEntity(enemy)
 
             // Track the kill
@@ -105,7 +104,7 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
                 }
             }
 
-            // Remove the entity
+            // Remove the entity (this is the only way the enemy dies - custom health reaching 0)
             enemy.remove()
         }
     }

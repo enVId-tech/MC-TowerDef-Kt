@@ -9,6 +9,7 @@ import dev.etran.towerDefMc.factories.EnemyFactory
 import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.persistence.PersistentDataType
 
 class WaveManager(
     private val gameConfig: GameSaveConfig, private val waypointManager: WaypointManager, private val pathManager: PathManager, private val gameId: Int
@@ -82,14 +83,23 @@ class WaveManager(
         // Wave is complete when spawning is done AND no enemies remain alive
         if (!isSpawningComplete) return false
 
-        val aliveEnemies = GameInstanceTracker.getLivingEntitiesInGame(gameId).size
+        val aliveEnemies = GameInstanceTracker.getLivingEntitiesInGame(gameId)
+        val aliveCount = aliveEnemies.size
 
         // Debug logging to help track wave completion issues
-        if (aliveEnemies > 0) {
-            println("Game $gameId - Wave $currentWave: $aliveEnemies enemies still alive")
+        if (aliveCount > 0) {
+            println("Game $gameId - Wave $currentWave: $aliveCount enemies still alive")
+            // Log the actual entities to help debug ghost enemies
+            aliveEnemies.forEach { enemy ->
+                val customHealth = enemy.persistentDataContainer.get(
+                    TowerDefMC.createKey("custom_health"),
+                    PersistentDataType.DOUBLE
+                )
+                println("  - Enemy ${enemy.uniqueId}: isDead=${enemy.isDead}, health=${enemy.health}, customHealth=$customHealth")
+            }
         }
 
-        return aliveEnemies <= 0
+        return aliveCount <= 0
     }
 
     fun startNextWave() {

@@ -47,9 +47,13 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
                 // Trigger game damage - enemy reached the end
                 val enemyGameId = GameInstanceTracker.getGameId(entity)
                 if (enemyGameId != null) {
-                    // Deal damage based on current health of the enemy
+                    // Deal damage based on CUSTOM health of the enemy (not vanilla health)
                     val damage = if (entity is org.bukkit.entity.LivingEntity) {
-                        ceil(entity.health).toInt()
+                        val customHealth = entity.persistentDataContainer.get(
+                            TowerDefMC.createKey("custom_health"),
+                            PersistentDataType.DOUBLE
+                        ) ?: entity.health
+                        ceil(customHealth).toInt()
                     } else {
                         1
                     }
