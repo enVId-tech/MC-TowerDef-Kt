@@ -15,6 +15,10 @@ import dev.etran.towerDefMc.commands.SpawnEnemy
 import dev.etran.towerDefMc.commands.StopGame
 import dev.etran.towerDefMc.commands.AddPlayerToGame
 import dev.etran.towerDefMc.commands.DebugCommand
+import dev.etran.towerDefMc.commands.JoinGame
+import dev.etran.towerDefMc.commands.LeaveGame
+import dev.etran.towerDefMc.commands.StartGame
+import dev.etran.towerDefMc.commands.StopGamePlayer
 import dev.etran.towerDefMc.commands.menus.MenuCommands
 import dev.etran.towerDefMc.factories.GameFactory
 import dev.etran.towerDefMc.listeners.ChatInputListener
@@ -205,6 +209,14 @@ class TowerDefMC : JavaPlugin() {
         getCommand("addplayer")?.tabCompleter = AddPlayerToGame
         getCommand("tddebug")?.setExecutor(DebugCommand)
         getCommand("tddebug")?.tabCompleter = DebugCommand
+        getCommand("joingame")?.setExecutor(JoinGame)
+        getCommand("joingame")?.tabCompleter = JoinGame
+        getCommand("leavegame")?.setExecutor(LeaveGame)
+        getCommand("leavegame")?.tabCompleter = LeaveGame
+        getCommand("startgame")?.setExecutor(StartGame)
+        getCommand("startgame")?.tabCompleter = StartGame
+        getCommand("stopgameplayer")?.setExecutor(StopGamePlayer)
+        getCommand("stopgameplayer")?.tabCompleter = StopGamePlayer
 
         logger.info {
             "Tower Defense Plugin - Game Commands Verified & Set up"

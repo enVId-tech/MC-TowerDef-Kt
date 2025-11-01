@@ -79,3 +79,23 @@ commands:
     usage: /<command> [category] [on|off|toggle]
     permission: towerdef.admin
     aliases: [debugtd, tdlog]
+
+  startgame:
+    description: Start a game with specified players (can be used with command blocks)
+    usage: /<command> <gameId> [player1] [player2] ...
+    aliases: [startg, gamestart]
+
+  stopgameplayer:
+    description: Stop a running game (player-accessible, can be used with command blocks)
+    usage: /<command> <gameId>
+    aliases: [stopg, gamestop]
+
+  joingame:
+    description: Join a game (can be used with command blocks)
+    usage: /<command> <gameId> [playerName]
+    aliases: [join, jg]
+
+  leavegame:
+    description: Leave your current game (can be used with command blocks)
+    usage: /<command> [playerName]
+    aliases: [leave, lg]
