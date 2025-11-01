@@ -20,10 +20,7 @@ import java.util.*
 object PathCreationSession {
 
     enum class PlacementPhase {
-        START_POINT,
-        CHECKPOINTS,
-        END_POINT,
-        COMPLETED
+        START_POINT, CHECKPOINTS, END_POINT, COMPLETED
     }
 
     private data class Session(
@@ -92,7 +89,8 @@ object PathCreationSession {
             PlacementPhase.CHECKPOINTS -> {
                 session.checkpoints.add(location)
                 val checkpointNum = session.checkpoints.size
-                val stand = createArmorStand(location, "§e§lCHECKPOINT $checkpointNum", Material.YELLOW_WOOL, "PathCheckpoint")
+                val stand =
+                    createArmorStand(location, "§e§lCHECKPOINT $checkpointNum", Material.YELLOW_WOOL, "PathCheckpoint")
                 session.placedStands.add(stand)
 
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.5f)
@@ -214,29 +212,44 @@ object PathCreationSession {
 
     private fun giveStartPointItem(player: Player) {
         player.inventory.clear()
-        val item = createPlacementItem(Material.LIME_WOOL, "§a§lPlace Start Point",
-            listOf("§7Right-click to place the start point", "§7where enemies will spawn"))
+        val item = createPlacementItem(
+            Material.LIME_WOOL,
+            "§a§lPlace Start Point",
+            listOf("§7Right-click to place the start point", "§7where enemies will spawn")
+        )
         player.inventory.setItem(4, item)
 
         // Add cancel button
-        val cancelItem = createPlacementItem(Material.BARRIER, "§c§lCancel Path Creation",
-            listOf("§7Right-click to cancel", "§7and restore your inventory"))
+        val cancelItem = createPlacementItem(
+            Material.BARRIER,
+            "§c§lCancel Path Creation",
+            listOf("§7Right-click to cancel", "§7and restore your inventory")
+        )
         player.inventory.setItem(8, cancelItem)
     }
 
     private fun giveCheckpointItem(player: Player) {
         player.inventory.clear()
-        val checkpointItem = createPlacementItem(Material.YELLOW_WOOL, "§e§lPlace Checkpoint",
-            listOf("§7Right-click to place a checkpoint", "§7Add as many as you need"))
+        val checkpointItem = createPlacementItem(
+            Material.YELLOW_WOOL,
+            "§e§lPlace Checkpoint",
+            listOf("§7Right-click to place a checkpoint", "§7Add as many as you need")
+        )
         player.inventory.setItem(4, checkpointItem)
 
-        val endItem = createPlacementItem(Material.RED_WOOL, "§c§lPlace End Point",
-            listOf("§7Right-click to place the end point", "§7This will complete the path"))
+        val endItem = createPlacementItem(
+            Material.RED_WOOL,
+            "§c§lPlace End Point",
+            listOf("§7Right-click to place the end point", "§7This will complete the path")
+        )
         player.inventory.setItem(8, endItem)
 
         // Add cancel button
-        val cancelItem = createPlacementItem(Material.BARRIER, "§c§lCancel Path Creation",
-            listOf("§7Right-click to cancel", "§7and restore your inventory"))
+        val cancelItem = createPlacementItem(
+            Material.BARRIER,
+            "§c§lCancel Path Creation",
+            listOf("§7Right-click to cancel", "§7and restore your inventory")
+        )
         player.inventory.setItem(0, cancelItem)
     }
 
@@ -246,13 +259,19 @@ object PathCreationSession {
 
     private fun giveEndPointItem(player: Player) {
         player.inventory.clear()
-        val item = createPlacementItem(Material.RED_WOOL, "§c§lPlace End Point",
-            listOf("§7Right-click to place the end point", "§7where enemies reach their goal"))
+        val item = createPlacementItem(
+            Material.RED_WOOL,
+            "§c§lPlace End Point",
+            listOf("§7Right-click to place the end point", "§7where enemies reach their goal")
+        )
         player.inventory.setItem(4, item)
 
         // Add cancel button
-        val cancelItem = createPlacementItem(Material.BARRIER, "§c§lCancel Path Creation",
-            listOf("§7Right-click to cancel", "§7and restore your inventory"))
+        val cancelItem = createPlacementItem(
+            Material.BARRIER,
+            "§c§lCancel Path Creation",
+            listOf("§7Right-click to cancel", "§7and restore your inventory")
+        )
         player.inventory.setItem(8, cancelItem)
     }
 
@@ -265,16 +284,16 @@ object PathCreationSession {
 
         // Mark as path creation item
         meta.persistentDataContainer.set(
-            TowerDefMC.createKey("pathCreationItem"),
-            PersistentDataType.STRING,
-            material.name
+            TowerDefMC.createKey("pathCreationItem"), PersistentDataType.STRING, material.name
         )
 
         item.itemMeta = meta
         return item
     }
 
-    private fun createArmorStand(location: Location, name: String, @Suppress("UNUSED_PARAMETER") material: Material, type: String): ArmorStand {
+    private fun createArmorStand(
+        location: Location, name: String, @Suppress("UNUSED_PARAMETER") material: Material, type: String
+    ): ArmorStand {
         return location.world.spawn(location, ArmorStand::class.java) { stand ->
             stand.isVisible = true
             stand.setGravity(false)
@@ -282,9 +301,7 @@ object PathCreationSession {
             stand.customName(Component.text(name))
             stand.isCustomNameVisible = true
             stand.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                type
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, type
             )
         }
     }
@@ -297,16 +314,19 @@ object PathCreationSession {
                 player.sendMessage("§7Right-click with the §aLIME WOOL §7to place")
                 player.sendMessage("§7the start point where enemies spawn")
             }
+
             PlacementPhase.CHECKPOINTS -> {
                 player.sendMessage("§6Phase 2: Place Checkpoints")
                 player.sendMessage("§7Right-click with §eYELLOW WOOL §7to add checkpoints")
                 player.sendMessage("§7Right-click with §cRED WOOL §7when ready for end point")
             }
+
             PlacementPhase.END_POINT -> {
                 player.sendMessage("§6Phase 3: Place End Point")
                 player.sendMessage("§7Right-click with the §cRED WOOL §7to place")
                 player.sendMessage("§7the end point where enemies reach their goal")
             }
+
             PlacementPhase.COMPLETED -> {}
         }
         player.sendMessage("§e§l=================================")

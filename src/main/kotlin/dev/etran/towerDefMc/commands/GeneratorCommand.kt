@@ -33,6 +33,7 @@ object GeneratorCommand : CommandExecutor, TabCompleter {
 
                 TowerGeneratorMenu(sender).open()
             }
+
             "enemy" -> {
                 val heldItem = sender.inventory.itemInMainHand
                 if (!heldItem.type.name.endsWith("_SPAWN_EGG")) {
@@ -43,6 +44,7 @@ object GeneratorCommand : CommandExecutor, TabCompleter {
 
                 EnemyGeneratorMenu(sender).open()
             }
+
             else -> {
                 sender.sendMessage("§cInvalid type. Use: tower or enemy")
                 return false
@@ -53,10 +55,7 @@ object GeneratorCommand : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         if (args.size == 1) {
             return listOf("tower", "enemy").filter { it.startsWith(args[0].lowercase()) }

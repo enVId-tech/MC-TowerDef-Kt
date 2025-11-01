@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.listeners
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.utils.createHealthBar
+import org.bukkit.GameMode
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
@@ -32,8 +33,7 @@ class EnemyTargetListener : Listener {
         if (entity !is Mob) return
 
         val isEnemy = entity.persistentDataContainer.has(
-            TowerDefMC.ENEMY_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING
         )
 
         if (!isEnemy) return
@@ -57,8 +57,7 @@ class EnemyTargetListener : Listener {
         if (damager !is Mob) return
 
         val isEnemy = damager.persistentDataContainer.has(
-            TowerDefMC.ENEMY_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING
         )
 
         if (!isEnemy) return
@@ -82,8 +81,7 @@ class EnemyTargetListener : Listener {
         if (entity !is LivingEntity) return
 
         val isEnemy = entity.persistentDataContainer.has(
-            TowerDefMC.ENEMY_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING
         )
 
         if (!isEnemy) return
@@ -94,15 +92,13 @@ class EnemyTargetListener : Listener {
 
             // Check if damager is a tower by looking at multiple possible indicators
             val isTower = damager.persistentDataContainer.has(
-                TowerDefMC.TOWER_TYPES,
-                PersistentDataType.STRING
+                TowerDefMC.TOWER_TYPES, PersistentDataType.STRING
             ) || damager.persistentDataContainer.get(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
             ) == "Tower"
 
             // Check if damager is a player in creative mode
-            val isCreativePlayer = damager is Player && damager.gameMode == org.bukkit.GameMode.CREATIVE
+            val isCreativePlayer = damager is Player && damager.gameMode == GameMode.CREATIVE
 
             // Allow damage from towers or creative mode players
             if (isTower || isCreativePlayer) {
@@ -115,8 +111,7 @@ class EnemyTargetListener : Listener {
         } else {
             // Check if this damage was marked as coming from a tower
             val isFromTower = entity.persistentDataContainer.has(
-                TowerDefMC.createKey("last_damager_is_tower"),
-                PersistentDataType.BYTE
+                TowerDefMC.createKey("last_damager_is_tower"), PersistentDataType.BYTE
             )
 
             if (isFromTower) {
@@ -141,21 +136,18 @@ class EnemyTargetListener : Listener {
         if (originalEntity !is LivingEntity) return
 
         val isEnemy = originalEntity.persistentDataContainer.has(
-            TowerDefMC.ENEMY_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING
         )
 
         if (!isEnemy) return
 
         // Get the enemy type and target checkpoint
         val enemyType = originalEntity.persistentDataContainer.get(
-            TowerDefMC.ENEMY_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING
         ) ?: return
 
         val targetCheckpointId = originalEntity.persistentDataContainer.get(
-            TowerDefMC.TARGET_CHECKPOINT_ID,
-            PersistentDataType.INTEGER
+            TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER
         ) ?: 1
 
         val gameId = GameInstanceTracker.getGameId(originalEntity)
@@ -165,23 +157,17 @@ class EnemyTargetListener : Listener {
             if (transformedEntity is LivingEntity) {
                 // Mark as enemy
                 transformedEntity.persistentDataContainer.set(
-                    TowerDefMC.ELEMENT_TYPES,
-                    PersistentDataType.STRING,
-                    "Enemy"
+                    TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy"
                 )
 
                 // Set enemy type
                 transformedEntity.persistentDataContainer.set(
-                    TowerDefMC.ENEMY_TYPES,
-                    PersistentDataType.STRING,
-                    enemyType
+                    TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, enemyType
                 )
 
                 // Set target checkpoint
                 transformedEntity.persistentDataContainer.set(
-                    TowerDefMC.TARGET_CHECKPOINT_ID,
-                    PersistentDataType.INTEGER,
-                    targetCheckpointId
+                    TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, targetCheckpointId
                 )
 
                 // Make non-collidable

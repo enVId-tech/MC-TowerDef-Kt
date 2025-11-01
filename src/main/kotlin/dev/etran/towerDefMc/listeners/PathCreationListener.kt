@@ -27,8 +27,7 @@ class PathCreationListener : Listener {
 
         val meta = item.itemMeta ?: return
         val isPathItem = meta.persistentDataContainer.has(
-            TowerDefMC.createKey("pathCreationItem"),
-            PersistentDataType.STRING
+            TowerDefMC.createKey("pathCreationItem"), PersistentDataType.STRING
         )
 
         if (!isPathItem) return
@@ -48,10 +47,12 @@ class PathCreationListener : Listener {
                     // Start point
                     PathCreationSession.handlePlacement(player, location)
                 }
+
                 Material.YELLOW_WOOL -> {
                     // Checkpoint
                     PathCreationSession.handlePlacement(player, location)
                 }
+
                 Material.RED_WOOL -> {
                     // End point or switch to end point phase
                     val phase = PathCreationSession.getSessionPhase(player)
@@ -63,11 +64,13 @@ class PathCreationListener : Listener {
                         PathCreationSession.handlePlacement(player, location)
                     }
                 }
+
                 Material.BARRIER -> {
                     // Cancel path creation
                     PathCreationSession.cancelSession(player)
                     player.sendMessage("§cPath creation cancelled!")
                 }
+
                 else -> {}
             }
         }

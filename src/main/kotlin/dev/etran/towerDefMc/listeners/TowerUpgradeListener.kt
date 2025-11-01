@@ -28,8 +28,7 @@ class TowerUpgradeListener : Listener {
         if (entity !is LivingEntity) return
 
         val elementType = entity.persistentDataContainer.get(
-            TowerDefMC.ELEMENT_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
         ) ?: return
 
         if (elementType != "Tower") return
@@ -54,9 +53,7 @@ class TowerUpgradeListener : Listener {
         // Player must be sneaking to upgrade (quick upgrade without menu)
         // Get current tower level
         val currentLevel = entity.persistentDataContainer.getOrDefault(
-            TowerDefMC.createKey("towerLevel"),
-            PersistentDataType.INTEGER,
-            1
+            TowerDefMC.createKey("towerLevel"), PersistentDataType.INTEGER, 1
         )
 
         val maxLevel = 5
@@ -88,9 +85,7 @@ class TowerUpgradeListener : Listener {
 
             // Update tower level
             entity.persistentDataContainer.set(
-                TowerDefMC.createKey("towerLevel"),
-                PersistentDataType.INTEGER,
-                newLevel
+                TowerDefMC.createKey("towerLevel"), PersistentDataType.INTEGER, newLevel
             )
 
             // Get base stats
@@ -113,19 +108,13 @@ class TowerUpgradeListener : Listener {
             // Store base stats if this is the first upgrade
             if (currentLevel == 1) {
                 entity.persistentDataContainer.set(
-                    TowerDefMC.createKey("baseDamage"),
-                    PersistentDataType.DOUBLE,
-                    baseDamage
+                    TowerDefMC.createKey("baseDamage"), PersistentDataType.DOUBLE, baseDamage
                 )
                 entity.persistentDataContainer.set(
-                    TowerDefMC.createKey("baseRange"),
-                    PersistentDataType.DOUBLE,
-                    baseRange
+                    TowerDefMC.createKey("baseRange"), PersistentDataType.DOUBLE, baseRange
                 )
                 entity.persistentDataContainer.set(
-                    TowerDefMC.createKey("baseSpeed"),
-                    PersistentDataType.DOUBLE,
-                    baseSpeed
+                    TowerDefMC.createKey("baseSpeed"), PersistentDataType.DOUBLE, baseSpeed
                 )
             }
 
@@ -135,25 +124,18 @@ class TowerUpgradeListener : Listener {
             val speedMultiplier = TowerUpgradeConfig.getSpeedMultiplier(newLevel)
 
             entity.persistentDataContainer.set(
-                TowerDefMC.TOWER_DMG,
-                PersistentDataType.DOUBLE,
-                baseDamage * damageMultiplier
+                TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, baseDamage * damageMultiplier
             )
             entity.persistentDataContainer.set(
-                TowerDefMC.TOWER_RANGE,
-                PersistentDataType.DOUBLE,
-                baseRange * rangeMultiplier
+                TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, baseRange * rangeMultiplier
             )
             entity.persistentDataContainer.set(
-                TowerDefMC.ATTACK_WAIT_TIME,
-                PersistentDataType.DOUBLE,
-                baseSpeed * speedMultiplier
+                TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, baseSpeed * speedMultiplier
             )
 
             // Update custom name to show level
             val towerType = entity.persistentDataContainer.get(
-                TowerDefMC.TOWER_TYPES,
-                PersistentDataType.STRING
+                TowerDefMC.TOWER_TYPES, PersistentDataType.STRING
             ) ?: "Tower"
             entity.customName(Component.text("§e★".repeat(newLevel) + " §6$towerType"))
             entity.isCustomNameVisible = true
@@ -163,11 +145,7 @@ class TowerUpgradeListener : Listener {
 
             // Visual and sound effects
             entity.world.spawnParticle(
-                Particle.HAPPY_VILLAGER,
-                entity.location.add(0.0, 1.0, 0.0),
-                20,
-                0.5, 0.5, 0.5,
-                0.1
+                Particle.HAPPY_VILLAGER, entity.location.add(0.0, 1.0, 0.0), 20, 0.5, 0.5, 0.5, 0.1
             )
             player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f)
 

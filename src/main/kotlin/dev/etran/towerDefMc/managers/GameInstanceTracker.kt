@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.utils.cleanUpEnemyHealthBar
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import java.util.UUID
@@ -87,13 +88,11 @@ object GameInstanceTracker {
 
         // Actually remove the entities from the world
         entityUUIDs.forEach { entityUUID ->
-            plugin.server.worlds.asSequence()
-                .flatMap { it.entities }
-                .firstOrNull { it.uniqueId == entityUUID }
+            plugin.server.worlds.asSequence().flatMap { it.entities }.firstOrNull { it.uniqueId == entityUUID }
                 ?.let { entity ->
                     // Clean up health bar if it's an enemy
-                    if (entity is org.bukkit.entity.LivingEntity) {
-                        dev.etran.towerDefMc.utils.cleanUpEnemyHealthBar(entity)
+                    if (entity is LivingEntity) {
+                        cleanUpEnemyHealthBar(entity)
                     }
                     // Remove the entity
                     entity.remove()
@@ -106,8 +105,7 @@ object GameInstanceTracker {
         plugin.server.worlds.forEach { world ->
             world.entities.filterIsInstance<org.bukkit.entity.LivingEntity>().forEach { entity ->
                 val towerGameId = entity.persistentDataContainer.get(
-                    TowerDefMC.createKey("tower_game_id"),
-                    org.bukkit.persistence.PersistentDataType.INTEGER
+                    TowerDefMC.createKey("tower_game_id"), org.bukkit.persistence.PersistentDataType.INTEGER
                 )
                 if (towerGameId == gameId) {
                     entity.remove()
@@ -121,8 +119,7 @@ object GameInstanceTracker {
                 if (item != null && item.type != org.bukkit.Material.AIR) {
                     // Check if this is a tower item
                     val isTowerItem = item.itemMeta?.persistentDataContainer?.has(
-                        TowerDefMC.TOWER_RANGE,
-                        org.bukkit.persistence.PersistentDataType.DOUBLE
+                        TowerDefMC.TOWER_RANGE, org.bukkit.persistence.PersistentDataType.DOUBLE
                     ) == true
 
                     if (isTowerItem) {

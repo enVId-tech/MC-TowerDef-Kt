@@ -39,14 +39,10 @@ object StopGame : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         if (args.size == 1) {
-            return GameRegistry.allGames.keys.map { it.toString() }
-                .filter { it.startsWith(args[0], ignoreCase = true) }
+            return GameRegistry.allGames.keys.map { it.toString() }.filter { it.startsWith(args[0], ignoreCase = true) }
         }
         return emptyList()
     }

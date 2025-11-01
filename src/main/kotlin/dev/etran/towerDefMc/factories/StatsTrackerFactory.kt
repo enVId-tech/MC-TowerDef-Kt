@@ -26,17 +26,17 @@ object StatsTrackerFactory {
         val meta = item.itemMeta ?: return item
 
         meta.displayName(Component.text("§6§lStats Tracker"))
-        meta.lore(listOf(
-            Component.text("§7Place this to view your"),
-            Component.text("§7in-game statistics"),
-            Component.text("§e"),
-            Component.text("§eRight-click to place")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Place this to view your"),
+                Component.text("§7in-game statistics"),
+                Component.text("§e"),
+                Component.text("§eRight-click to place")
+            )
+        )
 
         meta.persistentDataContainer.set(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING,
-            "Stats_Tracker"
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Stats_Tracker"
         )
 
         item.itemMeta = meta
@@ -75,27 +75,20 @@ object StatsTrackerFactory {
         armorStand.isInvulnerable = true
         armorStand.isCustomNameVisible = true
         armorStand.persistentDataContainer.set(
-            TowerDefMC.ELEMENT_TYPES,
-            PersistentDataType.STRING,
-            "StatsTracker"
+            TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "StatsTracker"
         )
         armorStand.persistentDataContainer.set(
-            TowerDefMC.createKey("trackerOwner"),
-            PersistentDataType.STRING,
-            player.uniqueId.toString()
+            TowerDefMC.createKey("trackerOwner"), PersistentDataType.STRING, player.uniqueId.toString()
         )
         armorStand.persistentDataContainer.set(
-            TowerDefMC.GAME_ID_KEY,
-            PersistentDataType.INTEGER,
-            game.gameId
+            TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER, game.gameId
         )
 
         // Start updating the stats display
         startStatsUpdateTask(armorStand, player, game.gameId)
 
         // Remove item from inventory if not in creative
-        if (player.gameMode != org.bukkit.GameMode.CREATIVE &&
-            player.gameMode != org.bukkit.GameMode.SPECTATOR) {
+        if (player.gameMode != org.bukkit.GameMode.CREATIVE && player.gameMode != org.bukkit.GameMode.SPECTATOR) {
             player.inventory.itemInMainHand.amount -= 1
         }
 
@@ -128,9 +121,7 @@ object StatsTrackerFactory {
 
         // Store task ID to cancel later if needed
         armorStand.persistentDataContainer.set(
-            TowerDefMC.createKey("updateTaskId"),
-            PersistentDataType.INTEGER,
-            taskId.taskId
+            TowerDefMC.createKey("updateTaskId"), PersistentDataType.INTEGER, taskId.taskId
         )
     }
 }

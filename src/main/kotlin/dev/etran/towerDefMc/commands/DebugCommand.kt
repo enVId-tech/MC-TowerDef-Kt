@@ -40,6 +40,7 @@ object DebugCommand : CommandExecutor, TabCompleter {
                     }
                 }
             }
+
             "off" -> {
                 if (category.equals("all", ignoreCase = true)) {
                     DebugLogger.masterDebug = false
@@ -54,6 +55,7 @@ object DebugCommand : CommandExecutor, TabCompleter {
                     }
                 }
             }
+
             "toggle", null -> {
                 if (category.equals("all", ignoreCase = true)) {
                     DebugLogger.masterDebug = !DebugLogger.masterDebug
@@ -66,6 +68,7 @@ object DebugCommand : CommandExecutor, TabCompleter {
                     sender.sendMessage("§6Debug logging for §e$category §6is now $status!")
                 }
             }
+
             else -> {
                 sender.sendMessage("§cInvalid action: $action")
                 sender.sendMessage("§7Usage: /tddebug <category> [on|off|toggle]")
@@ -82,55 +85,63 @@ object DebugCommand : CommandExecutor, TabCompleter {
                 DebugLogger.saveConfig()
                 true
             }
+
             "wave", "waves" -> {
                 DebugLogger.waveDebug = enabled
                 DebugLogger.saveConfig()
                 true
             }
+
             "enemy", "enemies" -> {
                 DebugLogger.enemyDebug = enabled
                 DebugLogger.saveConfig()
                 true
             }
+
             "tower", "towers" -> {
                 DebugLogger.towerDebug = enabled
                 DebugLogger.saveConfig()
                 true
             }
+
             "game" -> {
                 DebugLogger.gameDebug = enabled
                 DebugLogger.saveConfig()
                 true
             }
+
             "stats" -> {
                 DebugLogger.statsDebug = enabled
                 DebugLogger.saveConfig()
                 true
             }
+
             "path", "paths" -> {
                 DebugLogger.pathDebug = enabled
                 DebugLogger.saveConfig()
                 true
             }
+
             else -> false
         }
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         return when (args.size) {
             1 -> {
-                listOf("all", "master", "waves", "enemies", "towers", "game", "stats", "paths")
-                    .filter { it.startsWith(args[0], ignoreCase = true) }
+                listOf("all", "master", "waves", "enemies", "towers", "game", "stats", "paths").filter {
+                    it.startsWith(
+                        args[0], ignoreCase = true
+                    )
+                }
             }
+
             2 -> {
-                listOf("on", "off", "toggle")
-                    .filter { it.startsWith(args[1], ignoreCase = true) }
+                listOf("on", "off", "toggle").filter { it.startsWith(args[1], ignoreCase = true) }
             }
+
             else -> emptyList()
         }
     }

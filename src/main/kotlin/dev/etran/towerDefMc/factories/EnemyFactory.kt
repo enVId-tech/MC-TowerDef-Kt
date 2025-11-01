@@ -71,14 +71,10 @@ object EnemyFactory {
 
         // Set custom health system (default 20.0)
         entity.persistentDataContainer.set(
-            TowerDefMC.createKey("custom_health"),
-            PersistentDataType.DOUBLE,
-            20.0
+            TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE, 20.0
         )
         entity.persistentDataContainer.set(
-            TowerDefMC.createKey("custom_max_health"),
-            PersistentDataType.DOUBLE,
-            20.0
+            TowerDefMC.createKey("custom_max_health"), PersistentDataType.DOUBLE, 20.0
         )
 
         createHealthBar(entity)
@@ -93,8 +89,7 @@ object EnemyFactory {
 
     fun enemyPlace(enemyType: String, location: Location): Zombie? {
         // Get enemy configuration from registry
-        val enemyConfig = EnemyRegistry
-            .getEnemy(enemyType)
+        val enemyConfig = EnemyRegistry.getEnemy(enemyType)
 
         if (enemyConfig == null) {
             // Fallback to basic enemy if type not found
@@ -121,14 +116,10 @@ object EnemyFactory {
 
             // Store custom health in persistent data (can be any large number)
             entity.persistentDataContainer.set(
-                TowerDefMC.createKey("custom_health"),
-                PersistentDataType.DOUBLE,
-                enemyConfig.health
+                TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE, enemyConfig.health
             )
             entity.persistentDataContainer.set(
-                TowerDefMC.createKey("custom_max_health"),
-                PersistentDataType.DOUBLE,
-                enemyConfig.health
+                TowerDefMC.createKey("custom_max_health"), PersistentDataType.DOUBLE, enemyConfig.health
             )
 
             DebugLogger.logEnemy("Enemy configured with custom_health=${enemyConfig.health}, speed_base=${enemyConfig.speed * 0.1}")
@@ -138,14 +129,10 @@ object EnemyFactory {
 
             // Store default custom health
             entity.persistentDataContainer.set(
-                TowerDefMC.createKey("custom_health"),
-                PersistentDataType.DOUBLE,
-                20.0
+                TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE, 20.0
             )
             entity.persistentDataContainer.set(
-                TowerDefMC.createKey("custom_max_health"),
-                PersistentDataType.DOUBLE,
-                20.0
+                TowerDefMC.createKey("custom_max_health"), PersistentDataType.DOUBLE, 20.0
             )
         }
 

@@ -59,23 +59,19 @@ object AddPlayerToGame : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         return when (args.size) {
             1 -> {
                 // Tab complete game IDs
-                GameRegistry.allGames.keys.map { it.toString() }
-                    .filter { it.startsWith(args[0], ignoreCase = true) }
+                GameRegistry.allGames.keys.map { it.toString() }.filter { it.startsWith(args[0], ignoreCase = true) }
             }
+
             2 -> {
                 // Tab complete online player names
-                Bukkit.getOnlinePlayers()
-                    .map { it.name }
-                    .filter { it.startsWith(args[1], ignoreCase = true) }
+                Bukkit.getOnlinePlayers().map { it.name }.filter { it.startsWith(args[1], ignoreCase = true) }
             }
+
             else -> emptyList()
         }
     }

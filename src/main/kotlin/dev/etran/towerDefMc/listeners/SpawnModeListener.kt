@@ -43,11 +43,9 @@ class SpawnModeListener : Listener {
 
             // Exit spawn mode on main thread
             Bukkit.getScheduler().runTask(
-                dev.etran.towerDefMc.TowerDefMC.instance,
-                Runnable {
+                dev.etran.towerDefMc.TowerDefMC.instance, Runnable {
                     WaypointFactory.endSpawnMode(player)
-                }
-            )
+                })
         }
     }
 

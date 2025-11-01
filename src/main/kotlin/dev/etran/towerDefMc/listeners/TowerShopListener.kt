@@ -4,8 +4,6 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.menus.shop.TowerShopMenu
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
-import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -28,8 +26,7 @@ class TowerShopListener : Listener {
         }
 
         val isShopEntity = entity.persistentDataContainer.has(
-            TowerDefMC.createKey("tower_shop"),
-            PersistentDataType.STRING
+            TowerDefMC.createKey("tower_shop"), PersistentDataType.STRING
         )
 
         if (!isShopEntity) return
@@ -38,8 +35,7 @@ class TowerShopListener : Listener {
 
         // Get the game ID from the shop entity
         val gameId = entity.persistentDataContainer.get(
-            TowerDefMC.GAME_ID_KEY,
-            PersistentDataType.INTEGER
+            TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER
         )
 
         if (gameId == null) {

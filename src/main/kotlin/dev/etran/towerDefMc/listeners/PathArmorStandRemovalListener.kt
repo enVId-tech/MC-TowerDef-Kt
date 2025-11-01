@@ -41,8 +41,7 @@ class PathArmorStandRemovalListener : Listener {
 
     private fun handlePathArmorStandRemoval(stand: ArmorStand) {
         val elementType = stand.persistentDataContainer.get(
-            TowerDefMC.ELEMENT_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
         ) ?: return
 
         // Only handle path-related armor stands
@@ -55,8 +54,8 @@ class PathArmorStandRemovalListener : Listener {
             if (handled) {
                 // Notify nearby players
                 val location = stand.location
-                val nearbyPlayers = location.world.getNearbyEntities(location, 50.0, 50.0, 50.0)
-                    .filterIsInstance<Player>()
+                val nearbyPlayers =
+                    location.world.getNearbyEntities(location, 50.0, 50.0, 50.0).filterIsInstance<Player>()
 
                 when (elementType) {
                     "PathStart", "PathEnd" -> {
@@ -64,6 +63,7 @@ class PathArmorStandRemovalListener : Listener {
                             player.sendMessage("§c§l[Path System] §7A path's ${if (elementType == "PathStart") "start" else "end"} point was removed. The entire path has been deleted.")
                         }
                     }
+
                     "PathCheckpoint" -> {
                         nearbyPlayers.forEach { player ->
                             player.sendMessage("§e§l[Path System] §7A checkpoint was removed from a path.")

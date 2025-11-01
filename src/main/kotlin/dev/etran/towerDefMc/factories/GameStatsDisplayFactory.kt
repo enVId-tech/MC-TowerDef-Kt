@@ -26,17 +26,17 @@ object GameStatsDisplayFactory {
         val meta = item.itemMeta ?: return item
 
         meta.displayName(Component.text("§b§lGame Stats Display"))
-        meta.lore(listOf(
-            Component.text("§7Place this to view game statistics"),
-            Component.text("§7Shows: Health, Wave, Players, etc."),
-            Component.text("§e"),
-            Component.text("§eRight-click to place")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Place this to view game statistics"),
+                Component.text("§7Shows: Health, Wave, Players, etc."),
+                Component.text("§e"),
+                Component.text("§eRight-click to place")
+            )
+        )
 
         meta.persistentDataContainer.set(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING,
-            "Game_Stats_Display"
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Game_Stats_Display"
         )
 
         item.itemMeta = meta
@@ -90,20 +90,17 @@ object GameStatsDisplayFactory {
         Bukkit.getWorlds().forEach { world ->
             world.entities.filterIsInstance<ArmorStand>().forEach { stand ->
                 val elementType = stand.persistentDataContainer.get(
-                    TowerDefMC.ELEMENT_TYPES,
-                    PersistentDataType.STRING
+                    TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
                 )
                 val standGameId = stand.persistentDataContainer.get(
-                    TowerDefMC.GAME_ID_KEY,
-                    PersistentDataType.INTEGER
+                    TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER
                 )
 
                 // Remove armor stands that belong to this game
                 if (elementType == "GameStatsDisplay" && standGameId == gameId) {
                     // Cancel the update task
                     val taskId = stand.persistentDataContainer.get(
-                        TowerDefMC.createKey("updateTaskId"),
-                        PersistentDataType.INTEGER
+                        TowerDefMC.createKey("updateTaskId"), PersistentDataType.INTEGER
                     )
                     if (taskId != null) {
                         Bukkit.getScheduler().cancelTask(taskId)
@@ -127,9 +124,7 @@ object GameStatsDisplayFactory {
         armorStand.isInvulnerable = true
         armorStand.isCustomNameVisible = true
         armorStand.persistentDataContainer.set(
-            TowerDefMC.ELEMENT_TYPES,
-            PersistentDataType.STRING,
-            "GameStatsDisplay"
+            TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "GameStatsDisplay"
         )
 
         // Start updating the stats display (will show "No active game" until a game starts)
@@ -171,14 +166,10 @@ object GameStatsDisplayFactory {
             armorStand.isMarker = true  // Makes it smaller and prevents collision
             armorStand.customName(Component.text(line))
             armorStand.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                "GameStatsDisplay"
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "GameStatsDisplay"
             )
             armorStand.persistentDataContainer.set(
-                TowerDefMC.GAME_ID_KEY,
-                PersistentDataType.INTEGER,
-                gameId
+                TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER, gameId
             )
 
             armorStands.add(armorStand)
@@ -213,9 +204,7 @@ object GameStatsDisplayFactory {
         // Store task ID in the first armor stand to cancel later if needed
         if (armorStands.isNotEmpty()) {
             armorStands[0].persistentDataContainer.set(
-                TowerDefMC.createKey("updateTaskId"),
-                PersistentDataType.INTEGER,
-                taskId.taskId
+                TowerDefMC.createKey("updateTaskId"), PersistentDataType.INTEGER, taskId.taskId
             )
         }
     }
@@ -235,9 +224,7 @@ object GameStatsDisplayFactory {
 
         // Store task ID to cancel later if needed
         armorStand.persistentDataContainer.set(
-            TowerDefMC.createKey("updateTaskId"),
-            PersistentDataType.INTEGER,
-            taskId.taskId
+            TowerDefMC.createKey("updateTaskId"), PersistentDataType.INTEGER, taskId.taskId
         )
     }
 
@@ -314,12 +301,10 @@ object GameStatsDisplayFactory {
         Bukkit.getWorlds().forEach { world ->
             world.entities.filterIsInstance<ArmorStand>().forEach { stand ->
                 val elementType = stand.persistentDataContainer.get(
-                    TowerDefMC.ELEMENT_TYPES,
-                    PersistentDataType.STRING
+                    TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
                 )
                 val standGameId = stand.persistentDataContainer.get(
-                    TowerDefMC.GAME_ID_KEY,
-                    PersistentDataType.INTEGER
+                    TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER
                 )
 
                 if (elementType == "GameStatsDisplay" && standGameId == gameId) {

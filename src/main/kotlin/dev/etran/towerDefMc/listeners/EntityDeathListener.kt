@@ -34,6 +34,7 @@ object EntityDeathListener : Listener {
                         GameRegistry.activeGames[gameId]?.waypointManager?.remove(gameElement)
                     }
                 }
+
                 "Enemy" -> {
                     // Get the game ID before unregistering
                     val gameId = GameInstanceTracker.getGameId(gameElement)

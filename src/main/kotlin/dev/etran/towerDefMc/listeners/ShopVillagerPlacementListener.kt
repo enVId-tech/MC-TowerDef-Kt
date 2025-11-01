@@ -26,11 +26,9 @@ class ShopVillagerPlacementListener : Listener {
 
         val meta = item.itemMeta ?: return
         val isShopSpawner = meta.persistentDataContainer.has(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING
         ) && meta.persistentDataContainer.get(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING
         ) == "Tower_Shop_Spawner"
 
         if (!isShopSpawner) return
@@ -43,8 +41,7 @@ class ShopVillagerPlacementListener : Listener {
 
             // Get the game ID from the item (stored when given from ModifyGame menu)
             val gameId = meta.persistentDataContainer.get(
-                TowerDefMC.GAME_ID_KEY,
-                PersistentDataType.INTEGER
+                TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER
             )
 
             if (gameId == null) {
@@ -86,28 +83,21 @@ class ShopVillagerPlacementListener : Listener {
 
             // Mark as shop villager
             villager.persistentDataContainer.set(
-                TowerDefMC.createKey("tower_shop"),
-                PersistentDataType.STRING,
-                "true"
+                TowerDefMC.createKey("tower_shop"), PersistentDataType.STRING, "true"
             )
 
             // Store game ID
             villager.persistentDataContainer.set(
-                TowerDefMC.GAME_ID_KEY,
-                PersistentDataType.INTEGER,
-                gameId
+                TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER, gameId
             )
 
             // Mark as game element
             villager.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                "Shop"
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Shop"
             )
 
             // Remove item from inventory if not in creative
-            if (player.gameMode != org.bukkit.GameMode.CREATIVE &&
-                player.gameMode != org.bukkit.GameMode.SPECTATOR) {
+            if (player.gameMode != org.bukkit.GameMode.CREATIVE && player.gameMode != org.bukkit.GameMode.SPECTATOR) {
                 player.inventory.itemInMainHand.amount -= 1
             }
 

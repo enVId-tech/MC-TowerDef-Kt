@@ -90,16 +90,12 @@ object TowerFactory {
 
         // Initialize tower at level 1
         entity.persistentDataContainer.set(
-            TowerDefMC.createKey("towerLevel"),
-            PersistentDataType.INTEGER,
-            1
+            TowerDefMC.createKey("towerLevel"), PersistentDataType.INTEGER, 1
         )
 
         // Store the tower owner (player who placed it)
         entity.persistentDataContainer.set(
-            TowerDefMC.TOWER_OWNER_KEY,
-            PersistentDataType.STRING,
-            player.uniqueId.toString()
+            TowerDefMC.TOWER_OWNER_KEY, PersistentDataType.STRING, player.uniqueId.toString()
         )
 
         // Record tower placement in player stats and store game ID
@@ -114,9 +110,7 @@ object TowerFactory {
 
             // Store the game ID on the tower entity so it can be cleaned up when game ends
             entity.persistentDataContainer.set(
-                TowerDefMC.createKey("tower_game_id"),
-                PersistentDataType.INTEGER,
-                game.gameId
+                TowerDefMC.createKey("tower_game_id"), PersistentDataType.INTEGER, game.gameId
             )
 
             // Register the tower with GameInstanceTracker so cash rewards work

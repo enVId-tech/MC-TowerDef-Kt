@@ -1,6 +1,5 @@
 package dev.etran.towerDefMc.data
 
-import org.bukkit.Material
 import org.bukkit.entity.EntityType
 
 /**

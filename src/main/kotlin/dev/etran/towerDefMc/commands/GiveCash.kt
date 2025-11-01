@@ -51,18 +51,15 @@ object GiveCash : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         return when (args.size) {
-            1 -> GameRegistry.allGames.keys.map { it.toString() }
-                .filter { it.startsWith(args[0], ignoreCase = true) }
-            2 -> Bukkit.getOnlinePlayers().map { it.name }
-                .filter { it.startsWith(args[1], ignoreCase = true) }
-            3 -> listOf("100", "500", "1000", "5000")
-                .filter { it.startsWith(args[2]) }
+            1 -> GameRegistry.allGames.keys.map { it.toString() }.filter { it.startsWith(args[0], ignoreCase = true) }
+
+            2 -> Bukkit.getOnlinePlayers().map { it.name }.filter { it.startsWith(args[1], ignoreCase = true) }
+
+            3 -> listOf("100", "500", "1000", "5000").filter { it.startsWith(args[2]) }
+
             else -> emptyList()
         }
     }

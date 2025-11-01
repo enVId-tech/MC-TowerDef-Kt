@@ -23,19 +23,19 @@ object GiveShopVillager : CommandExecutor {
         val meta = shopEgg.itemMeta
 
         meta.displayName(Component.text("§6§lTower Shop Villager"))
-        meta.lore(listOf(
-            Component.text("§7Place this villager to create"),
-            Component.text("§7a tower shop for your game"),
-            Component.text(""),
-            Component.text("§eRight-click to place"),
-            Component.text("§7Players can buy towers from this shop")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Place this villager to create"),
+                Component.text("§7a tower shop for your game"),
+                Component.text(""),
+                Component.text("§eRight-click to place"),
+                Component.text("§7Players can buy towers from this shop")
+            )
+        )
 
         // Mark it as a shop villager spawner
         meta.persistentDataContainer.set(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING,
-            "Tower_Shop_Spawner"
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Tower_Shop_Spawner"
         )
 
         shopEgg.itemMeta = meta

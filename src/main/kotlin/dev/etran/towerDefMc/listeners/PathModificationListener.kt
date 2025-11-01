@@ -43,8 +43,7 @@ class PathModificationListener : Listener {
 
         val meta = item.itemMeta ?: return
         val isReplacementItem = meta.persistentDataContainer.has(
-            TowerDefMC.createKey("pathReplacementItem"),
-            PersistentDataType.STRING
+            TowerDefMC.createKey("pathReplacementItem"), PersistentDataType.STRING
         )
 
         if (!isReplacementItem) return

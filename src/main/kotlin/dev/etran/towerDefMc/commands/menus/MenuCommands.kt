@@ -101,10 +101,7 @@ object MenuCommands : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         if (args.size == 1) {
             val options = listOf("home", "new", "modify", "delete", "waves", "select")

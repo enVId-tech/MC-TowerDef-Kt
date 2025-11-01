@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.managers
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaveData
+import dev.etran.towerDefMc.factories.GameStatsDisplayFactory
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.DebugLogger
 import java.util.UUID
@@ -68,7 +69,8 @@ class GameManager(
             DebugLogger.logGame("Game $gameId: Cannot start - no paths or start points configured!")
             // Send message to all players trying to start the game
             initialPlayers.forEach { uuid ->
-                plugin.server.getPlayer(uuid)?.sendMessage("§c§lCannot start game: No paths or start points configured!")
+                plugin.server.getPlayer(uuid)
+                    ?.sendMessage("§c§lCannot start game: No paths or start points configured!")
             }
             plugin.logger.warning("Game $gameId: Cannot start - no paths or start points configured!")
             return
@@ -96,7 +98,7 @@ class GameManager(
         DebugLogger.logGame("Game $gameId: Successfully started with ${config.waves.size} waves")
 
         // Spawn game stats display armor stands at all lecterns
-        dev.etran.towerDefMc.factories.GameStatsDisplayFactory.spawnAllGameStatsDisplays(gameId)
+        GameStatsDisplayFactory.spawnAllGameStatsDisplays(gameId)
 
         // Reset wave manager state
         waveManager.resetWaves()
@@ -118,18 +120,11 @@ class GameManager(
         // Display ending sequence before cleanup
         if (win) {
             dev.etran.towerDefMc.utils.GameEndingSequence.displayVictorySequence(
-                gameId,
-                config.name,
-                players.toSet(),
-                waveManager.currentWave
+                gameId, config.name, players.toSet(), waveManager.currentWave
             )
         } else {
             dev.etran.towerDefMc.utils.GameEndingSequence.displayDefeatSequence(
-                gameId,
-                config.name,
-                players.toSet(),
-                waveManager.currentWave,
-                health
+                gameId, config.name, players.toSet(), waveManager.currentWave, health
             )
         }
 
@@ -140,7 +135,7 @@ class GameManager(
             waveManager.stopAllWaveActivities()
 
             // Remove game stats display armor stands
-            dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
+            GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
 
             // Clean up all entities for this game
             GameInstanceTracker.clearGame(gameId)
@@ -171,7 +166,7 @@ class GameManager(
         waveManager.stopAllWaveActivities()
 
         // Remove game stats display armor stands
-        dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
+        GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
 
         // Clean up all entities for this game
         GameInstanceTracker.clearGame(gameId)
@@ -198,9 +193,7 @@ class GameManager(
         // Initialize stats for new player
         if (isRunning) {
             PlayerStatsManager.initializePlayer(
-                gameId,
-                player,
-                config.defaultCash
+                gameId, player, config.defaultCash
             )
         }
     }

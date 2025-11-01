@@ -59,8 +59,7 @@ object WaveFactory {
 
         // Calculate wave parameters
         val minTime = 5.0 + (numSpawnPhases * 3.0)
-        val totalEnemies = sequence.filterIsInstance<EnemySpawnCommand>()
-            .sumOf { it.enemies.values.sum() }
+        val totalEnemies = sequence.filterIsInstance<EnemySpawnCommand>().sumOf { it.enemies.values.sum() }
         val maxTime = minTime + (totalEnemies * 2.0) + 20.0
 
         // Cash reward increases with wave difficulty
@@ -87,10 +86,7 @@ object WaveFactory {
      * Select enemies for a specific phase of a wave
      */
     private fun selectEnemiesForPhase(
-        waveNumber: Int,
-        phase: Int,
-        totalPhases: Int,
-        availableEnemies: List<String>
+        waveNumber: Int, phase: Int, totalPhases: Int, availableEnemies: List<String>
     ): Map<String, Int> {
         val enemyMap = mutableMapOf<String, Int>()
 
@@ -124,6 +120,7 @@ object WaveFactory {
                     enemyMap[secondEnemy] = max(1, (enemyCount * 0.2).toInt())
                 }
             }
+
             waveNumber <= 10 -> {
                 // Waves 6-10: Mix of basic and advanced
                 val numTypes = min(2, availableEnemies.size)
@@ -134,6 +131,7 @@ object WaveFactory {
                     enemyMap[enemy] = max(1, enemiesPerType)
                 }
             }
+
             waveNumber % 10 == 0 -> {
                 // Boss waves: Include all enemy types with emphasis on tough ones
                 if (availableEnemies.size >= 3) {
@@ -153,6 +151,7 @@ object WaveFactory {
                     }
                 }
             }
+
             else -> {
                 // Regular advanced waves: Random variety
                 val numTypes = min(3, availableEnemies.size)

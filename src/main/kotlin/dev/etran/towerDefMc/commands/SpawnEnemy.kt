@@ -55,11 +55,11 @@ object SpawnEnemy : CommandExecutor, TabCompleter {
 
         // Spawn the enemies
         repeat(amount) {
-            val entity = EnemyFactory.enemyPlace(enemyType, spawnLocation.clone().add(
-                Math.random() * 2 - 1,
-                0.0,
-                Math.random() * 2 - 1
-            ))
+            val entity = EnemyFactory.enemyPlace(
+                enemyType, spawnLocation.clone().add(
+                    Math.random() * 2 - 1, 0.0, Math.random() * 2 - 1
+                )
+            )
             if (entity != null) {
                 GameInstanceTracker.registerEntity(entity, gameId)
             }
@@ -71,18 +71,15 @@ object SpawnEnemy : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        alias: String,
-        args: Array<out String>
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         return when (args.size) {
-            1 -> GameRegistry.allGames.keys.map { it.toString() }
-                .filter { it.startsWith(args[0], ignoreCase = true) }
-            2 -> EnemyRegistry.getAllEnemies().map { it.id }
-                .filter { it.startsWith(args[1], ignoreCase = true) }
-            3 -> listOf("1", "5", "10", "25", "50")
-                .filter { it.startsWith(args[2]) }
+            1 -> GameRegistry.allGames.keys.map { it.toString() }.filter { it.startsWith(args[0], ignoreCase = true) }
+
+            2 -> EnemyRegistry.getAllEnemies().map { it.id }.filter { it.startsWith(args[1], ignoreCase = true) }
+
+            3 -> listOf("1", "5", "10", "25", "50").filter { it.startsWith(args[2]) }
+
             else -> emptyList()
         }
     }

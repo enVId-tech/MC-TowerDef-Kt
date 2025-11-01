@@ -1,7 +1,10 @@
 package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
+import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.type.Lectern
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -23,11 +26,9 @@ class GameStatsDisplayListener : Listener {
 
         val meta = item.itemMeta ?: return
         val isGameStatsDisplay = meta.persistentDataContainer.has(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING
         ) && meta.persistentDataContainer.get(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING
         ) == "Game_Stats_Display"
 
         if (!isGameStatsDisplay) return
@@ -51,15 +52,15 @@ class GameStatsDisplayListener : Listener {
             lecternLocation.block.type = Material.LECTERN
 
             // Set the lectern's facing direction to face the player
-            val lecternBlockData = lecternLocation.block.blockData as? org.bukkit.block.data.type.Lectern
+            val lecternBlockData = lecternLocation.block.blockData as? Lectern
             if (lecternBlockData != null) {
                 // Set facing direction towards the player
                 val playerYaw = player.location.yaw
                 lecternBlockData.facing = when {
-                    playerYaw >= -45 && playerYaw < 45 -> org.bukkit.block.BlockFace.SOUTH
-                    playerYaw >= 45 && playerYaw < 135 -> org.bukkit.block.BlockFace.WEST
-                    playerYaw >= 135 || playerYaw < -135 -> org.bukkit.block.BlockFace.NORTH
-                    else -> org.bukkit.block.BlockFace.EAST
+                    playerYaw >= -45 && playerYaw < 45 -> BlockFace.SOUTH
+                    playerYaw >= 45 && playerYaw < 135 -> BlockFace.WEST
+                    playerYaw >= 135 || playerYaw < -135 -> BlockFace.NORTH
+                    else -> BlockFace.EAST
                 }
                 lecternLocation.block.blockData = lecternBlockData
             }
@@ -82,8 +83,7 @@ class GameStatsDisplayListener : Listener {
             chunkData.set(key, PersistentDataType.STRING, newData)
 
             // Remove item from inventory if not in creative
-            if (player.gameMode != org.bukkit.GameMode.CREATIVE &&
-                player.gameMode != org.bukkit.GameMode.SPECTATOR) {
+            if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
                 player.inventory.itemInMainHand.amount -= 1
             }
 
