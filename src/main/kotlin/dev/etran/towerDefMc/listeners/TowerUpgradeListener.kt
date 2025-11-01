@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.listeners
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.TowerUpgradeConfig
 import dev.etran.towerDefMc.managers.PlayerStatsManager
+import dev.etran.towerDefMc.menus.towers.TowerManagementMenu
 import dev.etran.towerDefMc.registries.GameRegistry
 import net.kyori.adventure.text.Component
 import org.bukkit.Particle
@@ -33,18 +34,24 @@ class TowerUpgradeListener : Listener {
 
         if (elementType != "Tower") return
 
-        // Player must be sneaking to upgrade
-        if (!player.isSneaking) return
-
         event.isCancelled = true
 
         // Get the game the player is in
         val game = GameRegistry.getGameByPlayer(player.uniqueId)
         if (game == null) {
-            player.sendMessage("§cYou must be in a game to upgrade towers!")
+            player.sendMessage("§cYou must be in a game to interact with towers!")
             return
         }
 
+        // If player is sneaking, open the tower management menu
+        if (!player.isSneaking) {
+            val menu = TowerManagementMenu(player, entity, game.gameId)
+            MenuListener.registerMenu(player, menu)
+            menu.open()
+            return
+        }
+
+        // Player must be sneaking to upgrade (quick upgrade without menu)
         // Get current tower level
         val currentLevel = entity.persistentDataContainer.getOrDefault(
             TowerDefMC.createKey("towerLevel"),
