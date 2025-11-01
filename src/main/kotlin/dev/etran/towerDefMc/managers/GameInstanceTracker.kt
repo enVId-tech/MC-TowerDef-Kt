@@ -114,6 +114,25 @@ object GameInstanceTracker {
                 }
             }
         }
+
+        // Remove all tower items from players' inventories for this game
+        plugin.server.onlinePlayers.forEach { player ->
+            player.inventory.contents.forEachIndexed { index, item ->
+                if (item != null && item.type != org.bukkit.Material.AIR) {
+                    // Check if this is a tower item
+                    val isTowerItem = item.itemMeta?.persistentDataContainer?.has(
+                        TowerDefMC.TOWER_RANGE,
+                        org.bukkit.persistence.PersistentDataType.DOUBLE
+                    ) == true
+
+                    if (isTowerItem) {
+                        // Remove the tower item from inventory
+                        player.inventory.setItem(index, null)
+                    }
+                }
+            }
+            player.updateInventory()
+        }
     }
 
     /**
