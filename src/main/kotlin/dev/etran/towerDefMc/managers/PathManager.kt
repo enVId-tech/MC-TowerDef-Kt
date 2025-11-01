@@ -4,6 +4,7 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.PathData
 import dev.etran.towerDefMc.data.SerializableLocation
 import dev.etran.towerDefMc.data.SerializablePathData
+import dev.etran.towerDefMc.utils.DebugLogger
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -27,6 +28,8 @@ class PathManager {
         val path = PathData(pathId, name, startPoint, mutableListOf(), endPoint, true) // Visible by default
         paths[pathId] = path
 
+        DebugLogger.logPath("Created new path $pathId: '$name'")
+
         // Create armor stands for visualization
         createPathVisualization(pathId)
 
@@ -39,6 +42,8 @@ class PathManager {
     fun addCheckpointToPath(pathId: Int, checkpoint: Location): Boolean {
         val path = paths[pathId] ?: return false
         path.checkpoints.add(checkpoint)
+
+        DebugLogger.logPath("Added checkpoint to path $pathId (total checkpoints: ${path.checkpoints.size})")
 
         // Update visualization
         updatePathVisualization(pathId)
@@ -55,6 +60,8 @@ class PathManager {
 
         path.checkpoints.removeAt(checkpointIndex)
 
+        DebugLogger.logPath("Removed checkpoint $checkpointIndex from path $pathId")
+
         // Update visualization
         updatePathVisualization(pathId)
 
@@ -65,7 +72,9 @@ class PathManager {
      * Delete a path
      */
     fun deletePath(pathId: Int): Boolean {
-        paths.remove(pathId) ?: return false
+        val deletedPath = paths.remove(pathId) ?: return false
+
+        DebugLogger.logPath("Deleted path $pathId: '${deletedPath.name}'")
 
         // Remove armor stands
         pathArmorStands[pathId]?.forEach { it.remove() }
@@ -169,8 +178,7 @@ class PathManager {
      */
     fun handleArmorStandRemoval(stand: ArmorStand): Boolean {
         val elementType = stand.persistentDataContainer.get(
-            TowerDefMC.ELEMENT_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
         ) ?: return false
 
         // Find which path this stand belongs to
@@ -182,15 +190,13 @@ class PathManager {
                 deletePath(pathId)
                 return true
             }
+
             "PathCheckpoint" -> {
                 // Find the checkpoint index and remove it from the path
                 val path = paths[pathId] ?: return false
                 val standLocation = stand.location
                 val checkpointIndex = path.checkpoints.indexOfFirst { loc ->
-                    loc.world == standLocation.world &&
-                    loc.blockX == standLocation.blockX &&
-                    loc.blockY == standLocation.blockY &&
-                    loc.blockZ == standLocation.blockZ
+                    loc.world == standLocation.world && loc.blockX == standLocation.blockX && loc.blockY == standLocation.blockY && loc.blockZ == standLocation.blockZ
                 }
 
                 if (checkpointIndex >= 0) {
@@ -235,9 +241,7 @@ class PathManager {
             stand.customName(Component.text("§a§lSTART - ${path.name}"))
             stand.isCustomNameVisible = shouldBeVisible
             stand.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                "PathStart"
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "PathStart"
             )
         }
         stands.add(startStand)
@@ -251,9 +255,7 @@ class PathManager {
                 stand.customName(Component.text("§e§lCHECKPOINT ${index + 1} - ${path.name}"))
                 stand.isCustomNameVisible = shouldBeVisible
                 stand.persistentDataContainer.set(
-                    TowerDefMC.ELEMENT_TYPES,
-                    PersistentDataType.STRING,
-                    "PathCheckpoint"
+                    TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "PathCheckpoint"
                 )
             }
             stands.add(checkpointStand)
@@ -267,9 +269,7 @@ class PathManager {
             stand.customName(Component.text("§c§lEND - ${path.name}"))
             stand.isCustomNameVisible = shouldBeVisible
             stand.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                "PathEnd"
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "PathEnd"
             )
         }
         stands.add(endStand)
@@ -317,8 +317,7 @@ class PathManager {
         Bukkit.getWorlds().forEach { world ->
             world.entities.filterIsInstance<ArmorStand>().forEach { stand ->
                 val elementType = stand.persistentDataContainer.get(
-                    TowerDefMC.ELEMENT_TYPES,
-                    PersistentDataType.STRING
+                    TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
                 )
                 // Remove any armor stands that are path-related
                 if (elementType in listOf("PathStart", "PathCheckpoint", "PathEnd")) {
@@ -359,7 +358,8 @@ class PathManager {
     }
 
     private fun fromSerializable(serializable: SerializableLocation): Location {
-        val world = Bukkit.getWorld(serializable.world) ?: throw IllegalStateException("World ${serializable.world} not found")
+        val world =
+            Bukkit.getWorld(serializable.world) ?: throw IllegalStateException("World ${serializable.world} not found")
         return Location(world, serializable.x, serializable.y, serializable.z, serializable.yaw, serializable.pitch)
     }
 

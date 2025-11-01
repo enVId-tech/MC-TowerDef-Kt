@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.registries
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.*
 import dev.etran.towerDefMc.managers.GameManager
+import dev.etran.towerDefMc.utils.DebugLogger
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.util.UUID
@@ -45,6 +46,8 @@ object GameRegistry {
     fun loadAllSavedGames() {
         val gameFiles = getAllGameFiles()
 
+        DebugLogger.logGame("Loading ${gameFiles.size} saved game files")
+
         gameFiles.forEach { file ->
             val idRegex = Regex("game_(\\d+)\\.yml")
             val match = idRegex.find(file.name)
@@ -52,6 +55,7 @@ object GameRegistry {
 
             if (gameId == null) {
                 plugin.logger.warning("Skipping file ${file.name}: Invalid ID format.")
+                DebugLogger.logGame("Failed to load ${file.name} - invalid ID format")
                 return@forEach
             }
 
@@ -77,17 +81,19 @@ object GameRegistry {
                 )
 
                 val newGameManager = GameManager(
-                    gameId = gameId,
-                    config = gameConfigurationData
+                    gameId = gameId, config = gameConfigurationData
                 )
 
                 allGames[gameId] = newGameManager
-                plugin.logger.info("Loaded Game $gameId (${newGameManager.config.name})")
+                DebugLogger.logGame("Loaded game $gameId: '${gameConfigurationData.name}' with ${wavesData.size} waves and ${pathsData.size} paths")
             } catch (e: Exception) {
-                plugin.logger.severe("Failed to load game $gameId: ${e.message}")
+                plugin.logger.severe("Failed to load game from ${file.name}: ${e.message}")
+                DebugLogger.logGame("Error loading game ${file.name}: ${e.message}")
                 e.printStackTrace()
             }
         }
+
+        DebugLogger.logGame("Game loading complete. Total games loaded: ${allGames.size}")
     }
 
     private fun deserializeWave(waveMap: Map<*, *>): WaveData {
@@ -122,6 +128,7 @@ object GameRegistry {
                 val waitSeconds = (commandMap["waitSeconds"] as? Number)?.toDouble() ?: 0.0
                 WaitCommand(waitSeconds)
             }
+
             "ENEMY_SPAWN" -> {
                 val intervalSeconds = (commandMap["intervalSeconds"] as? Number)?.toDouble() ?: 1.0
                 val enemiesMap = commandMap["enemies"] as? Map<*, *> ?: emptyMap<Any, Any>()
@@ -134,6 +141,7 @@ object GameRegistry {
                 }.toMap()
                 EnemySpawnCommand(enemies, intervalSeconds)
             }
+
             else -> null
         }
     }
@@ -156,21 +164,19 @@ object GameRegistry {
             "cashGiven" to wave.cashGiven,
             "sequence" to wave.sequence.map { command ->
                 serializeWaveCommand(command)
-            }
-        )
+            })
     }
 
     private fun serializeWaveCommand(command: WaveCommand): Map<String, Any> {
         return when (command) {
             is WaitCommand -> mapOf(
-                "type" to "WAIT",
-                "waitSeconds" to command.waitSeconds
+                "type" to "WAIT", "waitSeconds" to command.waitSeconds
             )
+
             is EnemySpawnCommand -> mapOf(
-                "type" to "ENEMY_SPAWN",
-                "intervalSeconds" to command.intervalSeconds,
-                "enemies" to command.enemies
+                "type" to "ENEMY_SPAWN", "intervalSeconds" to command.intervalSeconds, "enemies" to command.enemies
             )
+
             else -> mapOf("type" to "UNKNOWN")
         }
     }
@@ -238,12 +244,7 @@ object GameRegistry {
             val pitch = (locationMap["pitch"] as? Number)?.toFloat() ?: 0f
 
             return SerializableLocation(
-                world = world,
-                x = x,
-                y = y,
-                z = z,
-                yaw = yaw,
-                pitch = pitch
+                world = world, x = x, y = y, z = z, yaw = yaw, pitch = pitch
             )
         } catch (e: Exception) {
             plugin.logger.warning("Failed to deserialize location: ${e.message}")

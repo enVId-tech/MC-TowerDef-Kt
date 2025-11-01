@@ -47,10 +47,10 @@ class TowerSelection(
             // Check if tower is enabled (present in the list with any value, or not present at all means enabled)
             val currentLimit = towerLimits[tower.id]
             val isEnabled = currentLimit != null && currentLimit != 0 || !towerLimits.containsKey(tower.id)
-            val limitDisplay = when {
-                currentLimit == null -> "No Limit"
-                currentLimit == 0 -> "Disabled"
-                currentLimit == -1 -> "No Limit"
+            val limitDisplay = when (currentLimit) {
+                null -> "No Limit"
+                0 -> "Disabled"
+                -1 -> "No Limit"
                 else -> currentLimit.toString()
             }
 
@@ -139,13 +139,13 @@ class TowerSelection(
 
         val slot = event.slot
 
-        when {
-            slot in 0..35 -> handleTowerClick(slot, event)
-            slot == 45 -> handleBackPage()
-            slot == 46 -> handleRefresh()
-            slot == 47 -> handleDone()
-            slot == 49 -> handleClearAllLimits()
-            slot == 53 -> handleNextPage()
+        when (slot) {
+            in 0..35 -> handleTowerClick(slot, event)
+            45 -> handleBackPage()
+            46 -> handleRefresh()
+            47 -> handleDone()
+            49 -> handleClearAllLimits()
+            53 -> handleNextPage()
         }
     }
 

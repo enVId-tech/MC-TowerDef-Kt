@@ -33,9 +33,7 @@ object WaveAnnouncement {
                 Component.text("WAVE $waveNumber", NamedTextColor.RED, TextDecoration.BOLD),
                 Component.text(waveData.name, NamedTextColor.YELLOW),
                 Title.Times.times(
-                    Duration.ofMillis(500),
-                    Duration.ofMillis(2500),
-                    Duration.ofMillis(500)
+                    Duration.ofMillis(500), Duration.ofMillis(2500), Duration.ofMillis(500)
                 )
             )
             player.showTitle(title)
@@ -104,7 +102,13 @@ object WaveAnnouncement {
             if (waveData.minTime > 0 || waveData.maxTime < 999) {
                 player.sendMessage("")
                 if (waveData.minTime > 0 && waveData.maxTime < 999) {
-                    player.sendMessage("  §7⏱ Duration: §f${String.format("%.1f", waveData.minTime)}s - ${String.format("%.1f", waveData.maxTime)}s")
+                    player.sendMessage(
+                        "  §7⏱ Duration: §f${String.format("%.1f", waveData.minTime)}s - ${
+                            String.format(
+                                "%.1f", waveData.maxTime
+                            )
+                        }s"
+                    )
                 } else if (waveData.maxTime < 999) {
                     player.sendMessage("  §7⏱ Max Duration: §f${String.format("%.1f", waveData.maxTime)}s")
                 }
@@ -129,9 +133,7 @@ object WaveAnnouncement {
                 Component.text("WAVE COMPLETE!", NamedTextColor.GREEN, TextDecoration.BOLD),
                 Component.text("+ $cashReward cash", NamedTextColor.GOLD),
                 Title.Times.times(
-                    Duration.ofMillis(300),
-                    Duration.ofMillis(1500),
-                    Duration.ofMillis(300)
+                    Duration.ofMillis(300), Duration.ofMillis(1500), Duration.ofMillis(300)
                 )
             )
             player.showTitle(title)
@@ -160,9 +162,7 @@ object WaveAnnouncement {
                 Component.text(""),
                 Component.text("Next wave in ${secondsUntilNext}s...", NamedTextColor.GRAY),
                 Title.Times.times(
-                    Duration.ofMillis(0),
-                    Duration.ofMillis(1000),
-                    Duration.ofMillis(500)
+                    Duration.ofMillis(0), Duration.ofMillis(1000), Duration.ofMillis(500)
                 )
             )
             player.showTitle(title)

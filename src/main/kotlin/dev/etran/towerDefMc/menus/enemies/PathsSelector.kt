@@ -28,11 +28,8 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
         paths.take(27).forEachIndexed { index, path ->
             val visibilityIcon = if (path.isVisible) "§a✔" else "§c✖"
             inventory.setItem(
-                index,
-                createMenuItem(
-                    if (path.isVisible) Material.LIME_CONCRETE else Material.GRAY_CONCRETE,
-                    "§e${path.name}",
-                    listOf(
+                index, createMenuItem(
+                    if (path.isVisible) Material.LIME_CONCRETE else Material.GRAY_CONCRETE, "§e${path.name}", listOf(
                         "§7Path ID: ${path.id}",
                         "§7Checkpoints: ${path.checkpoints.size}",
                         "§7Visible: $visibilityIcon ${if (path.isVisible) "Enabled" else "Disabled"}",
@@ -51,11 +48,8 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
 
         // Action buttons (bottom 2 rows)
         inventory.setItem(
-            37,
-            createMenuItem(
-                Material.EMERALD_BLOCK,
-                "§a§lCreate New Path",
-                listOf(
+            37, createMenuItem(
+                Material.EMERALD_BLOCK, "§a§lCreate New Path", listOf(
                     "§7Create a new enemy path interactively",
                     "§7You'll place: start point, checkpoints, end point",
                     "§7",
@@ -65,11 +59,8 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
         )
 
         inventory.setItem(
-            39,
-            createMenuItem(
-                Material.ANVIL,
-                "§6§lModify Path Waypoints",
-                listOf(
+            39, createMenuItem(
+                Material.ANVIL, "§6§lModify Path Waypoints", listOf(
                     "§7Enter modification mode",
                     "§7Punch waypoints to remove them",
                     "§7Replace start/end points if removed",
@@ -81,25 +72,16 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
         )
 
         inventory.setItem(
-            43,
-            createMenuItem(
-                Material.BARRIER,
-                "§cClear All Paths",
-                listOf(
-                    "§4WARNING: This will delete ALL paths!",
-                    "§4This cannot be undone!",
-                    "",
-                    "§eClick to clear all"
+            43, createMenuItem(
+                Material.BARRIER, "§cClear All Paths", listOf(
+                    "§4WARNING: This will delete ALL paths!", "§4This cannot be undone!", "", "§eClick to clear all"
                 )
             )
         )
 
         inventory.setItem(
-            49,
-            createMenuItem(
-                Material.ARROW,
-                "§eBack to Game",
-                listOf("§7Return to modify game menu")
+            49, createMenuItem(
+                Material.ARROW, "§eBack to Game", listOf("§7Return to modify game menu")
             )
         )
     }
@@ -136,6 +118,7 @@ class PathsSelector(player: Player, private val gameId: Int) : CustomMenu(player
                 gameManager?.saveGame()
                 refresh()
             }
+
             event.isLeftClick || event.isRightClick -> {
                 // Toggle visibility (both left and right click)
                 pathManager.togglePathVisibility(path.id)

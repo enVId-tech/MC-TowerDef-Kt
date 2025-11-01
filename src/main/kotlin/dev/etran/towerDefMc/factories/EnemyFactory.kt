@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.factories
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.utils.createHealthBar
+import dev.etran.towerDefMc.utils.DebugLogger
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -36,6 +37,8 @@ object EnemyFactory {
         val block = event.clickedBlock ?: return
         val location = block.location.add(0.5, 1.0, 0.5)
         val player = event.player
+
+        DebugLogger.logEnemy("Player ${player.name} placing enemy at ${location.blockX}, ${location.blockY}, ${location.blockZ}")
 
         val world = location.world
         val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
@@ -80,6 +83,8 @@ object EnemyFactory {
 
         createHealthBar(entity)
 
+        DebugLogger.logEnemy("Enemy spawned successfully with custom health system")
+
         // Take away 1 from the user if they aren't in creative or spectator mode.
         if (player.gameMode != GameMode.CREATIVE && player.gameMode != GameMode.SPECTATOR) {
             event.player.inventory.itemInMainHand.amount -= 1
@@ -93,7 +98,9 @@ object EnemyFactory {
 
         if (enemyConfig == null) {
             // Fallback to basic enemy if type not found
-            println("Warning: Enemy type '$enemyType' not found in registry, using default")
+            DebugLogger.logEnemy("Warning: Enemy type '$enemyType' not found in registry, using default")
+        } else {
+            DebugLogger.logEnemy("Spawning enemy type '$enemyType' with health=${enemyConfig.health}, speed=${enemyConfig.speed}")
         }
 
         val world = location.world
@@ -123,6 +130,8 @@ object EnemyFactory {
                 PersistentDataType.DOUBLE,
                 enemyConfig.health
             )
+
+            DebugLogger.logEnemy("Enemy configured with custom_health=${enemyConfig.health}, speed_base=${enemyConfig.speed * 0.1}")
         } else {
             // Default values
             if (scale != null) scale.baseValue = 1.5
@@ -163,6 +172,8 @@ object EnemyFactory {
 
         // Create health bar AFTER setting the custom health
         createHealthBar(entity)
+
+        DebugLogger.logEnemy("Enemy spawned: UUID=${entity.uniqueId}, type=$enemyType at ${location.blockX},${location.blockY},${location.blockZ}")
 
         return entity
     }

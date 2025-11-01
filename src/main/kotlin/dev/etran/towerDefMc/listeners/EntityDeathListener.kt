@@ -5,6 +5,7 @@ import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.managers.PlayerStatsManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.cleanUpEnemyHealthBar
+import dev.etran.towerDefMc.utils.DebugLogger
 import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -29,12 +30,15 @@ object EntityDeathListener : Listener {
                     // Find which game this checkpoint belongs to and remove it
                     val gameId = GameInstanceTracker.getGameId(gameElement)
                     if (gameId != null) {
+                        DebugLogger.logPath("Checkpoint removed from game $gameId")
                         GameRegistry.activeGames[gameId]?.waypointManager?.remove(gameElement)
                     }
                 }
                 "Enemy" -> {
                     // Get the game ID before unregistering
                     val gameId = GameInstanceTracker.getGameId(gameElement)
+
+                    DebugLogger.logEnemy("Enemy ${gameElement.uniqueId} killed in game $gameId")
 
                     // Unregister the enemy from the game instance tracker
                     // This is critical for wave completion detection

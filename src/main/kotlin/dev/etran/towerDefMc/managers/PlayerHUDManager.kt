@@ -49,19 +49,14 @@ object PlayerHUDManager {
         val stats = PlayerStatsManager.getPlayerStats(game.gameId, player.uniqueId) ?: return
 
         // Create action bar message with cash and key stats
-        val message = Component.text()
-            .append(Component.text("💰 ", NamedTextColor.GOLD, TextDecoration.BOLD))
+        val message = Component.text().append(Component.text("💰 ", NamedTextColor.GOLD, TextDecoration.BOLD))
             .append(Component.text("${stats.cash}", NamedTextColor.YELLOW))
-            .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-            .append(Component.text("⚔ ", NamedTextColor.RED))
+            .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("⚔ ", NamedTextColor.RED))
             .append(Component.text("${stats.kills}", NamedTextColor.WHITE))
-            .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-            .append(Component.text("🗼 ", NamedTextColor.AQUA))
+            .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("🗼 ", NamedTextColor.AQUA))
             .append(Component.text("${stats.towersPlaced}", NamedTextColor.WHITE))
-            .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-            .append(Component.text("📊 ", NamedTextColor.GREEN))
-            .append(Component.text("W${stats.wavesCompleted}", NamedTextColor.WHITE))
-            .build()
+            .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("📊 ", NamedTextColor.GREEN))
+            .append(Component.text("W${stats.wavesCompleted}", NamedTextColor.WHITE)).build()
 
         player.sendActionBar(message)
 
@@ -79,27 +74,18 @@ object PlayerHUDManager {
         val playerCount = allPlayerStats.size
         val activePaths = game.pathManager.getAllPaths().count { it.isVisible }
 
-        val subtitle = Component.text()
-            .append(Component.text("❤ ", NamedTextColor.RED))
+        val subtitle = Component.text().append(Component.text("❤ ", NamedTextColor.RED))
             .append(Component.text("${game.currentHealth}/${game.config.maxHealth}", NamedTextColor.WHITE))
-            .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-            .append(Component.text("🌊 ", NamedTextColor.AQUA))
+            .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("🌊 ", NamedTextColor.AQUA))
             .append(Component.text("${game.waveManager.currentWave}/${game.config.waves.size}", NamedTextColor.WHITE))
-            .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-            .append(Component.text("👥 ", NamedTextColor.GREEN))
+            .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("👥 ", NamedTextColor.GREEN))
             .append(Component.text("$playerCount", NamedTextColor.WHITE))
-            .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
-            .append(Component.text("🛤 ", NamedTextColor.YELLOW))
-            .append(Component.text("$activePaths", NamedTextColor.WHITE))
-            .build()
+            .append(Component.text(" | ", NamedTextColor.DARK_GRAY)).append(Component.text("🛤 ", NamedTextColor.YELLOW))
+            .append(Component.text("$activePaths", NamedTextColor.WHITE)).build()
 
         val title = Title.title(
-            Component.empty(),
-            subtitle,
-            Title.Times.times(
-                Duration.ofMillis(250),
-                Duration.ofSeconds(3),
-                Duration.ofMillis(500)
+            Component.empty(), subtitle, Title.Times.times(
+                Duration.ofMillis(250), Duration.ofSeconds(3), Duration.ofMillis(500)
             )
         )
 

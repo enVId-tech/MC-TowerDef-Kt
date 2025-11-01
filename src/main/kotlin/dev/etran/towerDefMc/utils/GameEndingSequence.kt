@@ -32,9 +32,7 @@ object GameEndingSequence {
                 Component.text("VICTORY!", NamedTextColor.GOLD, TextDecoration.BOLD),
                 Component.text("All waves completed!", NamedTextColor.YELLOW),
                 Title.Times.times(
-                    Duration.ofMillis(500),
-                    Duration.ofMillis(3500),
-                    Duration.ofMillis(1000)
+                    Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(1000)
                 )
             )
             player.showTitle(title)
@@ -57,7 +55,9 @@ object GameEndingSequence {
     /**
      * Display the defeat sequence to all players in the game
      */
-    fun displayDefeatSequence(gameId: Int, gameName: String, playerUUIDs: Set<UUID>, currentWave: Int, remainingHealth: Int) {
+    fun displayDefeatSequence(
+        gameId: Int, gameName: String, playerUUIDs: Set<UUID>, currentWave: Int, remainingHealth: Int
+    ) {
         val players = playerUUIDs.mapNotNull { Bukkit.getPlayer(it) }
 
         // Display defeat title
@@ -69,12 +69,8 @@ object GameEndingSequence {
             }
 
             val title = Title.title(
-                Component.text("DEFEAT", NamedTextColor.DARK_RED, TextDecoration.BOLD),
-                subtitle,
-                Title.Times.times(
-                    Duration.ofMillis(500),
-                    Duration.ofMillis(3500),
-                    Duration.ofMillis(1000)
+                Component.text("DEFEAT", NamedTextColor.DARK_RED, TextDecoration.BOLD), subtitle, Title.Times.times(
+                    Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(1000)
                 )
             )
             player.showTitle(title)
@@ -92,7 +88,9 @@ object GameEndingSequence {
     /**
      * Display game statistics in chat for all players
      */
-    private fun displayGameStatistics(gameId: Int, gameName: String, finalWave: Int, players: List<Player>, victory: Boolean) {
+    private fun displayGameStatistics(
+        gameId: Int, gameName: String, finalWave: Int, players: List<Player>, victory: Boolean
+    ) {
         val allStats = PlayerStatsManager.getAllPlayerStats(gameId)
 
         players.forEach { player ->
@@ -153,7 +151,13 @@ object GameEndingSequence {
                 val topDamager = allStats.maxByOrNull { it.value.damageDealt }
                 if (topDamager != null && topDamager.value.damageDealt > 0) {
                     val damagerName = Bukkit.getPlayer(topDamager.key)?.name ?: "Unknown"
-                    player.sendMessage("  §7Most Damage: §c$damagerName §7(${String.format("%.1f", topDamager.value.damageDealt)})")
+                    player.sendMessage(
+                        "  §7Most Damage: §c$damagerName §7(${
+                            String.format(
+                                "%.1f", topDamager.value.damageDealt
+                            )
+                        })"
+                    )
                 }
 
                 // Most towers

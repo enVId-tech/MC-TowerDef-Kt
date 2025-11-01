@@ -4,7 +4,7 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.GameInstanceTracker
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.utils.applyEnemyMovementLogic
-import org.bukkit.Bukkit
+import dev.etran.towerDefMc.utils.DebugLogger
 import org.bukkit.World
 import org.bukkit.entity.LivingEntity
 import org.bukkit.persistence.PersistentDataType
@@ -32,9 +32,13 @@ object EnemyScheduler {
                     applyEnemyMovementLogic(entity, game.waypointManager, gameId)
                 } else {
                     // Game not found, remove this orphaned enemy
+                    DebugLogger.logEnemy("Removing orphaned enemy ${entity.uniqueId} - game $gameId not found")
                     entity.remove()
                     GameInstanceTracker.unregisterEntity(entity)
                 }
+            } else {
+                DebugLogger.logEnemy("Enemy ${entity.uniqueId} has no game ID - removing")
+                entity.remove()
             }
         }
     }

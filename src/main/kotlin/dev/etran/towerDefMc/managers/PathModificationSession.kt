@@ -97,8 +97,7 @@ object PathModificationSession {
         val session = activeSessions[player.uniqueId] ?: return false
 
         val elementType = stand.persistentDataContainer.get(
-            TowerDefMC.ELEMENT_TYPES,
-            PersistentDataType.STRING
+            TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
         ) ?: return false
 
         val gameManager = GameRegistry.allGames[session.gameId] ?: return false
@@ -143,10 +142,7 @@ object PathModificationSession {
                 // Find which checkpoint this is
                 val standLocation = stand.location
                 val checkpointIndex = path.checkpoints.indexOfFirst { loc ->
-                    loc.world == standLocation.world &&
-                    loc.blockX == standLocation.blockX &&
-                    loc.blockY == standLocation.blockY &&
-                    loc.blockZ == standLocation.blockZ
+                    loc.world == standLocation.world && loc.blockX == standLocation.blockX && loc.blockY == standLocation.blockY && loc.blockZ == standLocation.blockZ
                 }
 
                 if (checkpointIndex >= 0) {
@@ -311,10 +307,11 @@ object PathModificationSession {
         val meta = item.itemMeta
 
         meta.displayName(Component.text("§a§lType 'finish' to complete"))
-        meta.lore(listOf(
-            Component.text("§7Type 'finish' in chat when you're"),
-            Component.text("§7done modifying the path")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Type 'finish' in chat when you're"), Component.text("§7done modifying the path")
+            )
+        )
 
         item.itemMeta = meta
         player.inventory.setItem(8, item)
@@ -325,14 +322,14 @@ object PathModificationSession {
         val meta = item.itemMeta
 
         meta.displayName(Component.text(name))
-        meta.lore(listOf(
-            Component.text("§7Right-click to place replacement")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Right-click to place replacement")
+            )
+        )
 
         meta.persistentDataContainer.set(
-            TowerDefMC.createKey("pathReplacementItem"),
-            PersistentDataType.STRING,
-            material.name
+            TowerDefMC.createKey("pathReplacementItem"), PersistentDataType.STRING, material.name
         )
 
         item.itemMeta = meta
@@ -349,8 +346,7 @@ object PathModificationSession {
     private fun hasReplacementItem(player: Player, material: Material): Boolean {
         return player.inventory.contents.any { item ->
             item?.type == material && item.itemMeta?.persistentDataContainer?.has(
-                TowerDefMC.createKey("pathReplacementItem"),
-                PersistentDataType.STRING
+                TowerDefMC.createKey("pathReplacementItem"), PersistentDataType.STRING
             ) == true
         }
     }

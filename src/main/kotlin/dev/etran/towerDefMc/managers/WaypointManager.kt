@@ -56,18 +56,14 @@ class WaypointManager {
 
             // Set the element type so it works with existing system
             stand.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                "StartPoint"
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "StartPoint"
             )
         }
 
         // Add to startpoint manager using existing method
         val startId = addStartpoint(armorStand)
         armorStand.persistentDataContainer.set(
-            TowerDefMC.STARTPOINT_ID,
-            PersistentDataType.INTEGER,
-            startId
+            TowerDefMC.STARTPOINT_ID, PersistentDataType.INTEGER, startId
         )
 
         saveCheckpoints()
@@ -146,18 +142,14 @@ class WaypointManager {
 
             // Set the element type so it works with existing system
             stand.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                "Checkpoint"
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Checkpoint"
             )
         }
 
         // Add to checkpoint manager using existing method
         val checkpointId = add(armorStand)
         armorStand.persistentDataContainer.set(
-            TowerDefMC.CHECKPOINT_ID,
-            PersistentDataType.INTEGER,
-            checkpointId
+            TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, checkpointId
         )
         armorStand.customName(Component.text("§e§lCHECKPOINT #$checkpointId"))
 
@@ -229,8 +221,10 @@ class WaypointManager {
     fun setEndPoint(location: Location) {
         // Remove old end point if exists (stored as special checkpoint)
         val existingEndpoint = checkpoints.values.lastOrNull()
-        if (existingEndpoint != null &&
-            existingEndpoint.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING) == "EndPoint") {
+        if (existingEndpoint != null && existingEndpoint.persistentDataContainer.get(
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING
+            ) == "EndPoint"
+        ) {
             remove(existingEndpoint)
         }
 
@@ -240,23 +234,19 @@ class WaypointManager {
             stand.isVisible = standsAreVisible
             stand.setGravity(false)
             stand.isInvulnerable = true
-            stand.customName(net.kyori.adventure.text.Component.text("§c§lEND POINT"))
+            stand.customName(Component.text("§c§lEND POINT"))
             stand.isCustomNameVisible = true
 
             // Set the element type so it works with existing system
             stand.persistentDataContainer.set(
-                TowerDefMC.ELEMENT_TYPES,
-                PersistentDataType.STRING,
-                "EndPoint"
+                TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "EndPoint"
             )
         }
 
         // Add to checkpoint manager using existing method
         val checkpointId = add(armorStand)
         armorStand.persistentDataContainer.set(
-            TowerDefMC.CHECKPOINT_ID,
-            PersistentDataType.INTEGER,
-            checkpointId
+            TowerDefMC.CHECKPOINT_ID, PersistentDataType.INTEGER, checkpointId
         )
 
         saveCheckpoints()
@@ -302,7 +292,8 @@ class WaypointManager {
 
             Bukkit.getWorlds().forEach { world ->
                 world.entities.filterIsInstance<ArmorStand>().filter { entity ->
-                    val elementType = entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING)
+                    val elementType =
+                        entity.persistentDataContainer.get(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING)
                     // Only toggle visibility for Checkpoint, StartPoint, and EndPoint
                     // NOT for PathStart, PathCheckpoint, or PathEnd (those are managed by PathManager)
                     elementType == "Checkpoint" || elementType == "StartPoint" || elementType == "EndPoint"
@@ -362,71 +353,5 @@ class WaypointManager {
             err.printStackTrace()
             plugin.logger.severe { "Could not save checkpoints.yml: ${err.message}" }
         }
-    }
-
-    /**
-     * Load waypoints from file
-     */
-    fun loadCheckpoints() {
-        checkpoints.clear()
-
-        val file = File(plugin.dataFolder, "checkpoints.yml")
-        if (!file.exists()) {
-            plugin.logger.info { "No checkpoints.yml found. Skipping waypoint loading." }
-            return
-        }
-
-        val config = YamlConfiguration.loadConfiguration(file)
-        val locationDataList = config.getMapList("checkpoints")
-
-        for (data in locationDataList) {
-            val worldName = data["world"] as? String ?: continue
-            val world = Bukkit.getWorld(worldName) ?: continue
-            val x = (data["x"] as? Number)?.toDouble() ?: continue
-            val y = (data["y"] as? Number)?.toDouble() ?: continue
-            val z = (data["z"] as? Number)?.toDouble() ?: continue
-            val index = (data["index"] as? Number)?.toInt() ?: continue
-            val isEndpoint = data["isEndpoint"] as? Boolean ?: false
-            val isCheckpoint = data["isCheckpoint"] as? Boolean ?: false
-            val checkpointId = (data["checkpointId"] as? Number)?.toInt() ?: index
-
-            val location = Location(world, x, y, z)
-
-            val armorStand = world.spawn(location, ArmorStand::class.java) { stand ->
-                stand.isVisible = standsAreVisible
-                stand.setGravity(false)
-                stand.isInvulnerable = true
-                stand.isCustomNameVisible = true
-
-                when {
-                    isEndpoint -> {
-                        stand.customName(net.kyori.adventure.text.Component.text("§c§lEND POINT"))
-                        stand.persistentDataContainer.set(
-                            TowerDefMC.ELEMENT_TYPES,
-                            PersistentDataType.STRING,
-                            "EndPoint"
-                        )
-                    }
-                    isCheckpoint -> {
-                        stand.customName(net.kyori.adventure.text.Component.text("§e§lCHECKPOINT #$checkpointId"))
-                        stand.persistentDataContainer.set(
-                            TowerDefMC.ELEMENT_TYPES,
-                            PersistentDataType.STRING,
-                            "Checkpoint"
-                        )
-                    }
-                }
-
-                stand.persistentDataContainer.set(
-                    TowerDefMC.CHECKPOINT_ID,
-                    PersistentDataType.INTEGER,
-                    checkpointId
-                )
-            }
-
-            checkpoints[index] = armorStand
-        }
-
-        plugin.logger.info { "Loaded ${checkpoints.size} waypoints from checkpoints.yml" }
     }
 }

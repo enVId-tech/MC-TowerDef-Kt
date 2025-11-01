@@ -92,13 +92,11 @@ fun createHealthBar(enemy: LivingEntity): TextDisplay {
 
     // Get custom health values if available
     val currentCustomHealth = enemy.persistentDataContainer.get(
-        TowerDefMC.createKey("custom_health"),
-        PersistentDataType.DOUBLE
+        TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE
     ) ?: enemy.health
 
     val maxCustomHealth = enemy.persistentDataContainer.get(
-        TowerDefMC.createKey("custom_max_health"),
-        PersistentDataType.DOUBLE
+        TowerDefMC.createKey("custom_max_health"), PersistentDataType.DOUBLE
     ) ?: (enemy.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0)
 
     textDisplay.text(getHealthBarComponent(currentCustomHealth, maxCustomHealth))

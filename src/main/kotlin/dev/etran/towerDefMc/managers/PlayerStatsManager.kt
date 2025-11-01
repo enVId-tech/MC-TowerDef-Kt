@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.managers
 
 import dev.etran.towerDefMc.data.PlayerStats
+import dev.etran.towerDefMc.utils.DebugLogger
 import java.util.UUID
 
 /**
@@ -53,7 +54,7 @@ object PlayerStatsManager {
         val stats = getPlayerStats(gameId, playerUUID)
         if (stats == null) {
             // Player stats don't exist - initialize them first
-            println("Warning: Player $playerUUID had no stats in game $gameId, initializing now")
+            DebugLogger.logStats("Warning: Player $playerUUID had no stats in game $gameId, initializing now")
             initializePlayer(gameId, playerUUID, 0)
             getPlayerStats(gameId, playerUUID)?.addCash(amount)
         } else {
@@ -74,7 +75,7 @@ object PlayerStatsManager {
     fun recordKill(gameId: Int, playerUUID: UUID) {
         val stats = getPlayerStats(gameId, playerUUID)
         if (stats == null) {
-            println("Warning: Player $playerUUID had no stats in game $gameId when recording kill")
+            DebugLogger.logStats("Warning: Player $playerUUID had no stats in game $gameId when recording kill")
             initializePlayer(gameId, playerUUID, 0)
             getPlayerStats(gameId, playerUUID)?.addKill()
         } else {
@@ -88,7 +89,7 @@ object PlayerStatsManager {
     fun recordDamage(gameId: Int, playerUUID: UUID, damage: Double) {
         val stats = getPlayerStats(gameId, playerUUID)
         if (stats == null) {
-            println("Warning: Player $playerUUID had no stats in game $gameId when recording damage")
+            DebugLogger.logStats("Warning: Player $playerUUID had no stats in game $gameId when recording damage")
             initializePlayer(gameId, playerUUID, 0)
             getPlayerStats(gameId, playerUUID)?.addDamage(damage)
         } else {
@@ -102,7 +103,7 @@ object PlayerStatsManager {
     fun recordTowerPlaced(gameId: Int, playerUUID: UUID) {
         val stats = getPlayerStats(gameId, playerUUID)
         if (stats == null) {
-            println("Warning: Player $playerUUID had no stats in game $gameId when recording tower placement")
+            DebugLogger.logStats("Warning: Player $playerUUID had no stats in game $gameId when recording tower placement")
             initializePlayer(gameId, playerUUID, 0)
             getPlayerStats(gameId, playerUUID)?.addTowerPlaced()
         } else {
@@ -116,7 +117,7 @@ object PlayerStatsManager {
     fun recordTowerUpgraded(gameId: Int, playerUUID: UUID) {
         val stats = getPlayerStats(gameId, playerUUID)
         if (stats == null) {
-            println("Warning: Player $playerUUID had no stats in game $gameId when recording tower upgrade")
+            DebugLogger.logStats("Warning: Player $playerUUID had no stats in game $gameId when recording tower upgrade")
             initializePlayer(gameId, playerUUID, 0)
             getPlayerStats(gameId, playerUUID)?.addTowerUpgraded()
         } else {

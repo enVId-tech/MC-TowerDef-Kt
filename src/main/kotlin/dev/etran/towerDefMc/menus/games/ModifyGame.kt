@@ -107,9 +107,7 @@ class ModifyGame(
         // Start Game Button
         inventory.setItem(
             33, createMenuItem(
-                Material.EMERALD_BLOCK,
-                "§a§lSTART GAME",
-                listOf(
+                Material.EMERALD_BLOCK, "§a§lSTART GAME", listOf(
                     "§7Start this tower defense game",
                     "§7You will be added as a player",
                     "",
@@ -122,9 +120,7 @@ class ModifyGame(
         if (gameManager.isGameRunning) {
             inventory.setItem(
                 25, createMenuItem(
-                    Material.REDSTONE_BLOCK,
-                    "§c§lSTOP GAME",
-                    listOf(
+                    Material.REDSTONE_BLOCK, "§c§lSTOP GAME", listOf(
                         "§7Stop the currently running game",
                         "§7This will end the game for all players",
                         "",
@@ -137,9 +133,7 @@ class ModifyGame(
         // Game Stats Display Button
         inventory.setItem(
             36, createMenuItem(
-                Material.LECTERN,
-                "§b§lPlace Game Stats Display",
-                listOf(
+                Material.LECTERN, "§b§lPlace Game Stats Display", listOf(
                     "§7Receive an item to place a",
                     "§7game statistics display board",
                     "§7Shows: Health, Wave, Players, etc.",
@@ -152,9 +146,7 @@ class ModifyGame(
         // Shop Villager Spawner Button
         inventory.setItem(
             39, createMenuItem(
-                Material.VILLAGER_SPAWN_EGG,
-                "§6§lTower Shop Villager",
-                listOf(
+                Material.VILLAGER_SPAWN_EGG, "§6§lTower Shop Villager", listOf(
                     "§7Receive a shop villager spawner",
                     "§7Place this villager to create a",
                     "§7tower shop for your game",
@@ -169,9 +161,7 @@ class ModifyGame(
         // Delete Game Button (bottom-left)
         inventory.setItem(
             45, createMenuItem(
-                Material.BARRIER,
-                "§c§lDelete Game",
-                listOf(
+                Material.BARRIER, "§c§lDelete Game", listOf(
                     "§7Permanently delete this game",
                     "§7This action cannot be undone!",
                     "§7All game data will be lost",
@@ -396,26 +386,24 @@ class ModifyGame(
         val meta = shopEgg.itemMeta
 
         meta.displayName(Component.text("§6§lTower Shop Villager"))
-        meta.lore(listOf(
-            Component.text("§7Place this villager to create"),
-            Component.text("§7a tower shop for your game"),
-            Component.text(""),
-            Component.text("§eRight-click to place"),
-            Component.text("§7Players can buy towers from this shop")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Place this villager to create"),
+                Component.text("§7a tower shop for your game"),
+                Component.text(""),
+                Component.text("§eRight-click to place"),
+                Component.text("§7Players can buy towers from this shop")
+            )
+        )
 
         // Mark it as a shop villager spawner
         meta.persistentDataContainer.set(
-            TowerDefMC.GAME_ITEMS,
-            PersistentDataType.STRING,
-            "Tower_Shop_Spawner"
+            TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Tower_Shop_Spawner"
         )
 
         // Store the game ID in the item so it knows which game it belongs to
         meta.persistentDataContainer.set(
-            TowerDefMC.GAME_ID_KEY,
-            PersistentDataType.INTEGER,
-            gameId
+            TowerDefMC.GAME_ID_KEY, PersistentDataType.INTEGER, gameId
         )
 
         shopEgg.itemMeta = meta

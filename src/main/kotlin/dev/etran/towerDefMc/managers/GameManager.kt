@@ -4,6 +4,7 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaveData
 import dev.etran.towerDefMc.registries.GameRegistry
+import dev.etran.towerDefMc.utils.DebugLogger
 import java.util.UUID
 
 class GameManager(
@@ -51,7 +52,12 @@ class GameManager(
 
     @Suppress("unused")
     fun startGame(initialPlayers: List<UUID>) {
-        if (isRunning) return
+        if (isRunning) {
+            DebugLogger.logGame("Game $gameId: Cannot start - already running")
+            return
+        }
+
+        DebugLogger.logGame("Game $gameId: Attempting to start game '${config.name}'")
 
         // Validate that there are paths or start points configured
         // Check for ANY paths (visible or not) or start points
@@ -59,6 +65,7 @@ class GameManager(
         val hasStartPoints = waypointManager.startpoints.values.isNotEmpty()
 
         if (!hasPaths && !hasStartPoints) {
+            DebugLogger.logGame("Game $gameId: Cannot start - no paths or start points configured!")
             // Send message to all players trying to start the game
             initialPlayers.forEach { uuid ->
                 plugin.server.getPlayer(uuid)?.sendMessage("§c§lCannot start game: No paths or start points configured!")
@@ -74,6 +81,8 @@ class GameManager(
         players.clear()
         players.addAll(initialPlayers)
 
+        DebugLogger.logGame("Game $gameId: Initializing ${initialPlayers.size} players with starting cash ${config.defaultCash}")
+
         // Initialize player stats with starting cash for all players
         initialPlayers.forEach { playerUUID ->
             PlayerStatsManager.initializePlayer(gameId, playerUUID, config.defaultCash)
@@ -84,6 +93,7 @@ class GameManager(
         GameRegistry.activeGames[gameId] = this
 
         plugin.logger.info("Game $gameId started: ${config.name}. Max Health: $health")
+        DebugLogger.logGame("Game $gameId: Successfully started with ${config.waves.size} waves")
 
         // Spawn game stats display armor stands at all lecterns
         dev.etran.towerDefMc.factories.GameStatsDisplayFactory.spawnAllGameStatsDisplays(gameId)
@@ -96,10 +106,14 @@ class GameManager(
     }
 
     fun endGame(win: Boolean) {
-        if (!isRunning) return
+        if (!isRunning) {
+            DebugLogger.logGame("Game $gameId: Cannot end - not running")
+            return
+        }
         isRunning = false
 
         plugin.logger.info("Game $gameId ended. Result: ${if (win) "Win" else "Loss"}")
+        DebugLogger.logGame("Game $gameId: Ending game - Result: ${if (win) "WIN" else "LOSS"}, Wave: ${waveManager.currentWave}, Health: $health")
 
         // Display ending sequence before cleanup
         if (win) {
@@ -121,6 +135,7 @@ class GameManager(
 
         // Delay cleanup to allow players to see the ending sequence
         plugin.server.scheduler.runTaskLater(plugin, Runnable {
+            DebugLogger.logGame("Game $gameId: Starting cleanup")
             // Stop all wave activities (spawning, wave progression, etc.)
             waveManager.stopAllWaveActivities()
 
@@ -135,6 +150,7 @@ class GameManager(
 
             // Don't delete the game file, just stop the instance
             GameRegistry.activeGames.remove(gameId)
+            DebugLogger.logGame("Game $gameId: Cleanup complete")
         }, 200L) // 10 second delay to allow players to read stats
     }
 
@@ -142,10 +158,14 @@ class GameManager(
      * Stop the game manually (cancellation)
      */
     fun stopGame() {
-        if (!isRunning) return
+        if (!isRunning) {
+            DebugLogger.logGame("Game $gameId: Cannot stop - not running")
+            return
+        }
         isRunning = false
 
         plugin.logger.info("Game $gameId stopped manually")
+        DebugLogger.logGame("Game $gameId: Manually stopped by admin")
 
         // Stop all wave activities (spawning, wave progression, etc.)
         waveManager.stopAllWaveActivities()

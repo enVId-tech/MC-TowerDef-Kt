@@ -56,22 +56,16 @@ class TowerShopMenu(player: Player, private val gameId: Int) : CustomMenu(player
             }
 
             val item = createMenuItem(
-                tower.icon,
-                (if (canAfford) "§a" else "§c") + tower.displayName,
-                lore
+                tower.icon, (if (canAfford) "§a" else "§c") + tower.displayName, lore
             )
 
             // Store tower ID in the item for purchase handling
             val meta = item.itemMeta
             meta.persistentDataContainer.set(
-                TowerDefMC.createKey("shop_tower_id"),
-                PersistentDataType.STRING,
-                tower.id
+                TowerDefMC.createKey("shop_tower_id"), PersistentDataType.STRING, tower.id
             )
             meta.persistentDataContainer.set(
-                TowerDefMC.createKey("shop_tower_cost"),
-                PersistentDataType.INTEGER,
-                cost
+                TowerDefMC.createKey("shop_tower_cost"), PersistentDataType.INTEGER, cost
             )
             item.itemMeta = meta
 
@@ -85,54 +79,53 @@ class TowerShopMenu(player: Player, private val gameId: Int) : CustomMenu(player
         }
 
         // Exit button (slot 45)
-        inventory.setItem(45, createMenuItem(
-            Material.BARRIER,
-            "§c§lExit Shop",
-            listOf("§7Close the shop")
-        ))
+        inventory.setItem(
+            45, createMenuItem(
+                Material.BARRIER, "§c§lExit Shop", listOf("§7Close the shop")
+            )
+        )
 
         // Current money display (slot 48-49)
-        inventory.setItem(49, createMenuItem(
-            Material.GOLD_INGOT,
-            "§e§lCurrent Money: §6${currentMoney}$",
-            listOf(
-                "§7Your available cash",
-                "§7Earn more by defeating enemies"
+        inventory.setItem(
+            49, createMenuItem(
+                Material.GOLD_INGOT, "§e§lCurrent Money: §6${currentMoney}$", listOf(
+                    "§7Your available cash", "§7Earn more by defeating enemies"
+                )
             )
-        ))
+        )
 
         // Game stats (slot 51)
         val game = GameRegistry.allGames[gameId]
         if (game != null) {
             val waveInfo = game.config.waves.getOrNull(game.currentWave)
-            inventory.setItem(51, createMenuItem(
-                Material.BOOK,
-                "§b§lGame Stats",
-                listOf(
-                    "§7Game ID: §e${gameId}",
-                    "§7Current Wave: §e${game.currentWave + 1}",
-                    "§7Wave Name: §e${waveInfo?.name ?: "N/A"}",
-                    "§7Lives: §c${playerStats?.kills ?: 0}",
-                    "§7Towers Placed: §a${playerStats?.towersPlaced ?: 0}"
+            inventory.setItem(
+                51, createMenuItem(
+                    Material.BOOK, "§b§lGame Stats", listOf(
+                        "§7Game ID: §e${gameId}",
+                        "§7Current Wave: §e${game.currentWave + 1}",
+                        "§7Wave Name: §e${waveInfo?.name ?: "N/A"}",
+                        "§7Lives: §c${playerStats?.kills ?: 0}",
+                        "§7Towers Placed: §a${playerStats?.towersPlaced ?: 0}"
+                    )
                 )
-            ))
+            )
         }
 
         // Pagination
         val totalPages = (allTowers.size + towersPerPage - 1) / towersPerPage
         if (currentPage > 0) {
-            inventory.setItem(46, createMenuItem(
-                Material.ARROW,
-                "§e§lPrevious Page",
-                listOf("§7Page ${currentPage} of ${totalPages}")
-            ))
+            inventory.setItem(
+                46, createMenuItem(
+                    Material.ARROW, "§e§lPrevious Page", listOf("§7Page ${currentPage} of ${totalPages}")
+                )
+            )
         }
         if (currentPage < totalPages - 1) {
-            inventory.setItem(52, createMenuItem(
-                Material.ARROW,
-                "§e§lNext Page",
-                listOf("§7Page ${currentPage + 2} of ${totalPages}")
-            ))
+            inventory.setItem(
+                52, createMenuItem(
+                    Material.ARROW, "§e§lNext Page", listOf("§7Page ${currentPage + 2} of ${totalPages}")
+                )
+            )
         }
     }
 
@@ -145,12 +138,14 @@ class TowerShopMenu(player: Player, private val gameId: Int) : CustomMenu(player
             45 -> { // Exit
                 player.closeInventory()
             }
+
             46 -> { // Previous page
                 if (currentPage > 0) {
                     currentPage--
                     setMenuItems()
                 }
             }
+
             52 -> { // Next page
                 val allTowers = TowerRegistry.getAllTowers().values.toList()
                 val totalPages = (allTowers.size + towersPerPage - 1) / towersPerPage
@@ -159,16 +154,15 @@ class TowerShopMenu(player: Player, private val gameId: Int) : CustomMenu(player
                     setMenuItems()
                 }
             }
+
             else -> {
                 // Check if it's a tower purchase
                 val meta = clickedItem.itemMeta ?: return
                 val towerId = meta.persistentDataContainer.get(
-                    TowerDefMC.createKey("shop_tower_id"),
-                    PersistentDataType.STRING
+                    TowerDefMC.createKey("shop_tower_id"), PersistentDataType.STRING
                 ) ?: return
                 val cost = meta.persistentDataContainer.get(
-                    TowerDefMC.createKey("shop_tower_cost"),
-                    PersistentDataType.INTEGER
+                    TowerDefMC.createKey("shop_tower_cost"), PersistentDataType.INTEGER
                 ) ?: return
 
                 purchaseTower(player, towerId, cost)
@@ -208,17 +202,21 @@ class TowerShopMenu(player: Player, private val gameId: Int) : CustomMenu(player
         val meta = towerItem.itemMeta
 
         meta.displayName(Component.text("§6${tower.displayName}"))
-        meta.lore(listOf(
-            Component.text("§7Damage: §c${tower.damage}"),
-            Component.text("§7Range: §a${tower.range}"),
-            Component.text("§7Attack Speed: §b${tower.attackSpeed}")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Damage: §c${tower.damage}"),
+                Component.text("§7Range: §a${tower.range}"),
+                Component.text("§7Attack Speed: §b${tower.attackSpeed}")
+            )
+        )
 
         // Set tower properties in PDC
         meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Tower 1")
         meta.persistentDataContainer.set(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, tower.range)
         meta.persistentDataContainer.set(TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, tower.damage)
-        meta.persistentDataContainer.set(TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, 1.0 / tower.attackSpeed)
+        meta.persistentDataContainer.set(
+            TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, 1.0 / tower.attackSpeed
+        )
         meta.persistentDataContainer.set(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING, towerId)
 
         towerItem.itemMeta = meta

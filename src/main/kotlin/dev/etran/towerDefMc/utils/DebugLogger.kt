@@ -127,36 +127,43 @@ object DebugLogger {
                 saveConfig()
                 masterDebug
             }
+
             "wave", "waves" -> {
                 waveDebug = !waveDebug
                 saveConfig()
                 waveDebug
             }
+
             "enemy", "enemies" -> {
                 enemyDebug = !enemyDebug
                 saveConfig()
                 enemyDebug
             }
+
             "tower", "towers" -> {
                 towerDebug = !towerDebug
                 saveConfig()
                 towerDebug
             }
+
             "game" -> {
                 gameDebug = !gameDebug
                 saveConfig()
                 gameDebug
             }
+
             "stats" -> {
                 statsDebug = !statsDebug
                 saveConfig()
                 statsDebug
             }
+
             "path", "paths" -> {
                 pathDebug = !pathDebug
                 saveConfig()
                 pathDebug
             }
+
             else -> false
         }
     }

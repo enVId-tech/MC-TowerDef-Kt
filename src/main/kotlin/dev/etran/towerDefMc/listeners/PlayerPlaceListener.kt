@@ -5,6 +5,7 @@ import dev.etran.towerDefMc.factories.EnemyFactory
 import dev.etran.towerDefMc.factories.StatsTrackerFactory
 import dev.etran.towerDefMc.factories.TowerFactory
 import dev.etran.towerDefMc.registries.GameRegistry
+import dev.etran.towerDefMc.utils.DebugLogger
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -28,16 +29,22 @@ object PlayerPlaceListener : Listener {
             val game = GameRegistry.getGameByPlayer(event.player.uniqueId)
 
             if (game == null) {
+                DebugLogger.logGame("Player ${event.player.name} tried to place $name but is not in a game")
                 event.player.sendMessage("You must be in a game to place game elements.")
                 return
             }
+
+            DebugLogger.logGame("Player ${event.player.name} placing $name in game ${game.gameId}")
 
             // Run functions specific to their unique identifiers
             when (name) {
                 "Tower 1" -> TowerFactory.towerPlace(event)
                 "Enemy 1" -> EnemyFactory.enemyPlace(event)
                 "Stats_Tracker" -> StatsTrackerFactory.placeStatsTracker(event)
-                else -> event.player.sendMessage("This game element doesn't exist.")
+                else -> {
+                    DebugLogger.logGame("Unknown game element: $name")
+                    event.player.sendMessage("This game element doesn't exist.")
+                }
             }
 
             return

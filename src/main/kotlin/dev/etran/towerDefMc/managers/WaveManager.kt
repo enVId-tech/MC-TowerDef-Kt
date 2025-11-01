@@ -7,12 +7,17 @@ import dev.etran.towerDefMc.data.WaitCommand
 import dev.etran.towerDefMc.data.WaveData
 import dev.etran.towerDefMc.factories.EnemyFactory
 import dev.etran.towerDefMc.registries.GameRegistry
+import dev.etran.towerDefMc.utils.DebugLogger
+import dev.etran.towerDefMc.utils.WaveAnnouncement
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.persistence.PersistentDataType
 
 class WaveManager(
-    private val gameConfig: GameSaveConfig, private val waypointManager: WaypointManager, private val pathManager: PathManager, private val gameId: Int
+    private val gameConfig: GameSaveConfig,
+    private val waypointManager: WaypointManager,
+    private val pathManager: PathManager,
+    private val gameId: Int
 ) {
     private var currentWaveData: WaveData? = null
     private var commandIndex = -1
@@ -37,6 +42,7 @@ class WaveManager(
      * Reset wave manager state for a fresh game start
      */
     fun resetWaves() {
+        DebugLogger.logWave("Game $gameId: Resetting wave manager")
         currentWave = 0
         commandIndex = -1
         currentWaveData = null
@@ -47,6 +53,7 @@ class WaveManager(
 
         // Clear waypoint manager checkpoints to allow new game to set them up fresh
         waypointManager.checkpoints.clear()
+        DebugLogger.logWave("Game $gameId: Wave manager reset complete")
     }
 
     /**
@@ -69,7 +76,7 @@ class WaveManager(
             waitTaskId = null
         }
 
-        println("All wave activities stopped for Game $gameId")
+        DebugLogger.logWave("All wave activities stopped for Game $gameId")
     }
 
     private fun cancelWaveCheckTask() {
@@ -88,13 +95,12 @@ class WaveManager(
         // Remove any enemies with null custom health (they're dead/removed but still tracked)
         val actuallyAlive = aliveEnemies.filter { enemy ->
             val customHealth = enemy.persistentDataContainer.get(
-                TowerDefMC.createKey("custom_health"),
-                PersistentDataType.DOUBLE
+                TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE
             )
 
             if (customHealth == null) {
                 // This enemy is already dead/removed, unregister it
-                dev.etran.towerDefMc.utils.DebugLogger.logEnemy("Removing ghost enemy ${enemy.uniqueId} from tracker (customHealth is null)")
+                DebugLogger.logEnemy("Removing ghost enemy ${enemy.uniqueId} from tracker (customHealth is null)")
                 GameInstanceTracker.unregisterEntity(enemy)
                 false
             } else {
@@ -106,14 +112,13 @@ class WaveManager(
 
         // Debug logging to help track wave completion issues
         if (aliveCount > 0) {
-            dev.etran.towerDefMc.utils.DebugLogger.logWave("Game $gameId - Wave $currentWave: $aliveCount enemies still alive")
+            DebugLogger.logWave("Game $gameId - Wave $currentWave: $aliveCount enemies still alive")
             // Log the actual entities to help debug ghost enemies
             actuallyAlive.forEach { enemy ->
                 val customHealth = enemy.persistentDataContainer.get(
-                    TowerDefMC.createKey("custom_health"),
-                    PersistentDataType.DOUBLE
+                    TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE
                 )
-                dev.etran.towerDefMc.utils.DebugLogger.logEnemy("  - Enemy ${enemy.uniqueId}: isDead=${enemy.isDead}, health=${enemy.health}, customHealth=$customHealth")
+                DebugLogger.logEnemy("  - Enemy ${enemy.uniqueId}: isDead=${enemy.isDead}, health=${enemy.health}, customHealth=$customHealth")
             }
         }
 
@@ -133,19 +138,15 @@ class WaveManager(
             spawnedEnemies = 0
             isSpawningComplete = false
 
-            println("--- Starting Wave $currentWave: ${waveDetails.name} ---")
+            DebugLogger.logWave("--- Starting Wave $currentWave: ${waveDetails.name} ---")
 
             // Get all players in this game
             val game = GameRegistry.activeGames[gameId]
             val playerUUIDs = game?.activePlayers ?: emptySet()
 
             // Announce wave start with on-screen display and chat details
-            dev.etran.towerDefMc.utils.WaveAnnouncement.announceWaveStart(
-                gameId,
-                currentWave,
-                waveDetails,
-                gameConfig.waves.size,
-                playerUUIDs
+            WaveAnnouncement.announceWaveStart(
+                gameId, currentWave, waveDetails, gameConfig.waves.size, playerUUIDs
             )
 
             commandIndex = 0
@@ -154,7 +155,7 @@ class WaveManager(
             // Start checking for wave completion
             startWaveCompletionCheck()
         } else {
-            println("Game Over! All waves completed.")
+            DebugLogger.logImportant("Game Over! All waves completed.")
         }
     }
 
@@ -164,7 +165,7 @@ class WaveManager(
         // Check every second (20 ticks) if the wave is complete
         waveCheckTaskId = plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, {
             if (checkWaveCompletion()) {
-                dev.etran.towerDefMc.utils.DebugLogger.logWave("Wave $currentWave completed!")
+                DebugLogger.logWave("Wave $currentWave completed!")
 
                 // Get all players in this game
                 val game = GameRegistry.activeGames[gameId]
@@ -176,15 +177,12 @@ class WaveManager(
                     PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
                         PlayerStatsManager.awardCash(gameId, playerUUID, cashReward)
                     }
-                    dev.etran.towerDefMc.utils.DebugLogger.logStats("Awarded $cashReward cash to all players for completing wave $currentWave")
+                    DebugLogger.logStats("Awarded $cashReward cash to all players for completing wave $currentWave")
                 }
 
                 // Display wave complete announcement with title and rewards
-                dev.etran.towerDefMc.utils.WaveAnnouncement.announceWaveComplete(
-                    gameId,
-                    currentWave,
-                    cashReward,
-                    playerUUIDs
+                WaveAnnouncement.announceWaveComplete(
+                    gameId, currentWave, cashReward, playerUUIDs
                 )
 
                 // Record wave completion in stats
@@ -194,12 +192,12 @@ class WaveManager(
 
                 // Check if this was the last wave
                 if (currentWave >= gameConfig.waves.size) {
-                    dev.etran.towerDefMc.utils.DebugLogger.logImportant("All waves completed! Game won!")
+                    DebugLogger.logImportant("All waves completed! Game won!")
                     game?.endGame(true)
                 } else {
                     // Show preparation message
                     plugin.server.scheduler.runTaskLater(plugin, Runnable {
-                        dev.etran.towerDefMc.utils.WaveAnnouncement.announcePreparation(playerUUIDs, 3)
+                        WaveAnnouncement.announcePreparation(playerUUIDs, 3)
                     }, 40L) // After 2 seconds
 
                     // Move to next wave after a short delay
@@ -213,12 +211,12 @@ class WaveManager(
 
     private fun processNextCommand() {
         if (commandIndex >= currentWaveData!!.sequence.size) {
-            println("All spawning complete for wave $currentWave!")
+            DebugLogger.logWave("All spawning complete for wave $currentWave!")
             isSpawningComplete = true
             // Check if this was the last wave
             if (currentWave >= gameConfig.waves.size) {
                 // Don't end yet - wait for enemies to be killed
-                println("Final wave spawning complete, waiting for enemies to be eliminated...")
+                DebugLogger.logWave("Final wave spawning complete, waiting for enemies to be eliminated...")
             }
             return // Spawning is finished, but wave continues until enemies are dead
         }
@@ -239,7 +237,7 @@ class WaveManager(
     }
 
     private fun handleEnemySpawnCommand(command: EnemySpawnCommand) {
-        dev.etran.towerDefMc.utils.DebugLogger.logWave("Command $commandIndex: Starting spawn sequence (Interval: ${command.intervalSeconds}s).")
+        DebugLogger.logWave("Command $commandIndex: Starting spawn sequence (Interval: ${command.intervalSeconds}s).")
         commandIndex++
 
         val intervalTicks = (command.intervalSeconds * 20).toLong()
@@ -267,7 +265,7 @@ class WaveManager(
                 if (game == null || !game.isGameRunning) {
                     this.cancel()
                     activeSpawnTasks.remove(this.taskId)
-                    dev.etran.towerDefMc.utils.DebugLogger.logWave("Spawn task cancelled - game is no longer running")
+                    DebugLogger.logWave("Spawn task cancelled - game is no longer running")
                     return
                 }
 
@@ -275,14 +273,14 @@ class WaveManager(
                     currentEnemyType = spawnQueue.keys.firstOrNull()
                     if (currentEnemyType != null) {
                         currentQuantity = spawnQueue.remove(currentEnemyType)!!
-                      }
+                    }
                 }
 
                 // If no more enemies in this command's queue, cancel the task
                 if (currentEnemyType == null) {
                     this.cancel()
                     activeSpawnTasks.remove(this.taskId)
-                    dev.etran.towerDefMc.utils.DebugLogger.logWave("Spawn sequence finished for command.")
+                    DebugLogger.logWave("Spawn sequence finished for command.")
                     processNextCommand()
                     return
                 }
@@ -300,7 +298,7 @@ class WaveManager(
                         return
                     }
                     val startpointLoc: Location = waypointManager.startpoints.values.random().location
-                    
+
                     // Spawn the enemy and register it to this game
                     val entity = EnemyFactory.enemyPlace(currentEnemyType!!, startpointLoc)
                     if (entity != null) {
@@ -320,7 +318,7 @@ class WaveManager(
                 spawnedEnemies++
                 currentQuantity--
 
-                dev.etran.towerDefMc.utils.DebugLogger.logEnemy("Spawned: $currentEnemyType for Game $gameId. Total spawned: $spawnedEnemies")
+                DebugLogger.logEnemy("Spawned: $currentEnemyType for Game $gameId. Total spawned: $spawnedEnemies")
             }
         }
 

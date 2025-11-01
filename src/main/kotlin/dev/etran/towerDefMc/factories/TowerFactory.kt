@@ -3,6 +3,7 @@ package dev.etran.towerDefMc.factories
 import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.managers.PlayerStatsManager
 import dev.etran.towerDefMc.registries.GameRegistry
+import dev.etran.towerDefMc.utils.DebugLogger
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -53,6 +54,8 @@ object TowerFactory {
             player.sendMessage("You cannot place a tower here!")
             return
         }
+
+        DebugLogger.logTower("Player ${player.name} placing tower at ${location.blockX}, ${location.blockY}, ${location.blockZ}")
 
         val world = location.world
         val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
@@ -118,6 +121,10 @@ object TowerFactory {
 
             // Register the tower with GameInstanceTracker so cash rewards work
             dev.etran.towerDefMc.managers.GameInstanceTracker.registerEntity(entity, game.gameId)
+
+            DebugLogger.logTower("Tower placed successfully by ${player.name} in game ${game.gameId}, UUID=${entity.uniqueId}")
+        } else {
+            DebugLogger.logTower("Warning: Tower placed by ${player.name} but no game found")
         }
 
         // Take away 1 from the user if they aren't in creative or spectator mode.

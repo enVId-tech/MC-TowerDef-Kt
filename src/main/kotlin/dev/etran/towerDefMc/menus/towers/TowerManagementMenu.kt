@@ -13,9 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.persistence.PersistentDataType
 
 class TowerManagementMenu(
-    player: Player,
-    private val tower: LivingEntity,
-    private val gameId: Int
+    player: Player, private val tower: LivingEntity, private val gameId: Int
 ) : CustomMenu(player, 27, "Tower Management") {
 
     override fun setMenuItems() {
@@ -28,42 +26,34 @@ class TowerManagementMenu(
 
         // Get tower stats
         val towerLevel = tower.persistentDataContainer.getOrDefault(
-            TowerDefMC.createKey("towerLevel"),
-            PersistentDataType.INTEGER,
-            1
+            TowerDefMC.createKey("towerLevel"), PersistentDataType.INTEGER, 1
         )
 
         val damage = tower.persistentDataContainer.getOrDefault(
-            TowerDefMC.TOWER_DMG,
-            PersistentDataType.DOUBLE,
-            2.5
+            TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, 2.5
         )
 
         val range = tower.persistentDataContainer.getOrDefault(
-            TowerDefMC.TOWER_RANGE,
-            PersistentDataType.DOUBLE,
-            5.0
+            TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, 5.0
         )
 
         val attackSpeed = tower.persistentDataContainer.getOrDefault(
-            TowerDefMC.ATTACK_WAIT_TIME,
-            PersistentDataType.DOUBLE,
-            1.0
+            TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, 1.0
         )
 
         // Tower info display (center top)
-        inventory.setItem(13, createMenuItem(
-            Material.ENDER_EYE,
-            "§6§lTower Information",
-            listOf(
-                "§7Level: §e$towerLevel",
-                "§7Damage: §c$damage",
-                "§7Range: §a$range",
-                "§7Attack Interval: §b${attackSpeed}s",
-                "",
-                "§7Sneak + Right-click to upgrade"
+        inventory.setItem(
+            13, createMenuItem(
+                Material.ENDER_EYE, "§6§lTower Information", listOf(
+                    "§7Level: §e$towerLevel",
+                    "§7Damage: §c$damage",
+                    "§7Range: §a$range",
+                    "§7Attack Interval: §b${attackSpeed}s",
+                    "",
+                    "§7Sneak + Right-click to upgrade"
+                )
             )
-        ))
+        )
 
         // Upgrade button
         val maxLevel = 5
@@ -72,22 +62,22 @@ class TowerManagementMenu(
             val playerStats = PlayerStatsManager.getPlayerStats(gameId, player.uniqueId)
             val canAfford = playerStats != null && playerStats.cash >= upgradeCost
 
-            inventory.setItem(11, createMenuItem(
-                Material.EMERALD,
-                if (canAfford) "§a§lUpgrade Tower" else "§c§lUpgrade Tower",
-                listOf(
-                    "§7Upgrade to level §e${towerLevel + 1}",
-                    "§7Cost: §e${upgradeCost}$",
-                    "",
-                    if (canAfford) "§aClick to upgrade!" else "§cNot enough cash!"
+            inventory.setItem(
+                11, createMenuItem(
+                    Material.EMERALD, if (canAfford) "§a§lUpgrade Tower" else "§c§lUpgrade Tower", listOf(
+                        "§7Upgrade to level §e${towerLevel + 1}",
+                        "§7Cost: §e${upgradeCost}$",
+                        "",
+                        if (canAfford) "§aClick to upgrade!" else "§cNot enough cash!"
+                    )
                 )
-            ))
+            )
         } else {
-            inventory.setItem(11, createMenuItem(
-                Material.GRAY_DYE,
-                "§7§lMax Level",
-                listOf("§7This tower is at maximum level")
-            ))
+            inventory.setItem(
+                11, createMenuItem(
+                    Material.GRAY_DYE, "§7§lMax Level", listOf("§7This tower is at maximum level")
+                )
+            )
         }
 
         // Sell button (bottom left - slot 18)
@@ -95,23 +85,23 @@ class TowerManagementMenu(
         val baseCost = 100 // TODO: Get actual tower cost from PDC if stored
         val refundAmount = (baseCost * sellRefundPercentage) / 100
 
-        inventory.setItem(18, createMenuItem(
-            Material.RED_DYE,
-            "§c§lSell Tower",
-            listOf(
-                "§7Remove this tower and get a refund",
-                "§7Refund: §e${refundAmount}$ §7(${sellRefundPercentage}%)",
-                "",
-                "§cClick to sell tower"
+        inventory.setItem(
+            18, createMenuItem(
+                Material.RED_DYE, "§c§lSell Tower", listOf(
+                    "§7Remove this tower and get a refund",
+                    "§7Refund: §e${refundAmount}$ §7(${sellRefundPercentage}%)",
+                    "",
+                    "§cClick to sell tower"
+                )
             )
-        ))
+        )
 
         // Close button (bottom right - slot 26)
-        inventory.setItem(26, createMenuItem(
-            Material.BARRIER,
-            "§cClose",
-            listOf("§7Close this menu")
-        ))
+        inventory.setItem(
+            26, createMenuItem(
+                Material.BARRIER, "§cClose", listOf("§7Close this menu")
+            )
+        )
     }
 
     override fun handleClick(event: InventoryClickEvent) {
@@ -134,9 +124,7 @@ class TowerManagementMenu(
 
         // Get current tower level
         val currentLevel = tower.persistentDataContainer.getOrDefault(
-            TowerDefMC.createKey("towerLevel"),
-            PersistentDataType.INTEGER,
-            1
+            TowerDefMC.createKey("towerLevel"), PersistentDataType.INTEGER, 1
         )
 
         val maxLevel = 5
@@ -166,9 +154,7 @@ class TowerManagementMenu(
 
             // Update tower level
             tower.persistentDataContainer.set(
-                TowerDefMC.createKey("towerLevel"),
-                PersistentDataType.INTEGER,
-                newLevel
+                TowerDefMC.createKey("towerLevel"), PersistentDataType.INTEGER, newLevel
             )
 
             // Apply stat multipliers
@@ -195,19 +181,31 @@ class TowerManagementMenu(
 
             // Store base stats if not already stored
             if (!tower.persistentDataContainer.has(TowerDefMC.createKey("baseDamage"), PersistentDataType.DOUBLE)) {
-                tower.persistentDataContainer.set(TowerDefMC.createKey("baseDamage"), PersistentDataType.DOUBLE, baseDamage)
+                tower.persistentDataContainer.set(
+                    TowerDefMC.createKey("baseDamage"), PersistentDataType.DOUBLE, baseDamage
+                )
             }
             if (!tower.persistentDataContainer.has(TowerDefMC.createKey("baseRange"), PersistentDataType.DOUBLE)) {
-                tower.persistentDataContainer.set(TowerDefMC.createKey("baseRange"), PersistentDataType.DOUBLE, baseRange)
+                tower.persistentDataContainer.set(
+                    TowerDefMC.createKey("baseRange"), PersistentDataType.DOUBLE, baseRange
+                )
             }
             if (!tower.persistentDataContainer.has(TowerDefMC.createKey("baseSpeed"), PersistentDataType.DOUBLE)) {
-                tower.persistentDataContainer.set(TowerDefMC.createKey("baseSpeed"), PersistentDataType.DOUBLE, baseSpeed)
+                tower.persistentDataContainer.set(
+                    TowerDefMC.createKey("baseSpeed"), PersistentDataType.DOUBLE, baseSpeed
+                )
             }
 
             // Apply multipliers
-            tower.persistentDataContainer.set(TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, baseDamage * damageMultiplier)
-            tower.persistentDataContainer.set(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, baseRange * rangeMultiplier)
-            tower.persistentDataContainer.set(TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, baseSpeed / speedMultiplier)
+            tower.persistentDataContainer.set(
+                TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, baseDamage * damageMultiplier
+            )
+            tower.persistentDataContainer.set(
+                TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, baseRange * rangeMultiplier
+            )
+            tower.persistentDataContainer.set(
+                TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, baseSpeed / speedMultiplier
+            )
 
             // Record upgrade in stats
             PlayerStatsManager.recordTowerUpgraded(gameId, player.uniqueId)

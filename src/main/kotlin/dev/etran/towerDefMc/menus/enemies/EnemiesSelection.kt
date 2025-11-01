@@ -127,8 +127,7 @@ class EnemiesSelection(
         // Open number selector menu
         player.closeInventory()
         val numberSelector = NumberSelector(
-            player, enemy.displayName,
-            { amount ->
+            player, enemy.displayName, { amount ->
                 if (amount > 0) {
                     selectedEnemies[enemy.id] = amount
                 } else {
@@ -137,10 +136,7 @@ class EnemiesSelection(
                 // Refresh the menu items to show updated counts, then reopen
                 setMenuItems()
                 this.open()
-            },
-            waveNum,
-            gameId,
-            gameConfig
+            }, waveNum, gameId, gameConfig
         )
         numberSelector.open()
     }

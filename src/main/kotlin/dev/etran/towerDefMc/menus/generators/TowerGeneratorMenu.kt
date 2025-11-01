@@ -38,68 +38,72 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
 
         // Display the spawn egg being configured (slot 4)
         val spawnEggMaterial = Material.getMaterial("${spawnEggType.name}_SPAWN_EGG") ?: Material.ZOMBIE_SPAWN_EGG
-        inventory.setItem(4, createMenuItem(
-            spawnEggMaterial,
-            "§6§lTower Spawn Egg",
-            listOf("§7Entity Type: §e${spawnEggType.name}")
-        ))
+        inventory.setItem(
+            4, createMenuItem(
+                spawnEggMaterial, "§6§lTower Spawn Egg", listOf("§7Entity Type: §e${spawnEggType.name}")
+            )
+        )
 
         // Tower Properties
-        inventory.setItem(10, createRenamableItem(
-            Material.GOLD_INGOT,
-            "§e§lCost: {VALUE}",
-            listOf("§7Click to change cost"),
-            cost.toString()
-        ))
+        inventory.setItem(
+            10, createRenamableItem(
+                Material.GOLD_INGOT, "§e§lCost: {VALUE}", listOf("§7Click to change cost"), cost.toString()
+            )
+        )
 
-        inventory.setItem(11, createRenamableItem(
-            Material.IRON_SWORD,
-            "§c§lDamage: {VALUE}",
-            listOf("§7Click to change damage"),
-            damage.toString()
-        ))
+        inventory.setItem(
+            11, createRenamableItem(
+                Material.IRON_SWORD, "§c§lDamage: {VALUE}", listOf("§7Click to change damage"), damage.toString()
+            )
+        )
 
-        inventory.setItem(12, createRenamableItem(
-            Material.CLOCK,
-            "§b§lAttack Interval: {VALUE}s",
-            listOf("§7Time between attacks", "§7Click to change"),
-            damageInterval.toString()
-        ))
+        inventory.setItem(
+            12, createRenamableItem(
+                Material.CLOCK,
+                "§b§lAttack Interval: {VALUE}s",
+                listOf("§7Time between attacks", "§7Click to change"),
+                damageInterval.toString()
+            )
+        )
 
-        inventory.setItem(13, createRenamableItem(
-            Material.BOW,
-            "§a§lRange: {VALUE}",
-            listOf("§7Click to change range"),
-            range.toString()
-        ))
+        inventory.setItem(
+            13, createRenamableItem(
+                Material.BOW, "§a§lRange: {VALUE}", listOf("§7Click to change range"), range.toString()
+            )
+        )
 
-        inventory.setItem(14, createRenamableItem(
-            Material.ENCHANTED_BOOK,
-            "§d§lUpgrade Path: {VALUE}",
-            listOf("§7Tower upgrade path ID", "§7Click to change"),
-            upgradePath
-        ))
+        inventory.setItem(
+            14, createRenamableItem(
+                Material.ENCHANTED_BOOK,
+                "§d§lUpgrade Path: {VALUE}",
+                listOf("§7Tower upgrade path ID", "§7Click to change"),
+                upgradePath
+            )
+        )
 
-        inventory.setItem(15, createRenamableItem(
-            Material.NAME_TAG,
-            "§f§lDisplay Name: {VALUE}",
-            listOf("§7Click to change name"),
-            displayName
-        ))
+        inventory.setItem(
+            15, createRenamableItem(
+                Material.NAME_TAG, "§f§lDisplay Name: {VALUE}", listOf("§7Click to change name"), displayName
+            )
+        )
 
         // Mob Properties
-        inventory.setItem(28, createMenuItem(
-            if (isBaby) Material.LIME_DYE else Material.GRAY_DYE,
-            "§e§lBaby Mode: " + if (isBaby) "§aEnabled" else "§cDisabled",
-            listOf("§7Click to toggle")
-        ))
+        inventory.setItem(
+            28, createMenuItem(
+                if (isBaby) Material.LIME_DYE else Material.GRAY_DYE,
+                "§e§lBaby Mode: " + if (isBaby) "§aEnabled" else "§cDisabled",
+                listOf("§7Click to toggle")
+            )
+        )
 
-        inventory.setItem(29, createRenamableItem(
-            Material.SLIME_BALL,
-            "§e§lSize: {VALUE}",
-            listOf("§7Entity scale multiplier", "§7Click to change"),
-            entitySize.toString()
-        ))
+        inventory.setItem(
+            29, createRenamableItem(
+                Material.SLIME_BALL,
+                "§e§lSize: {VALUE}",
+                listOf("§7Entity scale multiplier", "§7Click to change"),
+                entitySize.toString()
+            )
+        )
 
         // Separator
         for (i in 36..44) {
@@ -107,32 +111,27 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
         }
 
         // Action buttons
-        inventory.setItem(45, createMenuItem(
-            Material.BARRIER,
-            "§c§lCancel",
-            listOf("§7Close without saving")
-        ))
-
-        inventory.setItem(49, createMenuItem(
-            Material.LIME_CONCRETE,
-            "§a§lGenerate Tower Item",
-            listOf(
-                "§7Creates a tower spawn item",
-                "§7with the configured properties",
-                "",
-                "§eClick to generate!"
+        inventory.setItem(
+            45, createMenuItem(
+                Material.BARRIER, "§c§lCancel", listOf("§7Close without saving")
             )
-        ))
+        )
 
-        inventory.setItem(53, createMenuItem(
-            Material.BOOK,
-            "§e§lHelp",
-            listOf(
-                "§7Hold a spawn egg and run",
-                "§7/tdgenerator tower",
-                "§7to configure tower properties"
+        inventory.setItem(
+            49, createMenuItem(
+                Material.LIME_CONCRETE, "§a§lGenerate Tower Item", listOf(
+                    "§7Creates a tower spawn item", "§7with the configured properties", "", "§eClick to generate!"
+                )
             )
-        ))
+        )
+
+        inventory.setItem(
+            53, createMenuItem(
+                Material.BOOK, "§e§lHelp", listOf(
+                    "§7Hold a spawn egg and run", "§7/tdgenerator tower", "§7to configure tower properties"
+                )
+            )
+        )
     }
 
     override fun handleClick(event: InventoryClickEvent) {
@@ -149,6 +148,7 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
                     open()
                 }
             }
+
             11 -> { // Damage
                 player.closeInventory()
                 player.sendMessage("§eEnter the tower damage (or 'cancel'):")
@@ -158,6 +158,7 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
                     open()
                 }
             }
+
             12 -> { // Attack Interval
                 player.closeInventory()
                 player.sendMessage("§eEnter the attack interval in seconds (or 'cancel'):")
@@ -167,6 +168,7 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
                     open()
                 }
             }
+
             13 -> { // Range
                 player.closeInventory()
                 player.sendMessage("§eEnter the tower range (or 'cancel'):")
@@ -176,6 +178,7 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
                     open()
                 }
             }
+
             14 -> { // Upgrade Path
                 player.closeInventory()
                 player.sendMessage("§eEnter the upgrade path ID (or 'cancel'):")
@@ -185,6 +188,7 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
                     open()
                 }
             }
+
             15 -> { // Display Name
                 player.closeInventory()
                 player.sendMessage("§eEnter the display name (or 'cancel'):")
@@ -194,10 +198,12 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
                     open()
                 }
             }
+
             28 -> { // Baby toggle
                 isBaby = !isBaby
                 setMenuItems()
             }
+
             29 -> { // Size
                 player.closeInventory()
                 player.sendMessage("§eEnter the entity size multiplier (or 'cancel'):")
@@ -207,10 +213,12 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
                     open()
                 }
             }
+
             45 -> { // Cancel
                 player.closeInventory()
                 player.sendMessage("§cTower generation cancelled.")
             }
+
             49 -> { // Generate
                 generateTower(player)
             }
@@ -236,20 +244,24 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
         val meta = towerItem.itemMeta
 
         meta.displayName(Component.text("§6$displayName"))
-        meta.lore(listOf(
-            Component.text("§7Cost: §e$cost"),
-            Component.text("§7Damage: §c$damage"),
-            Component.text("§7Attack Interval: §b${damageInterval}s"),
-            Component.text("§7Range: §a$range"),
-            Component.text("§7Upgrade Path: §d$upgradePath"),
-            Component.text(""),
-            Component.text("§7Baby: ${if (isBaby) "§aYes" else "§cNo"}"),
-            Component.text("§7Size: §e$entitySize")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Cost: §e$cost"),
+                Component.text("§7Damage: §c$damage"),
+                Component.text("§7Attack Interval: §b${damageInterval}s"),
+                Component.text("§7Range: §a$range"),
+                Component.text("§7Upgrade Path: §d$upgradePath"),
+                Component.text(""),
+                Component.text("§7Baby: ${if (isBaby) "§aYes" else "§cNo"}"),
+                Component.text("§7Size: §e$entitySize")
+            )
+        )
 
         // Store tower data in PDC
         meta.persistentDataContainer.set(TowerDefMC.GAME_ITEMS, PersistentDataType.STRING, "Generated_Tower")
-        meta.persistentDataContainer.set(TowerDefMC.createKey("tower_generator_data"), PersistentDataType.STRING, data.toItemMetaString())
+        meta.persistentDataContainer.set(
+            TowerDefMC.createKey("tower_generator_data"), PersistentDataType.STRING, data.toItemMetaString()
+        )
         meta.persistentDataContainer.set(TowerDefMC.TOWER_RANGE, PersistentDataType.DOUBLE, range)
         meta.persistentDataContainer.set(TowerDefMC.TOWER_DMG, PersistentDataType.DOUBLE, damage)
         meta.persistentDataContainer.set(TowerDefMC.ATTACK_WAIT_TIME, PersistentDataType.DOUBLE, damageInterval)
@@ -267,13 +279,21 @@ class TowerGeneratorMenu(player: Player) : CustomMenu(player, 54, "Tower Generat
         player.sendMessage("§7${displayName} §ahas been added to your inventory.")
     }
 
-    private fun awaitNumberInput(player: Player, @Suppress("UNUSED_PARAMETER") key: String, @Suppress("UNUSED_PARAMETER") callback: (String) -> Unit) {
+    private fun awaitNumberInput(
+        player: Player,
+        @Suppress("UNUSED_PARAMETER") key: String,
+        @Suppress("UNUSED_PARAMETER") callback: (String) -> Unit
+    ) {
         // This is a simplified version - you'd need to integrate with MenuListener
         // For now, we'll use a basic approach
         player.sendMessage("§7(Type a number in chat)")
     }
 
-    private fun awaitStringInput(player: Player, @Suppress("UNUSED_PARAMETER") key: String, @Suppress("UNUSED_PARAMETER") callback: (String) -> Unit) {
+    private fun awaitStringInput(
+        player: Player,
+        @Suppress("UNUSED_PARAMETER") key: String,
+        @Suppress("UNUSED_PARAMETER") callback: (String) -> Unit
+    ) {
         // This is a simplified version - you'd need to integrate with MenuListener
         player.sendMessage("§7(Type in chat)")
     }

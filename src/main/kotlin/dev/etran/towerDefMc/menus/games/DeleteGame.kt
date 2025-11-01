@@ -16,7 +16,7 @@ class DeleteGame(player: Player) : CustomMenu(player, 54, "Tower Defense - Delet
         gamesList = GameRegistry.allGames
 
         if (gamesList.values.size >= 54) {
-            // Multi-page mode for 54+ games
+            // Multipage mode for 54+ games
             for (i in 0 + (currentMenuOpen * 36)..35 + (currentMenuOpen * 36)) {
                 if (i < gamesList.values.size) {
                     inventory.setItem(

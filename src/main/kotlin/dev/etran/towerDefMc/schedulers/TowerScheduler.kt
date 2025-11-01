@@ -4,13 +4,20 @@ import dev.etran.towerDefMc.TowerDefMC
 import dev.etran.towerDefMc.utils.damageEnemy
 import dev.etran.towerDefMc.utils.getClosestMobToTower
 import dev.etran.towerDefMc.utils.towerTurnToTarget
+import dev.etran.towerDefMc.utils.DebugLogger
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.persistence.PersistentDataType
 
 object TowerScheduler {
+    private var lastDebugTime = 0L
+    private const val DEBUG_INTERVAL = 5000L // Log every 5 seconds
+
     fun checkAndHandleTowers(world: World) {
+        val currentTime = System.currentTimeMillis()
+        var towerCount = 0
+
         // Only get the entities in the world
         world.getEntitiesByClass(LivingEntity::class.java).forEach { entity ->
             val container = entity.persistentDataContainer
@@ -18,6 +25,8 @@ object TowerScheduler {
             // Only proceed if entity actually has the key
             if (!container.has(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING)) return@forEach
             val towerId = container.get(TowerDefMC.TOWER_TYPES, PersistentDataType.STRING) ?: return@forEach
+
+            towerCount++
 
             // Checks each instance of the global identifier and runs code accordingly
             when (towerId) {
@@ -36,6 +45,12 @@ object TowerScheduler {
                     }
                 }
             }
+        }
+
+        // Periodic debug logging
+        if (currentTime - lastDebugTime > DEBUG_INTERVAL && towerCount > 0) {
+            DebugLogger.logTower("Active towers in world: $towerCount")
+            lastDebugTime = currentTime
         }
     }
 }

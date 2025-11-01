@@ -176,18 +176,12 @@ class ModifyWave(
             if (command is EnemySpawnCommand) {
                 player.closeInventory()
                 EnemiesSelection(
-                    player,
-                    { enemies, interval ->
+                    player, { enemies, interval ->
                         waveSequence[slot] = EnemySpawnCommand(enemies, interval)
                         player.sendMessage("§aUpdated enemy spawn command")
                         setMenuItems() // Refresh display
                         this.open()
-                    },
-                    waveNum,
-                    gameId,
-                    gameConfig,
-                    command.enemies,
-                    command.intervalSeconds
+                    }, waveNum, gameId, gameConfig, command.enemies, command.intervalSeconds
                 ).open()
                 return
             }
@@ -228,17 +222,13 @@ class ModifyWave(
     private fun handleAddEnemies() {
         player.closeInventory()
         val enemiesMenu = EnemiesSelection(
-            player,
-            { enemies, interval ->
+            player, { enemies, interval ->
                 // Callback from EnemiesSelection
                 waveSequence.add(EnemySpawnCommand(enemies, interval))
                 player.sendMessage("§aAdded enemy spawn command with ${enemies.values.sum()} enemies")
                 setMenuItems() // Refresh the display before reopening
                 this.open()
-            },
-            waveNum,
-            gameId,
-            gameConfig
+            }, waveNum, gameId, gameConfig
         )
         enemiesMenu.open()
     }

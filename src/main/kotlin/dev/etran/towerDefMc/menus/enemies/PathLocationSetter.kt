@@ -14,8 +14,7 @@ object PathLocationSetter {
     private val activeSetters = mutableMapOf<UUID, LocationCallback>()
 
     data class LocationCallback(
-        val gameId: Int,
-        val callback: (Location) -> Unit
+        val gameId: Int, val callback: (Location) -> Unit
     )
 
     fun startLocationSetting(player: Player, gameId: Int, callback: (Location) -> Unit) {

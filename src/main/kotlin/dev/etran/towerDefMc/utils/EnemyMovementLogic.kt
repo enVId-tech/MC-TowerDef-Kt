@@ -50,8 +50,7 @@ fun applyEnemyMovementLogic(entity: Entity, waypointManager: WaypointManager, ga
                     // Deal damage based on CUSTOM health of the enemy (not vanilla health)
                     val damage = if (entity is org.bukkit.entity.LivingEntity) {
                         val customHealth = entity.persistentDataContainer.get(
-                            TowerDefMC.createKey("custom_health"),
-                            PersistentDataType.DOUBLE
+                            TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE
                         ) ?: entity.health
                         ceil(customHealth).toInt()
                     } else {

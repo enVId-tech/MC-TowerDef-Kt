@@ -88,15 +88,12 @@ class Waves(
         // Bulk generation button
         inventory.setItem(
             50, createRenamableItem(
-                Material.NETHER_STAR,
-                "Generate {VALUE} Waves",
-                listOf(
+                Material.NETHER_STAR, "Generate {VALUE} Waves", listOf(
                     "§7Auto-generate multiple waves",
                     "§7Waves will be added to the end",
                     "§7Uses intelligent difficulty scaling",
                     "§eNumber of waves to generate: {VALUE}"
-                ),
-                "5"
+                ), "5"
             )
         )
 

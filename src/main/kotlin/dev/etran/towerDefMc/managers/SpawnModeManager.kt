@@ -19,9 +19,7 @@ import java.util.*
 object SpawnModeManager {
 
     enum class SpawnType {
-        START_POINT,
-        END_POINT,
-        CHECKPOINT
+        START_POINT, END_POINT, CHECKPOINT
     }
 
     private data class SpawnModeSession(
@@ -118,10 +116,12 @@ object SpawnModeManager {
                 gameManager.setStartPoint(location)
                 player.sendMessage("§aStart point set at: §e${formatLocation(location)}")
             }
+
             SpawnType.END_POINT -> {
                 gameManager.setEndPoint(location)
                 player.sendMessage("§aEnd point set at: §e${formatLocation(location)}")
             }
+
             SpawnType.CHECKPOINT -> {
                 gameManager.addCheckpoint(location)
                 player.sendMessage("§aCheckpoint added at: §e${formatLocation(location)}")
@@ -146,17 +146,17 @@ object SpawnModeManager {
         val meta = item.itemMeta
 
         meta.displayName(Component.text("§6${getSpawnTypeName(spawnType)} Placer"))
-        meta.lore(listOf(
-            Component.text("§7Right-click to place a ${getSpawnTypeName(spawnType).lowercase()}"),
-            Component.text("§7Type anything in chat to exit")
-        ))
+        meta.lore(
+            listOf(
+                Component.text("§7Right-click to place a ${getSpawnTypeName(spawnType).lowercase()}"),
+                Component.text("§7Type anything in chat to exit")
+            )
+        )
 
         // Mark as spawn item
         val pdc = meta.persistentDataContainer
         pdc.set(
-            NamespacedKey(TowerDefMC.instance, "spawn_item"),
-            PersistentDataType.STRING,
-            spawnType.name
+            NamespacedKey(TowerDefMC.instance, "spawn_item"), PersistentDataType.STRING, spawnType.name
         )
 
         item.itemMeta = meta

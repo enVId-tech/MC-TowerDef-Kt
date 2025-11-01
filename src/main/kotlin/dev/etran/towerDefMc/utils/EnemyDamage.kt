@@ -36,13 +36,12 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
 
         // Get custom health from persistent data
         val currentCustomHealth = enemy.persistentDataContainer.get(
-            TowerDefMC.createKey("custom_health"),
-            PersistentDataType.DOUBLE
+            TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE
         )
 
         // If custom health is null, this enemy wasn't properly initialized - remove it
         if (currentCustomHealth == null) {
-            println("Warning: Enemy ${enemy.uniqueId} had no custom health, removing it")
+            DebugLogger.logEnemy("Warning: Enemy ${enemy.uniqueId} had no custom health, removing it")
 
             // Clean up health bar
             cleanUpEnemyHealthBar(enemy)
@@ -80,42 +79,37 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
                     // Record damage in stats
                     PlayerStatsManager.recordDamage(gameId, ownerUUID, actualDamage)
                 } else {
-                    println("Warning: Tower owner $ownerUUID not found in game $gameId when awarding cash")
+                    DebugLogger.logTower("Warning: Tower owner $ownerUUID not found in game $gameId when awarding cash")
                 }
             } catch (e: IllegalArgumentException) {
                 // Invalid UUID format, skip cash reward
-                println("Warning: Invalid tower owner UUID format: $towerOwnerUUID")
+                DebugLogger.logTower("Warning: Invalid tower owner UUID format: $towerOwnerUUID")
             }
         } else {
             if (gameId == null) {
-                println("Warning: Tower ${tower.uniqueId} has no game ID when dealing damage")
+                DebugLogger.logTower("Warning: Tower ${tower.uniqueId} has no game ID when dealing damage")
             }
             if (towerOwnerUUID == null) {
-                println("Warning: Tower ${tower.uniqueId} has no owner when dealing damage")
+                DebugLogger.logTower("Warning: Tower ${tower.uniqueId} has no owner when dealing damage")
             }
         }
 
         // Apply damage to custom health ONLY (no vanilla damage)
         val newCustomHealth = max(0.0, currentCustomHealth - damage)
         enemy.persistentDataContainer.set(
-            TowerDefMC.createKey("custom_health"),
-            PersistentDataType.DOUBLE,
-            newCustomHealth
+            TowerDefMC.createKey("custom_health"), PersistentDataType.DOUBLE, newCustomHealth
         )
 
         // Update health bar with custom health - check passengers first since health bar is attached
-        val healthBar = enemy.passengers.filterIsInstance<org.bukkit.entity.TextDisplay>()
-            .firstOrNull { display ->
-                display.persistentDataContainer.get(
-                    TowerDefMC.HEALTH_OWNER_UUID,
-                    PersistentDataType.STRING
-                ) == enemy.uniqueId.toString()
-            }
+        val healthBar = enemy.passengers.filterIsInstance<org.bukkit.entity.TextDisplay>().firstOrNull { display ->
+            display.persistentDataContainer.get(
+                TowerDefMC.HEALTH_OWNER_UUID, PersistentDataType.STRING
+            ) == enemy.uniqueId.toString()
+        }
 
         if (healthBar != null) {
             val maxCustomHealth = enemy.persistentDataContainer.get(
-                TowerDefMC.createKey("custom_max_health"),
-                PersistentDataType.DOUBLE
+                TowerDefMC.createKey("custom_max_health"), PersistentDataType.DOUBLE
             ) ?: 20.0
             updateHealthBar(enemy, healthBar, newCustomHealth, maxCustomHealth)
         }

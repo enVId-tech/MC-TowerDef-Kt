@@ -3,7 +3,6 @@ package dev.etran.towerDefMc.menus
 import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.menus.games.DeleteGame
 import dev.etran.towerDefMc.menus.games.GameSelector
-import dev.etran.towerDefMc.menus.games.ModifyGame
 import dev.etran.towerDefMc.menus.games.NewGame
 import dev.etran.towerDefMc.utils.CustomMenu
 import org.bukkit.Material

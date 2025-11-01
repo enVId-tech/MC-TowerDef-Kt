@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-abstract class CustomMenu(val player: Player, val size: Int, val title: String) {
+abstract class CustomMenu(val player: Player, val size: Int, title: String) {
     val inventory: Inventory = Bukkit.createInventory(player, size, title.toComponent())
     private var isInitialized = false
 

@@ -21,6 +21,7 @@ import dev.etran.towerDefMc.listeners.EnemyHealthListener
 import dev.etran.towerDefMc.listeners.EnemyTargetListener
 import dev.etran.towerDefMc.listeners.EntityDeathListener
 import dev.etran.towerDefMc.listeners.FireproofListener
+import dev.etran.towerDefMc.listeners.GameStatsDisplayListener
 import dev.etran.towerDefMc.listeners.MenuListener
 import dev.etran.towerDefMc.listeners.PathArmorStandRemovalListener
 import dev.etran.towerDefMc.listeners.PathCreationListener
@@ -41,15 +42,15 @@ import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.registries.TowerRegistry
 import dev.etran.towerDefMc.schedulers.EnemyScheduler
+import dev.etran.towerDefMc.schedulers.HealthbarScheduler
 import dev.etran.towerDefMc.schedulers.TowerScheduler
+import dev.etran.towerDefMc.utils.DebugLogger
 import dev.etran.towerDefMc.utils.GameEndingSequence
 import dev.etran.towerDefMc.utils.TaskUtility
 import dev.etran.towerDefMc.utils.WaveAnnouncement
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
-import org.bukkit.entity.TextDisplay
-import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 
 class TowerDefMC : JavaPlugin() {
@@ -130,6 +131,9 @@ class TowerDefMC : JavaPlugin() {
             "Tower Defense Plugin - Starting Initialization"
         }
 
+        // Initialize DebugLogger FIRST before other components
+        DebugLogger.initialize(this)
+
         // Register utils
         TaskUtility.initialize(this)
         WaypointManager.initialize(this)
@@ -165,7 +169,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PathModificationListener(), this)
         server.pluginManager.registerEvents(PathArmorStandRemovalListener(), this)
         server.pluginManager.registerEvents(TowerUpgradeListener(), this)
-        server.pluginManager.registerEvents(dev.etran.towerDefMc.listeners.GameStatsDisplayListener(), this)
+        server.pluginManager.registerEvents(GameStatsDisplayListener(), this)
         server.pluginManager.registerEvents(TowerShopListener(), this)
         server.pluginManager.registerEvents(ShopVillagerPlacementListener(), this)
 
@@ -241,9 +245,7 @@ class TowerDefMC : JavaPlugin() {
                 for (world in Bukkit.getWorlds()) {
                     TowerScheduler.checkAndHandleTowers(world)
                 }
-            },
-            0L,
-            CHECK_INTERVAL_TICKS
+            }, 0L, CHECK_INTERVAL_TICKS
         )
     }
 
@@ -254,9 +256,7 @@ class TowerDefMC : JavaPlugin() {
                 for (world in Bukkit.getWorlds()) {
                     EnemyScheduler.checkAndHandleEnemies(world)
                 }
-            },
-            0L,
-            CHECK_INTERVAL_TICKS
+            }, 0L, CHECK_INTERVAL_TICKS
         )
     }
 
@@ -266,24 +266,9 @@ class TowerDefMC : JavaPlugin() {
             this, Runnable {
                 for (world in Bukkit.getWorlds()) {
                     // Find all TextDisplay entities with health bar markers
-                    world.entities.filterIsInstance<TextDisplay>().forEach { textDisplay ->
-                        val ownerUUID = textDisplay.persistentDataContainer.get(
-                            HEALTH_OWNER_UUID, PersistentDataType.STRING
-                        )
-
-                        if (ownerUUID != null) {
-                            // Check if the owner entity still exists
-                            val ownerExists = world.entities.any { it.uniqueId.toString() == ownerUUID }
-
-                            // If owner doesn't exist, remove this orphaned health bar
-                            if (!ownerExists) {
-                                textDisplay.remove()
-                            }
-                        }
-                    }
+                    HealthbarScheduler.updateHealthbars(world)
                 }
-            },
-            100L, // Start after 5 seconds
+            }, 100L, // Start after 5 seconds
             100L  // Run every 5 seconds
         )
     }
