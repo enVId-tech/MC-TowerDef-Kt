@@ -11,9 +11,8 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 
-class EnemyGeneratorMenu(player: Player) : CustomMenu(player, 54, "Enemy Generator") {
+class EnemyGeneratorMenu(player: Player, private val spawnEggType: EntityType) : CustomMenu(player, 54, "Enemy Generator") {
 
-    private var spawnEggType: EntityType = EntityType.ZOMBIE
     private var displayName: String = "Custom Enemy"
     private var health: Double = 20.0
     private var speed: Double = 1.0
@@ -25,19 +24,8 @@ class EnemyGeneratorMenu(player: Player) : CustomMenu(player, 54, "Enemy Generat
     private var entitySize: Double = 1.0
 
     override fun setMenuItems() {
-        // Check if player is holding a spawn egg
-        val heldItem = player.inventory.itemInMainHand
-        if (heldItem.type.name.endsWith("_SPAWN_EGG")) {
-            val eggName = heldItem.type.name.replace("_SPAWN_EGG", "")
-            try {
-                spawnEggType = EntityType.valueOf(eggName)
-            } catch (e: Exception) {
-                player.sendMessage("§cInvalid spawn egg type!")
-            }
-        }
-
         // Display the spawn egg being configured (slot 4)
-        val spawnEggMaterial = Material.getMaterial("${spawnEggType.name}_SPAWN_EGG") ?: Material.ZOMBIE_SPAWN_EGG
+        val spawnEggMaterial = Material.getMaterial("${spawnEggType.name}_SPAWN_EGG") ?: Material.EGG
         inventory.setItem(
             4, createMenuItem(
                 spawnEggMaterial, "§6§lEnemy Spawn Egg", listOf("§7Entity Type: §e${spawnEggType.name}")
@@ -141,7 +129,9 @@ class EnemyGeneratorMenu(player: Player) : CustomMenu(player, 54, "Enemy Generat
         inventory.setItem(
             53, createMenuItem(
                 Material.BOOK, "§e§lHelp", listOf(
-                    "§7Hold a spawn egg and run", "§7/tdgenerator enemy", "§7to configure enemy properties"
+                    "§7Run /tdgenerator enemy <type>",
+                    "§7to configure enemy properties",
+                    "§7Example: /tdgenerator enemy ZOMBIE"
                 )
             )
         )

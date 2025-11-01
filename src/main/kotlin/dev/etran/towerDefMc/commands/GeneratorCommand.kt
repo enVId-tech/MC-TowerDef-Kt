@@ -6,6 +6,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 
 object GeneratorCommand : CommandExecutor, TabCompleter {
@@ -17,32 +18,33 @@ object GeneratorCommand : CommandExecutor, TabCompleter {
         }
 
         if (args.isEmpty()) {
-            sender.sendMessage("§cUsage: /tdgenerator <tower|enemy>")
-            sender.sendMessage("§7Hold a spawn egg and run the command to configure properties")
+            sender.sendMessage("§cUsage: /tdgenerator <tower|enemy> <entity_type>")
+            sender.sendMessage("§7Example: /tdgenerator tower ZOMBIE")
+            return false
+        }
+
+        if (args.size < 2) {
+            sender.sendMessage("§cUsage: /tdgenerator <tower|enemy> <entity_type>")
+            sender.sendMessage("§7Please specify an entity type (e.g., ZOMBIE, SKELETON, etc.)")
+            return false
+        }
+
+        // Parse entity type
+        val entityType = try {
+            EntityType.valueOf(args[1].uppercase())
+        } catch (_: IllegalArgumentException) {
+            sender.sendMessage("§cInvalid entity type: ${args[1]}")
+            sender.sendMessage("§7Use tab completion to see available types")
             return false
         }
 
         when (args[0].lowercase()) {
             "tower" -> {
-                val heldItem = sender.inventory.itemInMainHand
-                if (!heldItem.type.name.endsWith("_SPAWN_EGG")) {
-                    sender.sendMessage("§cYou must be holding a spawn egg!")
-                    sender.sendMessage("§7Hold the spawn egg you want to use for the tower")
-                    return false
-                }
-
-                TowerGeneratorMenu(sender).open()
+                TowerGeneratorMenu(sender, entityType).open()
             }
 
             "enemy" -> {
-                val heldItem = sender.inventory.itemInMainHand
-                if (!heldItem.type.name.endsWith("_SPAWN_EGG")) {
-                    sender.sendMessage("§cYou must be holding a spawn egg!")
-                    sender.sendMessage("§7Hold the spawn egg you want to use for the enemy")
-                    return false
-                }
-
-                EnemyGeneratorMenu(sender).open()
+                EnemyGeneratorMenu(sender, entityType).open()
             }
 
             else -> {
@@ -57,10 +59,19 @@ object GeneratorCommand : CommandExecutor, TabCompleter {
     override fun onTabComplete(
         sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
-        if (args.size == 1) {
-            return listOf("tower", "enemy").filter { it.startsWith(args[0].lowercase()) }
+        return when (args.size) {
+            1 -> {
+                listOf("tower", "enemy").filter { it.startsWith(args[0].lowercase()) }
+            }
+            2 -> {
+                // Return all living entity types that have spawn eggs or can be spawned
+                EntityType.entries
+                    .filter { it.isAlive && it.isSpawnable }
+                    .map { it.name }
+                    .filter { it.startsWith(args[1].uppercase()) }
+                    .sorted()
+            }
+            else -> emptyList()
         }
-        return emptyList()
     }
 }
-
