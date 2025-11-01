@@ -62,6 +62,9 @@ class GameManager(
 
         plugin.logger.info("Game $gameId started: ${config.name}. Max Health: $health")
 
+        // Spawn game stats display armor stands at all lecterns
+        dev.etran.towerDefMc.factories.GameStatsDisplayFactory.spawnAllGameStatsDisplays(gameId)
+
         // Reset wave manager state
         waveManager.resetWaves()
 
@@ -74,6 +77,9 @@ class GameManager(
         isRunning = false
 
         plugin.logger.info("Game $gameId ended. Result: ${if (win) "Win" else "Loss"}")
+
+        // Remove game stats display armor stands
+        dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
 
         // Clean up all entities for this game
         GameInstanceTracker.clearGame(gameId)
@@ -89,6 +95,9 @@ class GameManager(
         isRunning = false
 
         plugin.logger.info("Game $gameId stopped manually")
+
+        // Remove game stats display armor stands
+        dev.etran.towerDefMc.factories.GameStatsDisplayFactory.removeAllGameStatsDisplays(gameId)
 
         // Clean up all entities for this game
         GameInstanceTracker.clearGame(gameId)

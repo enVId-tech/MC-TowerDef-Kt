@@ -145,6 +145,7 @@ class TowerDefMC : JavaPlugin() {
         server.pluginManager.registerEvents(PathModificationListener(), this)
         server.pluginManager.registerEvents(PathArmorStandRemovalListener(), this)
         server.pluginManager.registerEvents(TowerUpgradeListener(), this)
+        server.pluginManager.registerEvents(dev.etran.towerDefMc.listeners.GameStatsDisplayListener(), this)
 
         logger.info {
             "Tower Defense Plugin - Continuous Listeners Registered"
