@@ -321,6 +321,9 @@ class GameManager(
     // -- General Game Management --
 
     init {
+        // Clean up any orphaned path armor stands from previous sessions BEFORE loading paths
+        cleanupOrphanedPathStands()
+
         // Load paths from config
         if (config.paths.isNotEmpty()) {
             pathManager.loadPaths(config.paths)
@@ -328,6 +331,31 @@ class GameManager(
         // Load spawnable surfaces from config
         if (config.spawnableSurfaces.isNotEmpty()) {
             spawnableSurfaceManager.loadSurfaces(config.spawnableSurfaces)
+        }
+    }
+
+    /**
+     * Clean up orphaned path armor stands from the world
+     * This ensures no duplicate armor stands remain from previous server sessions
+     */
+    private fun cleanupOrphanedPathStands() {
+        var removedCount = 0
+        org.bukkit.Bukkit.getWorlds().forEach { world ->
+            world.entities.filterIsInstance<org.bukkit.entity.ArmorStand>().forEach { stand ->
+                val elementType = stand.persistentDataContainer.get(
+                    TowerDefMC.ELEMENT_TYPES,
+                    org.bukkit.persistence.PersistentDataType.STRING
+                )
+                // Remove any armor stands that are path-related
+                if (elementType in listOf("PathStart", "PathCheckpoint", "PathEnd")) {
+                    stand.remove()
+                    removedCount++
+                }
+            }
+        }
+
+        if (removedCount > 0) {
+            DebugLogger.logGame("Game $gameId: Cleaned up $removedCount orphaned path armor stands")
         }
     }
 

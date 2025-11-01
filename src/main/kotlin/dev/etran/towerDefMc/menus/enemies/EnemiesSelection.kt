@@ -191,12 +191,14 @@ class EnemiesSelection(
     // Simple number selector menu
     private class NumberSelector(
         player: Player,
-        @Suppress("unused") private val itemName: String,
+        private val itemName: String,
         private val onSelect: (Int) -> Unit,
         private val waveNum: Int,
         private val gameId: Int,
         private val config: GameSaveConfig
     ) : CustomMenu(player, 27, "Select Amount - $itemName") {
+
+        private var selectedAmount: Int = 1
 
         override fun setMenuItems() {
             val amounts = listOf(1, 5, 10, 25, 50, 100)
@@ -206,7 +208,7 @@ class EnemiesSelection(
                 if (slot < 17) {
                     inventory.setItem(
                         slot, createMenuItem(
-                            Material.SLIME_BALL, "§a$amount", listOf("§7Select $amount enemies")
+                            Material.SLIME_BALL, "§a$amount", listOf("§7Click to select $amount enemies")
                         )
                     )
                 }
@@ -216,7 +218,17 @@ class EnemiesSelection(
                 18, createRenamableItem(
                     Material.PAPER, "Custom: {VALUE}", listOf(
                         "Enter a custom amount", "Current: {VALUE}"
-                    ), "1"
+                    ), selectedAmount.toString()
+                )
+            )
+
+            inventory.setItem(
+                20, createMenuItem(
+                    Material.EMERALD_BLOCK, "§a§lSave & Go Back", listOf(
+                        "§7Save selected amount: §e${selectedAmount}x $itemName",
+                        "",
+                        "§aClick to confirm and return"
+                    )
                 )
             )
 
@@ -232,44 +244,52 @@ class EnemiesSelection(
 
             when (event.slot) {
                 10 -> {
-                    onSelect(1)
+                    selectedAmount = 1
+                    setMenuItems() // Refresh to show updated amount
                 }
 
                 11 -> {
-                    onSelect(5)
+                    selectedAmount = 5
+                    setMenuItems() // Refresh to show updated amount
                 }
 
                 12 -> {
-                    onSelect(10)
+                    selectedAmount = 10
+                    setMenuItems() // Refresh to show updated amount
                 }
 
                 13 -> {
-                    onSelect(25)
+                    selectedAmount = 25
+                    setMenuItems() // Refresh to show updated amount
                 }
 
                 14 -> {
-                    onSelect(50)
+                    selectedAmount = 50
+                    setMenuItems() // Refresh to show updated amount
                 }
 
                 15 -> {
-                    onSelect(100)
+                    selectedAmount = 100
+                    setMenuItems() // Refresh to show updated amount
                 }
 
-                18 -> {
-                    // Custom amount from renamable item
-                    val item = event.currentItem
-                    val meta = item?.itemMeta
-                    if (meta != null) {
-                        val pdc = meta.persistentDataContainer
-                        val customValue = pdc.get(TowerDefMC.Companion.TITLE_KEY, PersistentDataType.STRING)
-                        val amount = customValue?.toIntOrNull() ?: 1
-                        onSelect(amount)
-                    }
+                20 -> {
+                    // Save & Go Back button
+                    onSelect(selectedAmount)
                 }
 
                 22 -> {
+                    // Remove/Cancel
                     onSelect(0)
                 }
+            }
+        }
+
+        override fun onItemRenamed(slot: Int, newValue: String) {
+            if (slot == 18) {
+                // Custom amount entered
+                selectedAmount = newValue.toIntOrNull() ?: 1
+                setMenuItems() // Refresh to show updated amount in Save button
             }
         }
     }
