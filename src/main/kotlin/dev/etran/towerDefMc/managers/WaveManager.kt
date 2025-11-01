@@ -84,13 +84,31 @@ class WaveManager(
         if (!isSpawningComplete) return false
 
         val aliveEnemies = GameInstanceTracker.getLivingEntitiesInGame(gameId)
-        val aliveCount = aliveEnemies.size
+
+        // Remove any enemies with null custom health (they're dead/removed but still tracked)
+        val actuallyAlive = aliveEnemies.filter { enemy ->
+            val customHealth = enemy.persistentDataContainer.get(
+                TowerDefMC.createKey("custom_health"),
+                PersistentDataType.DOUBLE
+            )
+
+            if (customHealth == null) {
+                // This enemy is already dead/removed, unregister it
+                println("Removing ghost enemy ${enemy.uniqueId} from tracker (customHealth is null)")
+                GameInstanceTracker.unregisterEntity(enemy)
+                false
+            } else {
+                true
+            }
+        }
+
+        val aliveCount = actuallyAlive.size
 
         // Debug logging to help track wave completion issues
         if (aliveCount > 0) {
             println("Game $gameId - Wave $currentWave: $aliveCount enemies still alive")
             // Log the actual entities to help debug ghost enemies
-            aliveEnemies.forEach { enemy ->
+            actuallyAlive.forEach { enemy ->
                 val customHealth = enemy.persistentDataContainer.get(
                     TowerDefMC.createKey("custom_health"),
                     PersistentDataType.DOUBLE

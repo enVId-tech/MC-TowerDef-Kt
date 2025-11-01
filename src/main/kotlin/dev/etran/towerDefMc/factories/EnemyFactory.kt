@@ -41,6 +41,11 @@ object EnemyFactory {
         val entity = world.spawnEntity(location, EntityType.ZOMBIE) as Zombie
 
         val scale = entity.getAttribute(Attribute.SCALE)
+        val maxHealth = entity.getAttribute(Attribute.MAX_HEALTH)
+
+        // Keep Minecraft health at max to prevent vanilla death
+        if (maxHealth != null) maxHealth.baseValue = 1000.0
+        entity.health = 1000.0
 
         // Base value is a multiplier from the normal value, 2 is double size
         if (scale != null) scale.baseValue = 1.5
@@ -60,6 +65,18 @@ object EnemyFactory {
         entity.persistentDataContainer.set(TowerDefMC.ELEMENT_TYPES, PersistentDataType.STRING, "Enemy")
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, "Basic_Enemy_1")
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
+
+        // Set custom health system (default 20.0)
+        entity.persistentDataContainer.set(
+            TowerDefMC.createKey("custom_health"),
+            PersistentDataType.DOUBLE,
+            20.0
+        )
+        entity.persistentDataContainer.set(
+            TowerDefMC.createKey("custom_max_health"),
+            PersistentDataType.DOUBLE,
+            20.0
+        )
 
         createHealthBar(entity)
 

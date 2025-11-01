@@ -38,7 +38,24 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
         val currentCustomHealth = enemy.persistentDataContainer.get(
             TowerDefMC.createKey("custom_health"),
             PersistentDataType.DOUBLE
-        ) ?: enemy.health
+        )
+
+        // If custom health is null, this enemy wasn't properly initialized - remove it
+        if (currentCustomHealth == null) {
+            println("Warning: Enemy ${enemy.uniqueId} had no custom health, removing it")
+
+            // Clean up health bar
+            cleanUpEnemyHealthBar(enemy)
+
+            // Unregister from game tracker
+            GameInstanceTracker.unregisterEntity(enemy)
+
+            // Remove the entity
+            enemy.remove()
+
+            // Don't set ready time since we're removing the enemy, just return
+            return
+        }
 
         // Award cash to the tower owner based on damage dealt
         val gameId = GameInstanceTracker.getGameId(tower)
