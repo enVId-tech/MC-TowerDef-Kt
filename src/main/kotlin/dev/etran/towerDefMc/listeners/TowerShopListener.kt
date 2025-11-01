@@ -1,7 +1,7 @@
 package dev.etran.towerDefMc.listeners
 
 import dev.etran.towerDefMc.TowerDefMC
-import dev.etran.towerDefMc.managers.GameInstanceTracker
+import dev.etran.towerDefMc.registries.GameRegistry
 import dev.etran.towerDefMc.menus.shop.TowerShopMenu
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -48,8 +48,8 @@ class TowerShopListener : Listener {
         }
 
         // Check if player is in the game
-        val playerGame = GameInstanceTracker.getGameId(player)
-        if (playerGame != gameId) {
+        val playerGame = GameRegistry.getGameByPlayer(player.uniqueId)
+        if (playerGame == null || playerGame.gameId != gameId) {
             player.sendMessage("§cYou must be in game §e#${gameId} §cto use this shop!")
             return
         }
@@ -58,4 +58,3 @@ class TowerShopListener : Listener {
         TowerShopMenu(player, gameId).open()
     }
 }
-

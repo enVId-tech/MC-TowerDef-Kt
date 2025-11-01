@@ -83,6 +83,8 @@ class TowerDefMC : JavaPlugin() {
             get() = NamespacedKey(instance, "attackWaitTime")
         val TOWER_DMG: NamespacedKey
             get() = NamespacedKey(instance, "towerDMG")
+        val TOWER_OWNER_KEY: NamespacedKey
+            get() = NamespacedKey(instance, "towerOwner")
 
         // -- Enemies --
         val HEALTH_OWNER_UUID: NamespacedKey

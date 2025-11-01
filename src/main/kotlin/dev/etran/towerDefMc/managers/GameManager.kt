@@ -70,6 +70,12 @@ class GameManager(
         players.clear()
         players.addAll(initialPlayers)
 
+        // Initialize player stats with starting cash for all players
+        initialPlayers.forEach { playerUUID ->
+            PlayerStatsManager.initializePlayer(gameId, playerUUID, config.defaultCash)
+            plugin.server.getPlayer(playerUUID)?.sendMessage("§a§lStarting cash: §e${config.defaultCash}")
+        }
+
         // Add this game to activeGames so enemies can find it
         GameRegistry.activeGames[gameId] = this
 

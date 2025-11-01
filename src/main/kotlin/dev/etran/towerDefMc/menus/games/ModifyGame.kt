@@ -197,7 +197,6 @@ class ModifyGame(
         when (event.slot) {
             19 -> handleWavesClick()
             22 -> handleTowersClick()
-            25 -> handleValueUpdate(event) // Tower sell refund percentage
             30 -> handlePathsClick()
             33 -> handleStartGameClick()
             36 -> handleStatsDisplayClick()

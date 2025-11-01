@@ -118,6 +118,22 @@ class WaveManager(
         waveCheckTaskId = plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, {
             if (checkWaveCompletion()) {
                 println("Wave $currentWave completed!")
+
+                // Award cash to all players for completing the wave
+                val cashReward = currentWaveData?.cashGiven ?: 0
+                if (cashReward > 0) {
+                    PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
+                        PlayerStatsManager.awardCash(gameId, playerUUID, cashReward)
+
+                        // Send message to player
+                        plugin.server.getPlayer(playerUUID)?.sendMessage("§a§l+ $cashReward cash §7(Wave $currentWave completed!)")
+                    }
+                    println("Awarded $cashReward cash to all players for completing wave $currentWave")
+                }
+
+                // Record wave completion in stats
+                PlayerStatsManager.recordWaveCompletion(gameId)
+
                 cancelWaveCheckTask()
 
                 // Check if this was the last wave
@@ -173,11 +189,11 @@ class WaveManager(
         // Get a random path once for this spawn command and set up waypoint manager
         val randomPath = pathManager.getRandomPath()
         if (randomPath != null) {
-            // Setup waypoint manager with this path's checkpoints ONLY ONCE per game
-            // Check if waypoints are already set up (don't duplicate)
-            if (waypointManager.checkpoints.isEmpty()) {
-                pathManager.setupWaypointManagerForPath(randomPath, waypointManager)
-            }
+            // Clear all existing waypoints first to prevent duplication
+            waypointManager.clearAllWaypoints()
+
+            // Now setup waypoint manager with this path's checkpoints
+            pathManager.setupWaypointManagerForPath(randomPath, waypointManager)
         }
 
         val spawnTask = object : BukkitRunnable() {

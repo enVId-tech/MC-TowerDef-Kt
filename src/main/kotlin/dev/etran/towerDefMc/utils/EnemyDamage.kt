@@ -35,16 +35,24 @@ fun damageEnemy(tower: LivingEntity, enemy: LivingEntity) {
         )
         enemy.damage(damage)
 
-        // Track damage dealt - find the tower's owner/placer if possible
+        // Award cash to the tower owner based on damage dealt
         val gameId = GameInstanceTracker.getGameId(tower)
-        if (gameId != null) {
-            // Award damage to all players in the game for now
-            // In future, could track tower ownership per player
-            val game = GameRegistry.allGames[gameId]
-            if (game != null) {
-                PlayerStatsManager.getAllPlayerStats(gameId).keys.forEach { playerUUID ->
-                    PlayerStatsManager.recordDamage(gameId, playerUUID, damage)
-                }
+        val towerOwnerUUID = tower.persistentDataContainer.get(
+            TowerDefMC.TOWER_OWNER_KEY, PersistentDataType.STRING
+        )
+
+        if (gameId != null && towerOwnerUUID != null) {
+            try {
+                val ownerUUID = java.util.UUID.fromString(towerOwnerUUID)
+
+                // Award cash equal to the damage dealt (rounded to nearest int)
+                val cashReward = damage.toInt()
+                PlayerStatsManager.awardCash(gameId, ownerUUID, cashReward)
+
+                // Record damage in stats
+                PlayerStatsManager.recordDamage(gameId, ownerUUID, damage)
+            } catch (e: IllegalArgumentException) {
+                // Invalid UUID format, skip cash reward
             }
         }
     }

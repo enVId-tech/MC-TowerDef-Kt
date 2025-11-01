@@ -112,6 +112,7 @@ object EnemyFactory {
         entity.persistentDataContainer.set(TowerDefMC.ENEMY_TYPES, PersistentDataType.STRING, enemyType)
         entity.persistentDataContainer.set(TowerDefMC.TARGET_CHECKPOINT_ID, PersistentDataType.INTEGER, 1)
 
+        // Create health bar AFTER setting the actual health to match max health
         createHealthBar(entity)
 
         return entity

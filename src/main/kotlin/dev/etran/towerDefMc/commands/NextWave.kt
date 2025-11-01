@@ -33,8 +33,12 @@ object NextWave : CommandExecutor, TabCompleter {
         }
 
         // Start the next wave
-        gameManager.waveManager.startNextWave()
-        sender.sendMessage("§aStarted wave ${gameManager.waveManager.currentWave} in game $gameId")
+        if (gameManager.isGameRunning) {
+            gameManager.waveManager.startNextWave()
+            sender.sendMessage("§aStarted wave ${gameManager.waveManager.currentWave} in game $gameId")
+        } else {
+            sender.sendMessage("§cGame $gameId is currently not running!")
+        }
 
         return true
     }

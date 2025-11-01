@@ -7,7 +7,6 @@ import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Zombie
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -91,6 +90,13 @@ object TowerFactory {
             TowerDefMC.createKey("towerLevel"),
             PersistentDataType.INTEGER,
             1
+        )
+
+        // Store the tower owner (player who placed it)
+        entity.persistentDataContainer.set(
+            TowerDefMC.TOWER_OWNER_KEY,
+            PersistentDataType.STRING,
+            player.uniqueId.toString()
         )
 
         // Record tower placement in player stats

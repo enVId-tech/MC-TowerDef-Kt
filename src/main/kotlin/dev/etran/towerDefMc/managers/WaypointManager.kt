@@ -265,7 +265,15 @@ class WaypointManager {
     // ==================== General Waypoint Management ====================
 
     /**
-     * Clear all waypoints (checkpoints, start points, end points)
+     * Clear all waypoints (checkpoints only, not the armor stands in the world)
+     * This is used to reset waypoints between waves/spawns
+     */
+    fun clearAllWaypoints() {
+        checkpoints.clear()
+    }
+
+    /**
+     * Clear all waypoints (checkpoints, start points, end points) and remove armor stands
      */
     fun clearAllWaypoints(worlds: MutableList<World>): Boolean {
         try {
