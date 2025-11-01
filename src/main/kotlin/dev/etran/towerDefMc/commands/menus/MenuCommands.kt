@@ -6,6 +6,8 @@ import dev.etran.towerDefMc.menus.games.ModifyGame
 import dev.etran.towerDefMc.menus.games.DeleteGame
 import dev.etran.towerDefMc.menus.games.NewGame
 import dev.etran.towerDefMc.menus.waves.Waves
+import dev.etran.towerDefMc.menus.enemies.DeleteEnemyMenu
+import dev.etran.towerDefMc.menus.towers.DeleteTowerMenu
 import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -33,8 +35,10 @@ object MenuCommands : CommandExecutor, TabCompleter {
             "delete", "remove" -> openDeleteGameMenu(sender)
             "waves" -> openWavesMenu(sender, args)
             "select", "selector" -> openGameSelector(sender)
+            "deleteenemy", "deletenemies", "removeenemy" -> openDeleteEnemyMenu(sender)
+            "deletetower", "deletetowers", "removetower" -> openDeleteTowerMenu(sender)
             else -> {
-                sender.sendMessage("§cInvalid menu type. Use: home, new, modify, delete, waves, select")
+                sender.sendMessage("§cInvalid menu type. Use: home, new, modify, delete, waves, select, deleteenemy, deletetower")
                 return false
             }
         }
@@ -100,11 +104,19 @@ object MenuCommands : CommandExecutor, TabCompleter {
         GameSelector(player).open()
     }
 
+    private fun openDeleteEnemyMenu(player: Player) {
+        DeleteEnemyMenu(player).open()
+    }
+
+    private fun openDeleteTowerMenu(player: Player) {
+        DeleteTowerMenu(player).open()
+    }
+
     override fun onTabComplete(
         sender: CommandSender, command: Command, alias: String, args: Array<out String>
     ): List<String> {
         if (args.size == 1) {
-            val options = listOf("home", "new", "modify", "delete", "waves", "select")
+            val options = listOf("home", "new", "modify", "delete", "waves", "select", "deleteenemy", "deletetower")
             return options.filter { it.startsWith(args[0].lowercase()) }
         }
 
@@ -115,4 +127,3 @@ object MenuCommands : CommandExecutor, TabCompleter {
         return emptyList()
     }
 }
-

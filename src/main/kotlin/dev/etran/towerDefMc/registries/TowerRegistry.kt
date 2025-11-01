@@ -157,4 +157,23 @@ object TowerRegistry {
 
         config.save(towersFile)
     }
+
+    fun deleteTower(id: String): Boolean {
+        if (!towers.containsKey(id)) {
+            return false
+        }
+
+        towers.remove(id)
+        deleteTowerFromFile(id)
+        plugin.logger.info("Deleted tower: $id")
+        return true
+    }
+
+    private fun deleteTowerFromFile(id: String) {
+        val towersFile = File(plugin.dataFolder, "towers.yml")
+        val config = YamlConfiguration.loadConfiguration(towersFile)
+
+        config.set("towers.$id", null)
+        config.save(towersFile)
+    }
 }

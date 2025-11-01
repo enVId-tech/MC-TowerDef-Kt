@@ -145,6 +145,25 @@ object EnemyRegistry {
         config.save(enemiesFile)
     }
 
+    fun deleteEnemy(id: String): Boolean {
+        if (!enemies.containsKey(id)) {
+            return false
+        }
+
+        enemies.remove(id)
+        deleteEnemyFromFile(id)
+        plugin.logger.info("Deleted enemy: $id")
+        return true
+    }
+
+    private fun deleteEnemyFromFile(id: String) {
+        val enemiesFile = File(plugin.dataFolder, "enemies.yml")
+        val config = YamlConfiguration.loadConfiguration(enemiesFile)
+
+        config.set("enemies.$id", null)
+        config.save(enemiesFile)
+    }
+
     @Suppress("unused")
     fun reloadEnemies() {
         enemies.clear()
