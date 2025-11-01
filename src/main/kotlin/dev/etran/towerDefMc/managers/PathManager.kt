@@ -88,8 +88,8 @@ class PathManager {
      * This populates the waypoint manager with the path's points so enemies can navigate
      */
     fun setupWaypointManagerForPath(path: PathData, waypointManager: WaypointManager) {
-        // Clear existing checkpoints
-        waypointManager.checkpoints.values.forEach { it.remove() }
+        // Clear existing checkpoints WITHOUT removing the armor stands
+        // (they belong to paths and should stay in the world)
         waypointManager.checkpoints.clear()
 
         var checkpointId = 1
@@ -97,9 +97,10 @@ class PathManager {
         // Get the visualization armor stands for this path
         val stands = pathArmorStands[path.id] ?: return
 
-        // Add all armor stands to the waypoint manager in order
-        // The order is: start, checkpoints..., end
-        stands.forEach { stand ->
+        // Skip the first stand (start point) and add the rest
+        // The order is: start (skip), checkpoints..., end
+        // Enemies spawn at the start point, so they should navigate to checkpoints starting from ID 1
+        stands.drop(1).forEach { stand ->
             waypointManager.checkpoints[checkpointId] = stand
             checkpointId++
         }
@@ -296,7 +297,23 @@ class PathManager {
      * Load paths from serialized data
      */
     fun loadPaths(serializedPaths: List<SerializablePathData>) {
+        // Clear paths from memory
         clearAllPaths()
+
+        // Also remove any orphaned path armor stands from the world
+        // (from previous server sessions where pathArmorStands map was lost)
+        Bukkit.getWorlds().forEach { world ->
+            world.entities.filterIsInstance<ArmorStand>().forEach { stand ->
+                val elementType = stand.persistentDataContainer.get(
+                    TowerDefMC.ELEMENT_TYPES,
+                    PersistentDataType.STRING
+                )
+                // Remove any armor stands that are path-related
+                if (elementType in listOf("PathStart", "PathCheckpoint", "PathEnd")) {
+                    stand.remove()
+                }
+            }
+        }
 
         serializedPaths.forEach { serialized ->
             val path = PathData(

@@ -6,6 +6,7 @@ import dev.etran.towerDefMc.data.GameSaveConfig
 import dev.etran.towerDefMc.data.WaitCommand
 import dev.etran.towerDefMc.data.WaveData
 import dev.etran.towerDefMc.factories.EnemyFactory
+import dev.etran.towerDefMc.registries.GameRegistry
 import org.bukkit.Location
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -74,7 +75,7 @@ class WaveManager(
             if (currentWave >= gameConfig.waves.size) {
                 println("All waves completed! Game won!")
                 // Trigger game win
-                val game = dev.etran.towerDefMc.registries.GameRegistry.activeGames[gameId]
+                val game = GameRegistry.activeGames[gameId]
                 game?.endGame(true)
             }
             return // Wave is finished

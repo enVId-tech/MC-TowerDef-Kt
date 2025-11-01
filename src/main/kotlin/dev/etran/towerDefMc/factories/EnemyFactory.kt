@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.factories
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.registries.EnemyRegistry
 import dev.etran.towerDefMc.utils.createHealthBar
 import net.kyori.adventure.util.TriState
 import org.bukkit.GameMode
@@ -63,9 +64,10 @@ object EnemyFactory {
         }
     }
 
-    fun enemyPlace(enemyType: String, location: Location): org.bukkit.entity.Zombie? {
+    fun enemyPlace(enemyType: String, location: Location): Zombie? {
         // Get enemy configuration from registry
-        val enemyConfig = dev.etran.towerDefMc.registries.EnemyRegistry.getEnemy(enemyType)
+        val enemyConfig = EnemyRegistry
+            .getEnemy(enemyType)
 
         if (enemyConfig == null) {
             // Fallback to basic enemy if type not found

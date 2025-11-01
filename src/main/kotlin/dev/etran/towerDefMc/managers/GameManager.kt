@@ -57,6 +57,9 @@ class GameManager(
         players.clear()
         players.addAll(initialPlayers)
 
+        // Add this game to activeGames so enemies can find it
+        GameRegistry.activeGames[gameId] = this
+
         plugin.logger.info("Game $gameId started: ${config.name}. Max Health: $health")
 
         // Reset wave manager state
