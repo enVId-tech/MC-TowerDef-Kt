@@ -1,19 +1,20 @@
 package dev.etran.towerDefMc.utils
 
+import org.bukkit.Color
+import org.bukkit.FluidCollisionMode
+import org.bukkit.Location
+import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.block.Block
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import java.util.UUID
-import org.bukkit.block.Block
-import org.bukkit.FluidCollisionMode
-import org.bukkit.Particle
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.block.data.BlockData
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.math.PI
 
 object TaskUtility {
 
@@ -102,7 +103,7 @@ object TaskUtility {
 
         val task = object : BukkitRunnable() {
             // Use red dust for "No Placement" indicator
-            val redDust = Particle.DustOptions(org.bukkit.Color.RED, 1.0f)
+            val redDust = Particle.DustOptions(Color.RED, 1.0f)
 
             override fun run() {
                 val targetBlock = getHighlightedBlock(player)

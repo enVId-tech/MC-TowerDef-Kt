@@ -1,6 +1,7 @@
 package dev.etran.towerDefMc.factories
 
 import dev.etran.towerDefMc.TowerDefMC
+import dev.etran.towerDefMc.managers.GameManager
 import dev.etran.towerDefMc.managers.PlayerStatsManager
 import dev.etran.towerDefMc.registries.GameRegistry
 import net.kyori.adventure.text.Component
@@ -97,7 +98,7 @@ object GameStatsDisplayFactory {
     /**
      * Builds the display text for game stats
      */
-    private fun buildGameStatsDisplay(game: dev.etran.towerDefMc.managers.GameManager): String {
+    private fun buildGameStatsDisplay(game: GameManager): String {
         val allPlayerStats = PlayerStatsManager.getAllPlayerStats(game.gameId)
         val playerCount = allPlayerStats.size
 

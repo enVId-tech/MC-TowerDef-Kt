@@ -59,12 +59,17 @@ object GameRegistry {
                     deserializeWave(waveMap)
                 }
 
+                val pathsData = config.getMapList("game-data.paths").mapNotNull { pathMap ->
+                    deserializePath(pathMap)
+                }
+
                 val gameConfigurationData = GameSaveConfig(
                     maxHealth = config.getInt("game-data.maxHealth"),
                     defaultCash = config.getInt("game-data.defaultCash"),
                     name = config.getString("game-data.name") ?: "",
                     waves = wavesData,
-                    allowedTowers = config.getStringList("game-data.allowedTowers")
+                    allowedTowers = config.getStringList("game-data.allowedTowers"),
+                    paths = pathsData
                 )
 
                 val newGameManager = GameManager(
@@ -137,30 +142,6 @@ object GameRegistry {
         saveGameConfig(game.gameId, game.config)
     }
 
-    fun saveGameConfig(gameId: Int, config: GameSaveConfig) {
-        val gamesDir = File(plugin.dataFolder, "games")
-        if (!gamesDir.exists()) {
-            gamesDir.mkdirs()
-        }
-
-        val configFile = File(gamesDir, "game_$gameId.yml")
-        val yamlConfig = YamlConfiguration()
-
-        yamlConfig.set("game-data.maxHealth", config.maxHealth)
-        yamlConfig.set("game-data.defaultCash", config.defaultCash)
-        yamlConfig.set("game-data.name", config.name)
-
-        // Serialize waves to maps
-        val wavesData = config.waves.map { wave ->
-            serializeWave(wave)
-        }
-        yamlConfig.set("game-data.waves", wavesData)
-
-        yamlConfig.set("game-data.allowedTowers", config.allowedTowers)
-
-        yamlConfig.save(configFile)
-        plugin.logger.info("Saved Game $gameId (${config.name})")
-    }
 
     private fun serializeWave(wave: WaveData): Map<String, Any?> {
         return mapOf(
@@ -187,6 +168,82 @@ object GameRegistry {
                 "enemies" to command.enemies
             )
             else -> mapOf("type" to "UNKNOWN")
+        }
+    }
+
+    private fun serializePath(path: SerializablePathData): Map<String, Any?> {
+        return mapOf(
+            "id" to path.id,
+            "name" to path.name,
+            "startPoint" to serializeLocation(path.startPoint),
+            "checkpoints" to path.checkpoints.map { serializeLocation(it) },
+            "endPoint" to serializeLocation(path.endPoint),
+            "isVisible" to path.isVisible
+        )
+    }
+
+    private fun serializeLocation(location: SerializableLocation): Map<String, Any> {
+        return mapOf(
+            "world" to location.world,
+            "x" to location.x,
+            "y" to location.y,
+            "z" to location.z,
+            "yaw" to location.yaw,
+            "pitch" to location.pitch
+        )
+    }
+
+    private fun deserializePath(pathMap: Map<*, *>): SerializablePathData? {
+        try {
+            val id = (pathMap["id"] as? Number)?.toInt() ?: return null
+            val name = pathMap["name"] as? String ?: "Unnamed Path"
+            val startPointMap = pathMap["startPoint"] as? Map<*, *> ?: return null
+            val checkpointsList = pathMap["checkpoints"] as? List<*> ?: emptyList<Any>()
+            val endPointMap = pathMap["endPoint"] as? Map<*, *> ?: return null
+            val isVisible = pathMap["isVisible"] as? Boolean ?: true
+
+            val startPoint = deserializeLocation(startPointMap) ?: return null
+            val checkpoints = checkpointsList.mapNotNull { checkpoint ->
+                if (checkpoint is Map<*, *>) {
+                    deserializeLocation(checkpoint)
+                } else null
+            }
+            val endPoint = deserializeLocation(endPointMap) ?: return null
+
+            return SerializablePathData(
+                id = id,
+                name = name,
+                startPoint = startPoint,
+                checkpoints = checkpoints,
+                endPoint = endPoint,
+                isVisible = isVisible
+            )
+        } catch (e: Exception) {
+            plugin.logger.warning("Failed to deserialize path: ${e.message}")
+            return null
+        }
+    }
+
+    private fun deserializeLocation(locationMap: Map<*, *>): SerializableLocation? {
+        try {
+            val world = locationMap["world"] as? String ?: return null
+            val x = (locationMap["x"] as? Number)?.toDouble() ?: return null
+            val y = (locationMap["y"] as? Number)?.toDouble() ?: return null
+            val z = (locationMap["z"] as? Number)?.toDouble() ?: return null
+            val yaw = (locationMap["yaw"] as? Number)?.toFloat() ?: 0f
+            val pitch = (locationMap["pitch"] as? Number)?.toFloat() ?: 0f
+
+            return SerializableLocation(
+                world = world,
+                x = x,
+                y = y,
+                z = z,
+                yaw = yaw,
+                pitch = pitch
+            )
+        } catch (e: Exception) {
+            plugin.logger.warning("Failed to deserialize location: ${e.message}")
+            return null
         }
     }
 
@@ -220,5 +277,36 @@ object GameRegistry {
         return activeGames.values.firstOrNull { game ->
             game.hasPlayer(playerUUID)
         }
+    }
+
+    fun saveGameConfig(gameId: Int, config: GameSaveConfig) {
+        val gamesDir = File(plugin.dataFolder, "games")
+        if (!gamesDir.exists()) {
+            gamesDir.mkdirs()
+        }
+
+        val configFile = File(gamesDir, "game_$gameId.yml")
+        val yamlConfig = YamlConfiguration()
+
+        yamlConfig.set("game-data.maxHealth", config.maxHealth)
+        yamlConfig.set("game-data.defaultCash", config.defaultCash)
+        yamlConfig.set("game-data.name", config.name)
+
+        // Serialize waves to maps
+        val wavesData = config.waves.map { wave ->
+            serializeWave(wave)
+        }
+        yamlConfig.set("game-data.waves", wavesData)
+
+        yamlConfig.set("game-data.allowedTowers", config.allowedTowers)
+
+        // Serialize paths to maps
+        val pathsData = config.paths.map { path ->
+            serializePath(path)
+        }
+        yamlConfig.set("game-data.paths", pathsData)
+
+        yamlConfig.save(configFile)
+        plugin.logger.info("Saved Game $gameId (${config.name}) with ${config.paths.size} paths")
     }
 }

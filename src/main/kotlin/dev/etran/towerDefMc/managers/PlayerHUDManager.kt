@@ -66,7 +66,7 @@ object PlayerHUDManager {
         player.sendActionBar(message)
 
         // Also display game info as subtitle periodically (every 10 seconds / 200 ticks)
-        if (Bukkit.getCurrentTick() % 200 == 0L) {
+        if ((Bukkit.getCurrentTick() % 200).toLong() == 0L) {
             displayGameInfo(player, game)
         }
     }
